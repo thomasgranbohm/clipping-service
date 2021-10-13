@@ -1,0 +1,23 @@
+version: '3'
+services:
+  backend:
+    command: npm run dev
+    depends_on:
+      - database
+    environment:
+      DATABASE_HOST: database
+    image: node:16
+    volumes:
+      - ./backend:/home/node/app
+    working_dir: /home/node/app
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: clipping-service
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - database:/var/lib/postgresql/data
+volumes:
+  database:
+    driver: local
