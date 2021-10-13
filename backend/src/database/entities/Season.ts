@@ -1,6 +1,7 @@
 import {
 	BaseEntity,
 	Column,
+	Entity,
 	ManyToOne,
 	OneToMany,
 	PrimaryGeneratedColumn,
@@ -8,6 +9,7 @@ import {
 import { Episode } from './Episode';
 import { Show } from './Show';
 
+@Entity()
 export class Season extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	id: number;

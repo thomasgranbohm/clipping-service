@@ -4,8 +4,10 @@ import {
 	BeforeRemove,
 	Column,
 	Entity,
+	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Media } from './Media';
 
 @Entity()
 export class Clip extends BaseEntity {
@@ -20,6 +22,9 @@ export class Clip extends BaseEntity {
 
 	@Column()
 	end: number;
+
+	@ManyToOne(() => Media, (media) => media.clips)
+	media: Media;
 
 	@AfterInsert()
 	startFFmpeg() {

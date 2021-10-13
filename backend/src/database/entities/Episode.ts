@@ -1,11 +1,10 @@
-import { BaseEntity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Media } from './Media';
 import { Season } from './Season';
 import { Show } from './Show';
 
-export class Episode extends BaseEntity {
-	@PrimaryGeneratedColumn()
-	id: number;
-
+@Entity()
+export class Episode extends Media {
 	@Column()
 	name: string;
 
