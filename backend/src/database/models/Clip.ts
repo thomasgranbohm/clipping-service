@@ -82,7 +82,7 @@ export class Clip extends Model {
 			include: [Show, Episode, Season],
 		});
 		const cmd = [
-			ffmpeg.path,
+			ffmpeg,
 			'-i',
 			`'${resolve(
 				process.cwd(),
