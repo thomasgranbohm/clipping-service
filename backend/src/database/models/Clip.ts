@@ -1,3 +1,5 @@
+import { exec } from 'child_process';
+import { resolve } from 'path';
 import {
 	AfterCreate,
 	AllowNull,
@@ -6,6 +8,7 @@ import {
 	BeforeUpdate,
 	BelongsTo,
 	Column,
+	Default,
 	ForeignKey,
 	Model,
 	Table,
@@ -41,6 +44,10 @@ export class Clip extends Model {
 	@Column
 	end: number;
 
+	@Default(false)
+	@Column
+	ready: boolean;
+
 	@ForeignKey(() => Episode)
 	@Column
 	episodeId: number;
@@ -63,12 +70,37 @@ export class Clip extends Model {
 	show: Show;
 
 	@AfterCreate
-	static startFFmpeg(instance: Clip) {
+	static async startFFmpeg(instance: Clip) {
 		console.log(
 			'Start FFmpeg here! Start: %d. End: %d',
 			instance.start,
 			instance.end
 		);
+		const clip = await Clip.findOne({
+			where: { id: instance.id },
+			include: [Show, Episode, Season],
+		});
+		const cmd = [
+			'ffmpeg',
+			'-i',
+			`'${resolve(
+				process.cwd(),
+				'media',
+				'TV Shows',
+				clip.show.name,
+				clip.season.name,
+				clip.episode.name
+			)}'`,
+			'-ss',
+			instance.start.toFixed(2),
+			'-to',
+			instance.end.toFixed(2),
+			resolve(process.cwd(), 'clips', instance.slug + '.mp4'),
+		].join(' ');
+		exec(cmd, (err, stdout, stderr) => {
+			if (err) return console.log('Should remove clip', stderr);
+			instance.update({ ready: true });
+		});
 	}
 
 	@BeforeDestroy

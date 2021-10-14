@@ -29,6 +29,7 @@ server.use((err, _, res: Response, __) => {
 server.listen(1337, async () => {
 	const s = await connectToDatabase();
 	await s.sync({ force: true });
+
 	await scanMedia();
 	console.log('http://localhost:1337');
 });

@@ -6,6 +6,16 @@ import { Router } from 'express';
 
 const router = Router();
 
+router.get('/', async (req, res) => {
+	try {
+		const episodes = await Episode.findAll();
+
+		return res.json({ episodes });
+	} catch (error) {
+		return res.json({ error });
+	}
+});
+
 router.get('/:id', async (req, res) => {
 	const { id } = req.params;
 

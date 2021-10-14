@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolve } from 'path';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 import { Season } from '../database/models/Season';
@@ -25,6 +26,12 @@ router.post('/', async (req, res) => {
 			throw {
 				name: 400,
 				description: 'End cannot be before start.',
+			};
+
+		if (start < 0 || end > episode.duration)
+			throw {
+				name: 400,
+				description: 'Start or end is beyond boundaries.',
 			};
 
 		const clip = await Clip.create({
@@ -57,6 +64,30 @@ router.get('/:id', async (req, res) => {
 			};
 
 		return res.json({ clip });
+	} catch (error) {
+		return res.json({ error });
+	}
+});
+
+router.get('/:id/watch', async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const clip = await Clip.findOne({
+			where: { id },
+		});
+		if (!clip)
+			throw {
+				name: '404',
+				description: 'Could not find clip.',
+			};
+		else if (!clip.ready)
+			throw {
+				name: 400,
+				description: 'File not ready yet.',
+			};
+
+		return res.sendFile(resolve(process.cwd(), 'clips', clip.slug + '.mp4'));
 	} catch (error) {
 		return res.json({ error });
 	}

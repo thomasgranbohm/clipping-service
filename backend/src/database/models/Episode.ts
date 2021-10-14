@@ -1,17 +1,23 @@
+// import { exec } from 'child_process';
+// import { resolve } from 'path';
 import {
 	BeforeCreate,
 	BeforeUpdate,
 	BelongsTo,
 	Column,
+	DataType,
 	ForeignKey,
 	HasMany,
 	Model,
-	Table,
+	Table
 } from 'sequelize-typescript';
 import slugify from 'slugify';
+// import { promisify } from 'util';
 import { Clip } from './Clip';
 import { Season } from './Season';
 import { Show } from './Show';
+
+// const execWait = promisify(exec);
 
 @Table
 export class Episode extends Model {
@@ -21,9 +27,14 @@ export class Episode extends Model {
 	@Column
 	slug: string;
 
+	@Column({
+		type: DataType.FLOAT,
+	})
+	duration: number;
+
 	@BeforeCreate
 	@BeforeUpdate
-	static createSlug(instance: Episode) {
+	static async populate(instance: Episode) {
 		instance.slug = slugify(instance.name, { lower: true });
 	}
 
