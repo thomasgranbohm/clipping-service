@@ -24,8 +24,8 @@ const requestPlex = async (url) => {
 			const ae = error as AxiosError;
 			return {
 				error: {
-					status: ae.response.status,
-					data: ae.response.data,
+					status: ae.response?.status || 500,
+					data: ae.response?.data || 'Something went wrong',
 				},
 			};
 		}
