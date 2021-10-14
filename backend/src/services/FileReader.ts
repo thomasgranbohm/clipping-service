@@ -43,14 +43,14 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 					[
 						ffprobe.path,
 						'-v error -print_format json -show_format',
-						`'${resolve(
+						`"${resolve(
 							process.cwd(),
 							'media',
 							'TV Shows',
 							show.name,
 							season.name,
 							episode_name
-						).replaceAll("'", "\\'")}'`,
+						).replace(/(["'$`\\])/g, '\\$1')}"`,
 					].join(' ')
 				);
 				if (stderr) throw stderr;
