@@ -7,6 +7,7 @@ import {
 	Table,
 } from 'sequelize-typescript';
 import slugify from 'slugify';
+import { Clip } from './Clip';
 import { Episode } from './Episode';
 import { Season } from './Season';
 
@@ -29,4 +30,7 @@ export class Show extends Model {
 
 	@HasMany(() => Episode)
 	episodes: Episode[];
+
+	@HasMany(() => Clip)
+	clips: Clip[];
 }
