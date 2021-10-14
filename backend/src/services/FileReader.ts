@@ -7,6 +7,7 @@ import { Episode } from '../database/models/Episode';
 // import { Movie } from '../database/models/Movie';
 import { Season } from '../database/models/Season';
 import { Show } from '../database/models/Show';
+import ffprobe from 'ffprobe-static';
 
 const execWait = promisify(exec);
 
@@ -36,7 +37,8 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 			for (const episode_name of episode_files) {
 				const { stderr, stdout } = await execWait(
 					[
-						'ffprobe -v error -print_format json -show_format',
+						ffprobe.path,
+						'-v error -print_format json -show_format',
 						`'${resolve(
 							process.cwd(),
 							'media',

@@ -18,6 +18,7 @@ import slugify from 'slugify';
 import { Episode } from './Episode';
 import { Season } from './Season';
 import { Show } from './Show';
+import ffmpeg from 'ffmpeg-static';
 
 @Table
 export class Clip extends Model {
@@ -81,7 +82,7 @@ export class Clip extends Model {
 			include: [Show, Episode, Season],
 		});
 		const cmd = [
-			'ffmpeg',
+			ffmpeg.path,
 			'-i',
 			`'${resolve(
 				process.cwd(),
