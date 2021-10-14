@@ -6,8 +6,8 @@
 	"author": "Thomas Granbohm <thomas.granbohm@gmail.com>",
 	"license": "MIT",
 	"scripts": {
-		"build": "tsc",
-		"start": "NODE_ENV=production node dist/index.js",
+		"build": "tsc -p .",
+		"start": "node dist/index.js",
 		"dev": "ts-node-dev src/"
 	},
 	"dependencies": {
