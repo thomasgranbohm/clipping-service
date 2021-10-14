@@ -1,11 +1,13 @@
 import { Router } from 'express';
+import { getLibraryContents } from '../services/PlexAPI';
 import { Season } from '../database/models/Season';
 import { Show } from '../database/models/Show';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-	const shows = await Show.findAll();
+	const { id } = req.query;
+	const shows = await getLibraryContents(parseInt(id as string));
 
 	return res.json(shows);
 });

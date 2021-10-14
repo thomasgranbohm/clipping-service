@@ -1,23 +1,20 @@
-import { exec } from 'child_process';
-import { resolve } from 'path';
 import {
 	AfterCreate,
 	AllowNull,
 	BeforeCreate,
 	BeforeDestroy,
 	BeforeUpdate,
-	BelongsTo,
 	Column,
 	Default,
-	ForeignKey,
 	Model,
 	Table,
 	Unique,
 } from 'sequelize-typescript';
+import { getItemDetails } from '../../services/PlexAPI';
 import slugify from 'slugify';
 import { Episode } from './Episode';
-import { Season } from './Season';
-import { Show } from './Show';
+import { resolve } from 'path';
+import { exec } from 'child_process';
 import ffmpeg from 'ffmpeg-static';
 
 @Table
@@ -49,26 +46,17 @@ export class Clip extends Model {
 	@Column
 	ready: boolean;
 
-	@ForeignKey(() => Episode)
+	@AllowNull(false)
 	@Column
-	episodeId: number;
+	metadataId: number;
 
-	@BelongsTo(() => Episode)
-	episode: Episode;
-
-	@ForeignKey(() => Season)
-	@Column
-	seasonId: number;
-
-	@BelongsTo(() => Season)
-	season: Season;
-
-	@ForeignKey(() => Show)
+	@AllowNull(false)
 	@Column
 	showId: number;
 
-	@BelongsTo(() => Show)
-	show: Show;
+	@AllowNull(false)
+	@Column
+	seasonId: number;
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
@@ -77,21 +65,19 @@ export class Clip extends Model {
 			instance.start,
 			instance.end
 		);
-		const clip = await Clip.findOne({
-			where: { id: instance.id },
-			include: [Show, Episode, Season],
-		});
+
+		const data = await getItemDetails(instance.metadataId);
+
+		const filepath = data['Metadata'].pop()['Media'].pop()['Part'].pop().file;
+		if (!filepath)
+			return console.error(
+				'Could not find file for id: %d',
+				instance.metadataId
+			);
 		const cmd = [
 			ffmpeg,
 			'-i',
-			`'${resolve(
-				process.cwd(),
-				'media',
-				'TV Shows',
-				clip.show.name,
-				clip.season.name,
-				clip.episode.name
-			)}'`,
+			`'${filepath}'`,
 			'-ss',
 			instance.start.toFixed(2),
 			'-to',

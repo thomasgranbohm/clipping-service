@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { resolve } from 'path';
+import { getItemDetails } from '../services/PlexAPI';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 import { Season } from '../database/models/Season';
@@ -13,20 +14,25 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-	const { name, episodeId, start, end } = req.body;
+	const { name, metadataId, start, end } = req.body;
 
 	try {
-		const episode = await Episode.findOne({
-			where: { id: episodeId },
-			include: [Season, Show],
-		});
-		if (!episode) throw new Error('Episode not found.');
+		const episode = await getItemDetails(metadataId);
 
-		if (end < start)
-			throw {
+		if (episode.size !== 1 || episode.key)
+			return {
 				name: 400,
-				description: 'End cannot be before start.',
+				description: 'Cannot create a clip from a non-episode.',
 			};
+
+		const metadata = episode['Metadata'].pop();
+
+		if (metadata)
+			if (end < start)
+				throw {
+					name: 400,
+					description: 'End cannot be before start.',
+				};
 
 		if (start < 0 || end > episode.duration)
 			throw {
@@ -38,9 +44,9 @@ router.post('/', async (req, res) => {
 			name,
 			start,
 			end,
-			episodeId,
-			seasonId: episode.seasonId,
-			showId: episode.showId,
+			metadataId,
+			seasonId: parseInt(metadata.parentRatingKey),
+			showId: parseInt(metadata.grandparentRatingKey),
 		});
 
 		return res.json({ clip });

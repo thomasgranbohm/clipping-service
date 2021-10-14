@@ -14,5 +14,5 @@ export const DATABASE_CONFIG: SequelizeOptions = {
 	password: DATABASE.PASSWORD,
 	logging: process.env.NODE_ENV !== 'production',
 	sync: { force: true },
-	models: [Clip, Episode, Season, Show],
+	models: [Clip],
 };

@@ -11,6 +11,7 @@
 		"dev": "ts-node-dev src/"
 	},
 	"dependencies": {
+		"axios": "^0.23.0",
 		"express": "^4.17.1",
 		"ffmpeg-static": "^4.4.0",
 		"ffprobe-static": "^3.0.0",

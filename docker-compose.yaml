@@ -4,6 +4,7 @@ services:
     command: npm run dev
     depends_on:
       - database
+    env_file: ./config/backend.env
     environment:
       DATABASE_HOST: database
     image: node:16
