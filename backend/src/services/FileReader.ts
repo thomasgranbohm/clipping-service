@@ -50,7 +50,7 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 							show.name,
 							season.name,
 							episode_name
-						).replace(/(["'$`\\])/g, '\\$1')}"`,
+						).replace(/(["$\\])/g, '\\$1')}"`,
 					].join(' ')
 				);
 				if (stderr) throw stderr;
