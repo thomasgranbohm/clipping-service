@@ -12,6 +12,7 @@ services:
     expose:
       - 1337
     volumes:
+      - "${PLEX_DIR}:${PLEX_DIR}"
       - ./backend:/home/node/app
     working_dir: /home/node/app
   database:
