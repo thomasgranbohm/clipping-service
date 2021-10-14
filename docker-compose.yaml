@@ -23,11 +23,13 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
   nginx:
+    command: bash -c '/test-endpoint.sh backend 1337 && echo "Starting NGiNX..." && nginx -g "daemon off;"'
     image: nginx
     ports:
       - 9001:80
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./scripts/test-endpoint.sh:/test-endpoint.sh
 volumes:
   database:
     driver: local

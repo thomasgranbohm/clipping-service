@@ -15,6 +15,8 @@ const MEDIA_DIR = resolve(process.cwd(), 'media');
 const MOVIE_DIR = resolve(MEDIA_DIR, 'Movies');
 const TV_SHOW_DIR = resolve(MEDIA_DIR, 'TV Shows');
 
+const EXTENSIONS = ['mkv', 'mp4', 'avi'];
+
 const importMedia = async (media, type: 'movie' | 'tvshow') => {
 	if (type === 'movie') {
 		// await Movie.create({
@@ -35,6 +37,8 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 				resolve(TV_SHOW_DIR, media, season_dir)
 			);
 			for (const episode_name of episode_files) {
+				if (!EXTENSIONS.includes(episode_name.split('.').pop().toLowerCase()))
+					continue;
 				const { stderr, stdout } = await execWait(
 					[
 						ffprobe.path,
@@ -46,7 +50,7 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 							show.name,
 							season.name,
 							episode_name
-						)}'`,
+						).replaceAll("'", "\\'")}'`,
 					].join(' ')
 				);
 				if (stderr) throw stderr;
