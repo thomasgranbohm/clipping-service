@@ -27,8 +27,13 @@ const importMedia = async (media, type: 'movie' | 'tvshow') => {
 			where: { name: media },
 		});
 
-		const season_dirs = await fs.readdir(resolve(TV_SHOW_DIR, media));
-		for (const season_dir of season_dirs) {
+		const season_dirs = await fs.readdir(resolve(TV_SHOW_DIR, media), {
+			withFileTypes: true,
+		});
+		for (const season_info of season_dirs) {
+			if (!season_info.isDirectory()) continue;
+			const season_dir = season_info.name;
+
 			const [season] = await Season.findOrCreate({
 				where: { name: season_dir, showId: show.id },
 			});
