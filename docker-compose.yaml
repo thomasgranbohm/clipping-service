@@ -18,6 +18,8 @@ services:
       POSTGRES_DB: clipping-service
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
     volumes:
       - database:/var/lib/postgresql/data
 volumes:

@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm';
-import { TYPEORM_CONFIG } from './config';
+import { Sequelize } from 'sequelize-typescript';
+import { DATABASE_CONFIG } from './config';
 
-export const connectToDatabase = () => createConnection(TYPEORM_CONFIG);
+export const connectToDatabase = () => new Sequelize(DATABASE_CONFIG);

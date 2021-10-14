@@ -1,15 +1,15 @@
+import { SequelizeOptions } from 'sequelize-typescript';
 import { DATABASE } from '../constants';
-import { ConnectionOptions } from 'typeorm';
-import { resolve } from 'path';
 
-export const TYPEORM_CONFIG: ConnectionOptions = {
-	type: 'postgres',
+console.log(__dirname + '/models/*.ts');
+
+export const DATABASE_CONFIG: SequelizeOptions = {
+	dialect: 'postgres',
 	host: DATABASE.HOST,
 	port: DATABASE.PORT,
 	database: DATABASE.NAME,
 	username: DATABASE.USERNAME,
 	password: DATABASE.PASSWORD,
-	logging: DATABASE.LOGGING,
-	synchronize: true,
-	entities: [resolve(__dirname, './entities/**/*.ts')],
+	sync: { force: true },
+	models: [__dirname + '/models/*.ts'],
 };

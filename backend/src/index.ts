@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
-import { scanMedia } from './services/FileReader';
 import { connectToDatabase } from './database';
 import Show from './routes/Show';
+import { scanMedia } from './services/FileReader';
 
 const server = express();
 
@@ -21,7 +21,8 @@ server.use((err, _, res: Response, __) => {
 });
 
 server.listen(1337, async () => {
-	await connectToDatabase();
+	const s = await connectToDatabase();
+	await s.sync({ force: true });
 	await scanMedia();
 	console.log('http://localhost:1337');
 });

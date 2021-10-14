@@ -1,7 +1,7 @@
-import { Episode } from '../database/entities/Episode';
-import { Movie } from '../database/entities/Movie';
-import { Season } from '../database/entities/Season';
-import { Show } from '../database/entities/Show';
+import { Episode } from '../database/models/Episode';
+// import { Movie } from '../database/models/Movie';
+import { Season } from '../database/models/Season';
+import { Show } from '../database/models/Show';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
@@ -11,43 +11,31 @@ const TV_SHOW_DIR = resolve(MEDIA_DIR, 'TV Shows');
 
 const importMedia = async (media, type: 'movie' | 'tvshow') => {
 	if (type === 'movie') {
-		Movie.create({
-			name: media,
-		});
+		// await Movie.create({
+		// 	name: media,
+		// });
 	} else if (type === 'tvshow') {
-		if ((await Show.findOne({ where: { name: media } })) !== undefined)
-			return console.log('Found %s', media);
-		const show = await Show.create({
-			name: media,
+		const [show] = await Show.findOrCreate({
+			where: { name: media },
 		});
-		await show.save();
 
 		const season_dirs = await fs.readdir(resolve(TV_SHOW_DIR, media));
 		for (const season_dir of season_dirs) {
-			if ((await Season.findOne({ where: { name: season_dir } })) !== undefined)
-				return;
-			const season = await Season.create({
-				name: season_dir,
-				show,
+			const [season] = await Season.findOrCreate({
+				where: { name: season_dir, showId: show.id },
 			});
-			await season.save();
 
 			const episode_files = await fs.readdir(
 				resolve(TV_SHOW_DIR, media, season_dir)
 			);
 			for (const episode_name of episode_files) {
-				if (
-					(await Episode.findOne({ where: { name: episode_name } })) !==
-					undefined
-				)
-					return;
-				const episode = await Episode.create({
-					name: episode_name,
-					season,
-					show,
+				await Episode.findOrCreate({
+					where: {
+						name: episode_name,
+						seasonId: season.id,
+						showId: show.id,
+					},
 				});
-
-				await episode.save();
 			}
 		}
 	}
