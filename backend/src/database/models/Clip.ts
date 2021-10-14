@@ -60,12 +60,6 @@ export class Clip extends Model {
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
-		console.log(
-			'Start FFmpeg here! Start: %d. End: %d',
-			instance.start,
-			instance.end
-		);
-
 		const data = await getItemDetails(instance.metadataId);
 
 		const filepath = data['Metadata'].pop()['Media'].pop()['Part'].pop().file;
@@ -82,10 +76,11 @@ export class Clip extends Model {
 			instance.start.toFixed(2),
 			'-to',
 			instance.end.toFixed(2),
+			'-y',
 			resolve(process.cwd(), 'clips', instance.slug + '.mp4'),
 		].join(' ');
 		exec(cmd, (err, stdout, stderr) => {
-			if (err) return console.log('Should remove clip', stderr);
+			if (err) return Clip.destroy({ where: { id: instance.id } });
 			instance.update({ ready: true });
 		});
 	}
