@@ -1,3 +1,4 @@
+import Anchor from 'components/Anchor/Anchor';
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
@@ -42,20 +43,17 @@ const ShowPage = ({ data }) => {
 	const { showTitle, metadata, ...rest } = data;
 
 	return (
-		<div>
+		<>
 			<Breadcrumb {...rest} />
 			<h1>{showTitle}</h1>
 			<ul>
 				{metadata.map(({ key, title, type }) => (
 					<li key={key}>
-						<a href={`/${type}/${key}`}>{title}</a>
+						<Anchor href={`/${type}/${key}`}>{title}</Anchor>
 					</li>
 				))}
 			</ul>
-			<pre>
-				<code>{JSON.stringify(data, null, 4)}</code>
-			</pre>
-		</div>
+		</>
 	);
 };
 

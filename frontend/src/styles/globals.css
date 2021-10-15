@@ -11,7 +11,17 @@ body {
 }
 
 body {
-	max-width: 960px;
+	max-width: calc(960px - 2rem);
 	width: 100%;
+	padding: 0 1rem;
 	margin: 1rem auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0.25em 0;
 }

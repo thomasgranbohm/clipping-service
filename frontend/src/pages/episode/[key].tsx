@@ -40,14 +40,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const EpisodePage = (props) => {
 	const { episodeTitle, summary, ...rest } = props;
 	return (
-		<div>
+		<>
 			<Breadcrumb {...rest} />
 			<h1>{episodeTitle}</h1>
 			<p>{summary}</p>
-			<pre>
-				<code>{JSON.stringify(props, null, 4)}</code>
-			</pre>
-		</div>
+		</>
 	);
 };
 

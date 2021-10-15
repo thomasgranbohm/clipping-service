@@ -1,3 +1,4 @@
+import Anchor from 'components/Anchor/Anchor';
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
@@ -25,20 +26,16 @@ const LibraryPage = (props) => {
 	const { contents } = props;
 
 	return (
-		<div>
-			<Breadcrumb {...props}/>
+		<>
 			<h1>Library</h1>
 			<ul>
 				{contents.map(({ key, title, type }) => (
 					<li key={key}>
-						<a href={`/${type}/${key}`}>{title}</a>
+						<Anchor href={`/${type}/${key}`}>{title}</Anchor>
 					</li>
 				))}
 			</ul>
-			<pre>
-				<code>{JSON.stringify(props, null, 4)}</code>
-			</pre>
-		</div>
+		</>
 	);
 };
 

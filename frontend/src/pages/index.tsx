@@ -1,3 +1,4 @@
+import Anchor from 'components/Anchor/Anchor';
 import { GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 
@@ -13,19 +14,16 @@ const Home = ({ ...props }) => {
 	const { libraries } = props;
 
 	return (
-		<div>
+		<>
 			<h1>Hello World!</h1>
 			<ul>
 				{libraries.map(({ key, title }) => (
 					<li key={key}>
-						<a href={`/library/${key}`}>{title}</a>
+						<Anchor href={`/library/${key}`}>{title}</Anchor>
 					</li>
 				))}
 			</ul>
-			<pre>
-				<code>{JSON.stringify(props, null, 4)}</code>
-			</pre>
-		</div>
+		</>
 	);
 };
 

@@ -1,6 +1,8 @@
 .container {
-	color: gray;
 	display: flex;
+	flex-wrap: wrap;
+
+	color: gray;
 	gap: 0.5rem;
 
 	font-size: 1rem;
