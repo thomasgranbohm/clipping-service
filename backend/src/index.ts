@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, { Response } from 'express';
 import { connectToDatabase } from './database';
 import Clip from './routes/Clip';
@@ -6,8 +7,17 @@ import Library from './routes/Library';
 
 const server = express();
 
-export let media = {};
-
+server.use(
+	cors({
+		origin: ['https://granbohm.dev'],
+	})
+);
+// server.options(
+// 	'*',
+// 	cors({
+// 		origin: ['https://granbohm.dev'],
+// 	})
+// );
 server.use(express.json());
 
 server.get('/', (_, res) => {
