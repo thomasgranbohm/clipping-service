@@ -2,6 +2,7 @@ import Anchor from 'components/Anchor/Anchor';
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
+import Head from 'next/head';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);
@@ -40,10 +41,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ShowPage = ({ data }) => {
-	const { showTitle, metadata, ...rest } = data;
+	const { showTitle, summary, metadata, ...rest } = data;
 
 	return (
 		<>
+			<Head>
+				<title>{showTitle}</title>
+				<meta property="og:title" content={showTitle} />
+				<meta property="og:description" content={summary} />
+				<meta property="og:site_name" content="Clipping Service" />
+			</Head>
 			<Breadcrumb {...rest} />
 			<h1>{showTitle}</h1>
 			<ul>
@@ -53,6 +60,7 @@ const ShowPage = ({ data }) => {
 					</li>
 				))}
 			</ul>
+			<p>{summary}</p>
 		</>
 	);
 };

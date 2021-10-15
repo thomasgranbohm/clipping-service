@@ -114,10 +114,12 @@ export const getItemChildren = async (id: PlexId) => {
 	const { Metadata: metadata, key } = data;
 
 	if (data.viewGroup === 'season') {
+		// Show lookup
 		const {
 			parentTitle: showTitle,
 			librarySectionTitle: libraryTitle,
 			librarySectionID: libraryKey,
+			summary,
 		} = data;
 
 		return {
@@ -126,6 +128,7 @@ export const getItemChildren = async (id: PlexId) => {
 			showTitle,
 			libraryKey,
 			libraryTitle,
+			summary,
 			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
 				key: ratingKey,
 				index,
@@ -134,6 +137,7 @@ export const getItemChildren = async (id: PlexId) => {
 			})),
 		};
 	} else if (data.viewGroup === 'episode') {
+		// Season lookup
 		const {
 			title1: showTitle,
 			title2: seasonTitle,
