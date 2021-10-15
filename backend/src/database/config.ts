@@ -1,9 +1,6 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 import { DATABASE } from '../constants';
 import { Clip } from './models/Clip';
-import { Episode } from './models/Episode';
-import { Season } from './models/Season';
-import { Show } from './models/Show';
 
 export const DATABASE_CONFIG: SequelizeOptions = {
 	dialect: 'postgres',

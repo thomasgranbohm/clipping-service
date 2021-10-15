@@ -35,16 +35,129 @@ const requestPlex = async (url) => {
 	}
 };
 
-export const getAllLibraries = async () => requestPlex(`/library/sections`);
+export const getAllLibraries = async () => {
+	const data = await requestPlex(`/library/sections`);
+
+	const libraries = data['Directory']
+		.filter((lib) => lib.type === 'show')
+		.map(({ key, title, type }) => ({ key, title, type }));
+
+	return libraries;
+};
 
 export const getSpecificLibrary = async (id: PlexId) =>
 	requestPlex(`/library/sections/${id}`);
 
-export const getLibraryContents = async (id: PlexId) =>
-	requestPlex(`/library/sections/${id}/all`);
+export const getLibraryContents = async (id: PlexId) => {
+	const data = await requestPlex(`/library/sections/${id}/all`);
 
-export const getItemDetails = async (id: PlexId) =>
-	requestPlex(`/library/metadata/${id}`);
+	const contents = data['Metadata'].map(({ title, ratingKey, type }) => ({
+		key: ratingKey,
+		title,
+		type,
+	}));
 
-export const getItemChildren = async (id: PlexId) =>
-	requestPlex(`/library/metadata/${id}/children`);
+	return contents;
+};
+
+export const getItemDetails = async (id: PlexId) => {
+	const data = await requestPlex(`/library/metadata/${id}`);
+
+	const {
+		Metadata: metadata,
+		librarySectionTitle: libraryTitle,
+		librarySectionID: libraryKey,
+	} = data;
+
+	const {
+		ratingKey: key,
+		type,
+		title: episodeTitle,
+		grandparentTitle: showTitle,
+		parentTitle: seasonTitle,
+		parentRatingKey: seasonKey,
+		grandparentRatingKey: showKey,
+		summary,
+		index,
+		Media,
+	} = metadata.pop();
+
+	if (type !== 'episode')
+		return {
+			error: 400,
+			description: `Type ${type} is not episode.`,
+		};
+
+	const { duration, Part } = Media.pop();
+	const { file: filePath } = Part.pop();
+
+	return {
+		key,
+		episodeTitle,
+		index,
+		seasonKey,
+		seasonTitle,
+		showKey,
+		showTitle,
+		libraryKey,
+		libraryTitle,
+		summary,
+		type,
+		duration,
+		filePath,
+	};
+};
+
+export const getItemChildren = async (id: PlexId) => {
+	const data = await requestPlex(`/library/metadata/${id}/children`);
+
+	const { Metadata: metadata, key } = data;
+
+	if (data.viewGroup === 'season') {
+		const {
+			parentTitle: showTitle,
+			librarySectionTitle: libraryTitle,
+			librarySectionID: libraryKey,
+		} = data;
+
+		return {
+			key,
+			type: 'show',
+			showTitle,
+			libraryKey,
+			libraryTitle,
+			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
+				key: ratingKey,
+				index,
+				title,
+				type,
+			})),
+		};
+	} else if (data.viewGroup === 'episode') {
+		const {
+			title1: showTitle,
+			title2: seasonTitle,
+			grandparentRatingKey: showKey,
+			librarySectionTitle: libraryTitle,
+			librarySectionID: libraryKey,
+		} = data;
+
+		return {
+			key,
+			type: 'season',
+			showTitle,
+			showKey,
+			seasonTitle,
+			libraryKey,
+			libraryTitle,
+			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
+				key: ratingKey,
+				index,
+				title,
+				type,
+			})),
+		};
+	}
+
+	return data;
+};

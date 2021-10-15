@@ -12,7 +12,6 @@ import {
 } from 'sequelize-typescript';
 import { getItemDetails } from '../../services/PlexAPI';
 import slugify from 'slugify';
-import { Episode } from './Episode';
 import { resolve } from 'path';
 import { exec } from 'child_process';
 import ffmpeg from 'ffmpeg-static';
@@ -30,7 +29,7 @@ export class Clip extends Model {
 
 	@BeforeCreate
 	@BeforeUpdate
-	static createSlug(instance: Episode) {
+	static createSlug(instance: Clip) {
 		instance.slug = slugify(instance.name, { lower: true });
 	}
 
@@ -60,10 +59,9 @@ export class Clip extends Model {
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
-		const data = await getItemDetails(instance.metadataId);
+		const { filePath } = await getItemDetails(instance.metadataId);
 
-		const filepath = data['Metadata'].pop()['Media'].pop()['Part'].pop().file;
-		if (!filepath)
+		if (!filePath)
 			return console.error(
 				'Could not find file for id: %d',
 				instance.metadataId
@@ -71,7 +69,7 @@ export class Clip extends Model {
 		const cmd = [
 			ffmpeg,
 			'-i',
-			`'${filepath}'`,
+			`'${filePath}'`,
 			'-ss',
 			instance.start.toFixed(2),
 			'-to',
@@ -80,7 +78,10 @@ export class Clip extends Model {
 			resolve(process.cwd(), 'clips', instance.slug + '.mp4'),
 		].join(' ');
 		exec(cmd, (err, stdout, stderr) => {
-			if (err) return Clip.destroy({ where: { id: instance.id } });
+			if (err) {
+				console.log('Error while running FFmpeg: %s', stderr);
+				return Clip.destroy({ where: { id: instance.id } });
+			}
 			instance.update({ ready: true });
 		});
 	}

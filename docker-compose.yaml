@@ -23,6 +23,17 @@ services:
       - 5432:5432
     volumes:
       - database:/var/lib/postgresql/data
+  frontend:
+    command: npm run dev
+    depends_on:
+      - backend
+    env_file: ./config/frontend.env
+    image: node:16
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/home/node/app
+    working_dir: /home/node/app
 volumes:
   database:
     driver: local

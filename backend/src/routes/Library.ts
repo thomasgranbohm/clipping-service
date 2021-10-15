@@ -8,9 +8,9 @@ import {
 const router = Router();
 
 router.get('/', async (req, res) => {
-	const libs = await getAllLibraries();
+	const libraries = await getAllLibraries();
 
-	return res.json(libs);
+	return res.json({ libraries });
 });
 
 router.get('/:id', async (req, res) => {
@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/contents', async (req, res) => {
 	const contents = await getLibraryContents(parseInt(req.params.id));
 
-	return res.json(contents);
+	return res.json({ contents });
 });
 
 export default router;

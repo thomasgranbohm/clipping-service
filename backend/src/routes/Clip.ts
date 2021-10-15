@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import { resolve } from 'path';
-import { getItemDetails } from '../services/PlexAPI';
 import { Clip } from '../database/models/Clip';
-import { Episode } from '../database/models/Episode';
-import { Season } from '../database/models/Season';
-import { Show } from '../database/models/Show';
+import { getItemDetails } from '../services/PlexAPI';
 
 const router = Router();
 
@@ -19,7 +16,7 @@ router.post('/', async (req, res) => {
 	try {
 		const episode = await getItemDetails(metadataId);
 
-		if (episode.size !== 1 || episode.key)
+		if (episode.type !== 'episode' || episode.key)
 			return {
 				name: 400,
 				description: 'Cannot create a clip from a non-episode.',

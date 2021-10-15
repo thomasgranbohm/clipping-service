@@ -1,12 +1,8 @@
 import express, { Response } from 'express';
 import { connectToDatabase } from './database';
 import Clip from './routes/Clip';
-import Episode from './routes/Episode';
-import Season from './routes/Season';
-import Show from './routes/Show';
-import { getAllLibraries } from './services/PlexAPI';
-import Library from './routes/Library';
 import Item from './routes/Item';
+import Library from './routes/Library';
 
 const server = express();
 
@@ -19,9 +15,6 @@ server.get('/', (_, res) => {
 });
 
 server.use('/clips', Clip);
-server.use('/episodes', Episode);
-server.use('/seasons', Season);
-server.use('/shows', Show);
 
 // Plex API
 server.use('/libraries', Library);
