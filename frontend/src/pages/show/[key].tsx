@@ -1,3 +1,4 @@
+import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 
@@ -38,13 +39,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ShowPage = ({ data }) => {
-	const { libraryTitle, showTitle, metadata } = data;
+	const { showTitle, metadata, ...rest } = data;
 
 	return (
 		<div>
-			<h1>
-				{libraryTitle} / {showTitle}
-			</h1>
+			<Breadcrumb {...rest} />
+			<h1>{showTitle}</h1>
 			<ul>
 				{metadata.map(({ key, title, type }) => (
 					<li key={key}>

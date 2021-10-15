@@ -18,7 +18,7 @@ const Home = ({ ...props }) => {
 			<ul>
 				{libraries.map(({ key, title }) => (
 					<li key={key}>
-						<a href={`/libraries/${key}`}>{title}</a>
+						<a href={`/library/${key}`}>{title}</a>
 					</li>
 				))}
 			</ul>

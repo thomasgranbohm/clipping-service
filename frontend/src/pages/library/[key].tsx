@@ -1,3 +1,4 @@
+import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 
@@ -25,6 +26,7 @@ const LibraryPage = (props) => {
 
 	return (
 		<div>
+			<Breadcrumb {...props}/>
 			<h1>Library</h1>
 			<ul>
 				{contents.map(({ key, title, type }) => (

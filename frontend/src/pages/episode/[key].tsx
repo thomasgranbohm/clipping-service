@@ -1,3 +1,4 @@
+import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { getPaths as getSeasonPaths } from 'pages/season/[key]';
 import { privateAPI } from 'utils/api';
@@ -37,12 +38,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const EpisodePage = (props) => {
-	const { libraryTitle, showTitle, seasonTitle, episodeTitle, summary } = props;
+	const { episodeTitle, summary, ...rest } = props;
 	return (
 		<div>
-			<h1>
-				{libraryTitle} / {showTitle} / {seasonTitle} / {episodeTitle}
-			</h1>
+			<Breadcrumb {...rest} />
+			<h1>{episodeTitle}</h1>
 			<p>{summary}</p>
 			<pre>
 				<code>{JSON.stringify(props, null, 4)}</code>
