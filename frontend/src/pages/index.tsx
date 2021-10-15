@@ -1,5 +1,6 @@
 import Anchor from 'components/Anchor/Anchor';
 import { GetStaticProps } from 'next';
+import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -15,6 +16,9 @@ const Home = ({ ...props }) => {
 
 	return (
 		<>
+			<Head>
+				<title>Clipping Service</title>
+			</Head>
 			<h1>Hello World!</h1>
 			<ul>
 				{libraries.map(({ key, title }) => (

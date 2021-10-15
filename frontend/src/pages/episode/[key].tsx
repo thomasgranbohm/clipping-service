@@ -46,6 +46,7 @@ const EpisodePage = (props) => {
 				<title>
 					{episodeTitle} - {rest.showTitle}
 				</title>
+				<meta name="description" content={summary} />
 				<meta
 					property="og:title"
 					content={`${episodeTitle} - ${rest.showTitle}`}

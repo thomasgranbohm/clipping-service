@@ -3,6 +3,7 @@ import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 import { getPaths as getShowPaths } from '../show/[key]';
+import Head from 'next/head';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);
@@ -43,6 +44,16 @@ const SeasonPage = ({ data }) => {
 
 	return (
 		<>
+			<Head>
+				<title>
+					{seasonTitle} - {rest.showTitle}
+				</title>
+				<meta
+					property="og:title"
+					content={`${seasonTitle} - ${rest.showTitle}`}
+				/>
+				<meta property="og:site_name" content="Clipping Service" />
+			</Head>
 			<Breadcrumb {...rest} />
 			<h1>{seasonTitle}</h1>
 			<ol>

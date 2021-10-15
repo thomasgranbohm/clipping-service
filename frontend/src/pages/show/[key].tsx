@@ -47,6 +47,7 @@ const ShowPage = ({ data }) => {
 		<>
 			<Head>
 				<title>{showTitle}</title>
+				<meta name="description" content={summary} />
 				<meta property="og:title" content={showTitle} />
 				<meta property="og:description" content={summary} />
 				<meta property="og:site_name" content="Clipping Service" />
