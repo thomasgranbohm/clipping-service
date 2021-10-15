@@ -9,15 +9,9 @@ const server = express();
 
 server.use(
 	cors({
-		origin: ['https://granbohm.dev'],
+		origin: [process.env.FRONTEND_URL],
 	})
 );
-// server.options(
-// 	'*',
-// 	cors({
-// 		origin: ['https://granbohm.dev'],
-// 	})
-// );
 server.use(express.json());
 
 server.get('/', (_, res) => {
