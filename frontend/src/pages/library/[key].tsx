@@ -1,4 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
+import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
@@ -30,6 +31,7 @@ const LibraryPage = (props) => {
 			<Head>
 				<title>Clipping Service</title>
 			</Head>
+			<Breadcrumb />
 			<h1>Library</h1>
 			<ul>
 				{contents.map(({ key, title, type }) => (

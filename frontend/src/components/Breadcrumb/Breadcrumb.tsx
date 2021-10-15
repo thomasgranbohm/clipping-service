@@ -23,8 +23,10 @@ const Breadcrumb = ({
 	showTitle,
 }: BreadcrumbProps) => (
 	<h2 className={classes['container']}>
+		<Anchor href="/">Clipping Service</Anchor>
 		{libraryKey && libraryTitle && (
 			<>
+				<span className={classes['slash']}>/</span>
 				<Anchor href={`/library/${libraryKey}`}>{libraryTitle}</Anchor>
 				{showKey && showTitle && (
 					<>
