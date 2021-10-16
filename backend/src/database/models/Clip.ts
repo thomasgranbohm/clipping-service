@@ -1,6 +1,3 @@
-import { exec } from 'child_process';
-import ffmpeg from 'ffmpeg-static';
-import { mkdir } from 'fs/promises';
 import { resolve } from 'path';
 import {
 	AfterCreate,
@@ -16,7 +13,7 @@ import {
 } from 'sequelize-typescript';
 import slugify from 'slugify';
 import { CLIPS_DIR } from '../../constants';
-import { getItemDetails } from '../../services/PlexAPI';
+import { generateClip } from '../../services/FFmpeg';
 
 @Table
 export class Clip extends Model {
@@ -78,38 +75,23 @@ export class Clip extends Model {
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
-		const { filePath } = await getItemDetails(instance.metadataKey);
-
-		if (!filePath)
-			return console.error(
-				'Could not find file for id: %d',
-				instance.metadataKey
-			);
-
-		const CLIP_PATH = resolve(CLIPS_DIR, instance.slug + '.mp4');
-
-		const cmd = [
-			ffmpeg,
-			'-i',
-			`'${filePath}'`,
-			'-ss',
-			instance.start.toFixed(2),
-			'-to',
-			instance.end.toFixed(2),
-			'-y',
-			CLIP_PATH,
-		].join(' ');
-		exec(cmd, (err, stdout, stderr) => {
-			if (err) {
-				console.log('Error while running FFmpeg: %s', stderr);
-				return Clip.destroy({ where: { id: instance.id } });
-			}
-			instance.update({ ready: true });
-		});
+		generateClip(instance);
 	}
 
 	@BeforeDestroy
 	static removeClip(instance: Clip) {
 		console.log('Remove clip from file system with id %d.', instance.id);
+	}
+
+	getPath() {
+		return resolve(CLIPS_DIR, this.slug);
+	}
+
+	getMediaPath() {
+		return resolve(this.getPath(), 'clip.mp4');
+	}
+
+	getThumbnailPath() {
+		return resolve(this.getPath(), 'thumbnail.png');
 	}
 }

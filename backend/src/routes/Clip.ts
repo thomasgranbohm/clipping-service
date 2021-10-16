@@ -1,6 +1,4 @@
-import { CLIPS_DIR } from '../constants';
 import { Router } from 'express';
-import { resolve } from 'path';
 import { Clip } from '../database/models/Clip';
 import { getItemDetails } from '../services/PlexAPI';
 
@@ -91,7 +89,31 @@ router.get('/:slug/watch', async (req, res) => {
 				description: 'File not ready yet.',
 			};
 
-		return res.sendFile(resolve(CLIPS_DIR, clip.slug + '.mp4'));
+		return res.sendFile(clip.getMediaPath());
+	} catch (error) {
+		return res.status(400).json({ error });
+	}
+});
+
+router.get('/:slug/watch', async (req, res) => {
+	const { slug } = req.params;
+
+	try {
+		const clip = await Clip.findOne({
+			where: { slug },
+		});
+		if (!clip)
+			throw {
+				name: '404',
+				description: 'Could not find clip.',
+			};
+		else if (!clip.ready)
+			throw {
+				name: 400,
+				description: 'File not ready yet.',
+			};
+
+		return res.sendFile(clip.getThumbnailPath());
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
@@ -120,6 +142,9 @@ router.get('/:slug/oembed', async (req, res) => {
 			type: 'link',
 			provider_name: 'Clipping Service',
 			provider_url: process.env.FRONTEND_URL,
+			thumbnail_height: 720,
+			thumbnail_url: clip.getThumbnailPath(),
+			thumbnail_width: 1200,
 			// width: 320,
 			// height: 200,
 			// html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
