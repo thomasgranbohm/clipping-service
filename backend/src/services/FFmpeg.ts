@@ -40,7 +40,7 @@ export const generateThumbnail = async (clip: Clip) => {
 		clip.getMediaPath(),
 		'-ss',
 		clip.start.toFixed(2),
-		'-vframes',
+		'-frames:v',
 		'1',
 		THUMBNAIL_PATH,
 	].join(' ');

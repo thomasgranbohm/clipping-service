@@ -95,7 +95,7 @@ router.get('/:slug/watch', async (req, res) => {
 	}
 });
 
-router.get('/:slug/watch', async (req, res) => {
+router.get('/:slug/thumbnail', async (req, res) => {
 	const { slug } = req.params;
 
 	try {
@@ -143,7 +143,7 @@ router.get('/:slug/oembed', async (req, res) => {
 			provider_name: 'Clipping Service',
 			provider_url: process.env.FRONTEND_URL,
 			thumbnail_height: 720,
-			thumbnail_url: clip.getThumbnailPath(),
+			thumbnail_url: `${process.env.FRONTEND_URL}/api/clips/${clip.slug}/thumbnail`,
 			thumbnail_width: 1200,
 			// width: 320,
 			// height: 200,
