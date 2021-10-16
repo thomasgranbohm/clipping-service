@@ -1,8 +1,9 @@
-import { mkdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
 import { resolve } from 'path';
 import {
 	AfterCreate,
 	AllowNull,
+	BeforeBulkDestroy,
 	BeforeCreate,
 	BeforeDestroy,
 	BeforeUpdate,
@@ -82,8 +83,10 @@ export class Clip extends Model {
 	}
 
 	@BeforeDestroy
-	static removeClip(instance: Clip) {
-		console.log('Remove clip from file system with id %d.', instance.id);
+	@BeforeBulkDestroy
+	static async removeClip(instance: Clip) {
+		console.debug('Remove clip from file system with id %d.', instance.id);
+		await rm(instance.getPath(), { recursive: true, force: true });
 	}
 
 	getPath() {

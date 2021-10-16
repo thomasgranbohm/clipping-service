@@ -4,12 +4,13 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 import { getPaths as getShowPaths } from '../show/[key]';
 import Head from 'next/head';
+import ClipListing from 'components/ClipListing/ClipListing';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);
 
 	return {
-		props: { data },
+		props: { ...(data as Object) },
 	};
 };
 
@@ -21,7 +22,7 @@ export const getPaths = async () => {
 	for (const show of shows) {
 		const seResp = await privateAPI(`/items/${show.key}/children`);
 
-		for (const season of seResp.data['metadata']) {
+		for (const season of seResp.data['details']['metadata']) {
 			if (season.type !== 'season') continue;
 			paths.push(season);
 		}
@@ -39,8 +40,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const SeasonPage = ({ data }) => {
-	const { seasonTitle, metadata, ...rest } = data;
+const SeasonPage = ({ details, clips }) => {
+	const { seasonTitle, metadata, ...rest } = details;
 
 	return (
 		<>
@@ -63,6 +64,7 @@ const SeasonPage = ({ data }) => {
 					</li>
 				))}
 			</ol>
+			<ClipListing clips={clips} />
 		</>
 	);
 };

@@ -71,6 +71,19 @@ router.get('/:slug', async (req, res) => {
 	}
 });
 
+router.delete('/:slug', async (req, res) => {
+	const { slug } = req.params;
+
+	try {
+		const clip = await Clip.findOne({ where: { slug } });
+		await clip.destroy();
+
+		return res.json({ deleted: clip });
+	} catch (error) {
+		return res.status(404).json({ error });
+	}
+});
+
 router.get('/:slug/watch', async (req, res) => {
 	const { slug } = req.params;
 

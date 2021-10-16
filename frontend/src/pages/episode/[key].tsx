@@ -1,13 +1,14 @@
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import ClipListing from 'components/ClipListing/ClipListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
 import { getPaths as getSeasonPaths } from 'pages/season/[key]';
 import { privateAPI } from 'utils/api';
-import Head from 'next/head';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}`);
 	return {
-		props: { ...(data as Object) },
+		props: data as Object,
 	};
 };
 
@@ -19,7 +20,7 @@ const getPaths = async () => {
 	for (const season of seasons) {
 		const epResp = await privateAPI(`/items/${season.key}/children`);
 
-		for (const episode of epResp.data['metadata']) {
+		for (const episode of epResp.data['details']['metadata']) {
 			if (episode.type !== 'episode') continue;
 
 			paths.push(episode);
@@ -38,8 +39,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const EpisodePage = (props) => {
-	const { episodeTitle, summary, ...rest } = props;
+const EpisodePage = ({ details, clips }) => {
+	const { episodeTitle, summary, ...rest } = details;
 	return (
 		<>
 			<Head>
@@ -57,6 +58,7 @@ const EpisodePage = (props) => {
 			<Breadcrumb {...rest} />
 			<h1>{episodeTitle}</h1>
 			<p>{summary}</p>
+			<ClipListing clips={clips} />
 		</>
 	);
 };

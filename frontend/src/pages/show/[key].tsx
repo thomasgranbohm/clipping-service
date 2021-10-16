@@ -3,12 +3,13 @@ import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { privateAPI } from 'utils/api';
 import Head from 'next/head';
+import ClipListing from 'components/ClipListing/ClipListing';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);
 
 	return {
-		props: { data },
+		props: { ...(data as Object) },
 	};
 };
 
@@ -40,8 +41,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const ShowPage = ({ data }) => {
-	const { showTitle, summary, metadata, ...rest } = data;
+const ShowPage = ({ details, clips }) => {
+	const { showTitle, summary, metadata, ...rest } = details;
 
 	return (
 		<>
@@ -62,6 +63,7 @@ const ShowPage = ({ data }) => {
 				))}
 			</ul>
 			<p>{summary}</p>
+			<ClipListing clips={clips} />
 		</>
 	);
 };

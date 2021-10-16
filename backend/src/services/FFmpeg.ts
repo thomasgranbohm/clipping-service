@@ -22,6 +22,7 @@ export const generateClip = async (clip: Clip) => {
 		'-y',
 		CLIP_PATH,
 	].join(' ');
+	console.debug(cmd);
 	exec(cmd, (err, stdout, stderr) => {
 		if (err) {
 			console.log('Error while creating clip: %s', stderr);
@@ -39,11 +40,13 @@ export const generateThumbnail = async (clip: Clip) => {
 		'-i',
 		clip.getMediaPath(),
 		'-ss',
-		clip.start.toFixed(2),
+		'0',
 		'-frames:v',
 		'1',
+		'-y',
 		THUMBNAIL_PATH,
 	].join(' ');
+	console.debug(cmd);
 	exec(cmd, (err, stdout, stderr) => {
 		if (err) {
 			console.log('Error while creating thumbnail: %s', stderr);
