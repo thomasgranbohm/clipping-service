@@ -23,13 +23,21 @@ export type ClipBlurbProps = {
 const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
 	<Anchor href={`/clip/${slug}`}>
 		<div className={classes['container']}>
+			{/* TODO: Needs fixing */}
 			<NextImage
 				className={classes['thumbnail']}
-				src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/thumbnail`}
+				src={`${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
+					'localhost:9001/api',
+					'backend:1337'
+				)}/clips/${slug}/thumbnail`}
 				alt={name}
 				width={256}
 				height={144}
 				placeholder="blur"
+				blurDataURL={`_next/image?url=${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
+					'localhost:9001/api',
+					'backend:1337'
+				)}/clips/${slug}/thumbnail&w=256&q=1`}
 			/>
 			<b>{name}</b>
 		</div>
