@@ -1,3 +1,7 @@
+import { exec } from 'child_process';
+import ffmpeg from 'ffmpeg-static';
+import { mkdir } from 'fs/promises';
+import { resolve } from 'path';
 import {
 	AfterCreate,
 	AllowNull,
@@ -10,11 +14,9 @@ import {
 	Table,
 	Unique,
 } from 'sequelize-typescript';
-import { getItemDetails } from '../../services/PlexAPI';
 import slugify from 'slugify';
-import { resolve } from 'path';
-import { exec } from 'child_process';
-import ffmpeg from 'ffmpeg-static';
+import { CLIPS_DIR } from '../../constants';
+import { getItemDetails } from '../../services/PlexAPI';
 
 @Table
 export class Clip extends Model {
@@ -83,6 +85,9 @@ export class Clip extends Model {
 				'Could not find file for id: %d',
 				instance.metadataKey
 			);
+
+		const CLIP_PATH = resolve(CLIPS_DIR, instance.slug + '.mp4');
+
 		const cmd = [
 			ffmpeg,
 			'-i',
@@ -92,7 +97,7 @@ export class Clip extends Model {
 			'-to',
 			instance.end.toFixed(2),
 			'-y',
-			resolve(process.cwd(), 'clips', instance.slug + '.mp4'),
+			CLIP_PATH,
 		].join(' ');
 		exec(cmd, (err, stdout, stderr) => {
 			if (err) {

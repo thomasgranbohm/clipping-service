@@ -50,6 +50,10 @@ const ClipPage = ({ clip }) => {
 					property="og:video"
 					content={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/watch`}
 				/>
+				<link
+					type="application/json+oembed"
+					href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/oembed`}
+				/>
 			</Head>
 			<Breadcrumb {...clip} />
 			<h1>{name}</h1>

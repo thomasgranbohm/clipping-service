@@ -1,3 +1,4 @@
+import { CLIPS_DIR } from '../constants';
 import { Router } from 'express';
 import { resolve } from 'path';
 import { Clip } from '../database/models/Clip';
@@ -90,7 +91,38 @@ router.get('/:slug/watch', async (req, res) => {
 				description: 'File not ready yet.',
 			};
 
-		return res.sendFile(resolve(process.cwd(), 'clips', clip.slug + '.mp4'));
+		return res.sendFile(resolve(CLIPS_DIR, clip.slug + '.mp4'));
+	} catch (error) {
+		return res.status(400).json({ error });
+	}
+});
+
+router.get('/:slug/oembed', async (req, res) => {
+	const { slug } = req.params;
+
+	try {
+		const clip = await Clip.findOne({
+			where: { slug },
+		});
+		if (!clip)
+			throw {
+				name: '404',
+				description: 'Could not find clip.',
+			};
+		else if (!clip.ready)
+			throw {
+				name: 400,
+				description: 'File not ready yet.',
+			};
+
+		return res.json({
+			title: clip.name,
+			provider_name: 'Clipping Service',
+			provider_url: process.env.FRONTEND_URL,
+			author_name: `Clip - ${clip.name}`,
+			author_url: `${process.env.FRONTEND_URL}/clip/${clip.slug}`,
+			html: `<iframe width="200" height="113" src="http://clips.granbohm.dev/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+		});
 	} catch (error) {
 		return res.status(400).json({ error });
 	}

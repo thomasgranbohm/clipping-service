@@ -1,4 +1,8 @@
+import { resolve } from 'path';
+
 export const IDENTIFIER_REGEX = /[0-9a-f]{12}/;
+
+export const CLIPS_DIR = resolve(process.cwd(), 'clips');
 
 export namespace DATABASE {
 	export const HOST = process.env.DATABASE_HOST || 'localhost';
