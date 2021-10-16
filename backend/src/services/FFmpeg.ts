@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { Clip } from 'database/models/Clip';
+import { Clip } from '../database/models/Clip';
 import ffmpeg from 'ffmpeg-static';
 import { getItemDetails } from './PlexAPI';
 
