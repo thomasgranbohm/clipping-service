@@ -16,9 +16,9 @@ export const generateClip = async (clip: Clip) => {
 	const cmd = [
 		ffmpeg,
 		'-ss',
-		Math.min(clip.start - BACKTRACK, 0).toFixed(4),
+		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		'-i',
-		filePath,
+		`'${filePath}'`,
 		'-ss',
 		BACKTRACK.toFixed(4),
 		'-t',
