@@ -9,9 +9,11 @@ const ClipListing = ({ clips }: ClipListingProps) => (
 	<div className={classes['container']}>
 		<h2>Clips</h2>
 		<div className={classes['clips']}>
-			{clips.map((clip) => (
-				<ClipBlurb key={clip.id} {...clip} />
-			))}
+			<div className={classes['inner']}>
+				{clips.map((clip) => (
+					<ClipBlurb key={clip.id} {...clip} />
+				))}
+			</div>
 		</div>
 	</div>
 );

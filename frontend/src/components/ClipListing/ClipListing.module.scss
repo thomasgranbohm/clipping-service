@@ -1,11 +1,25 @@
 .container {
 	.clips {
-		display: flex;
-		flex-wrap: nowrap;
-		justify-content: flex-start;
-		align-items: center;
-		gap: 1rem;
+		overflow-x: hidden;
 
-		flex-direction: row;
+		margin-inline: -1rem;
+		padding-bottom: 0.5rem;
+
+		.inner {
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: flex-start;
+			align-items: center;
+			gap: 1rem;
+
+			flex-direction: row;
+
+			overflow: auto;
+
+			padding-inline: 1rem;
+			scroll-padding: 1rem;
+			scroll-snap-type: x proximity;
+			scroll-snap-align: start;
+		}
 	}
 }

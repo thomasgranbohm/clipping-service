@@ -86,7 +86,9 @@ export class Clip extends Model {
 	@BeforeBulkDestroy
 	static async removeClip(instance: Clip) {
 		console.debug('Remove clip from file system with id %d.', instance.id);
-		await rm(instance.getPath(), { recursive: true, force: true });
+		if (instance) {
+			await rm(instance.getPath(), { recursive: true, force: true });
+		}
 	}
 
 	getPath() {

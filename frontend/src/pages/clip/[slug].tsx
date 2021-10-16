@@ -10,6 +10,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	if (!clip) {
 		return {
 			notFound: true,
+			revalidate: 1
 		};
 	}
 

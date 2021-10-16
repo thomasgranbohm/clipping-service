@@ -9,6 +9,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}`);
 	return {
 		props: data as Object,
+		revalidate: 1,
 	};
 };
 
