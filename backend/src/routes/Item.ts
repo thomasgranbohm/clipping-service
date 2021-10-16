@@ -14,6 +14,7 @@ router.get(`/:id`, async (req, res) => {
 	const clips = await Clip.findAll({
 		where: {
 			metadataKey: req.params.id,
+			ready: true,
 		},
 	});
 
@@ -31,6 +32,7 @@ router.get(`/:id/children`, async (req, res) => {
 				},
 				{ seasonKey: req.params.id },
 			],
+			ready: true,
 		},
 	});
 

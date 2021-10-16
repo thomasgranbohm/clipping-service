@@ -23,11 +23,13 @@ export const generateClip = async (clip: Clip) => {
 		CLIP_PATH,
 	].join(' ');
 	console.debug(cmd);
+	console.time('Media Generation');
 	exec(cmd, (err, stdout, stderr) => {
 		if (err) {
 			console.log('Error while creating clip: %s', stderr);
 			return Clip.destroy({ where: { id: clip.id } });
 		}
+		console.timeEnd('Media Generation');
 		generateThumbnail(clip).then(() => clip.update({ ready: true }));
 	});
 };
