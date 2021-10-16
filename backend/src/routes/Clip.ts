@@ -121,7 +121,7 @@ router.get('/:slug/oembed', async (req, res) => {
 			provider_url: process.env.FRONTEND_URL,
 			author_name: `Clip - ${clip.name}`,
 			author_url: `${process.env.FRONTEND_URL}/clip/${clip.slug}`,
-			html: `<iframe width="200" height="113" src="http://clips.granbohm.dev/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+			html: `<iframe width="200" height="113" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
 		});
 	} catch (error) {
 		return res.status(400).json({ error });
