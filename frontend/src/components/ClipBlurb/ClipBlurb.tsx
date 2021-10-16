@@ -27,6 +27,8 @@ const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
 				className={classes['thumbnail']}
 				src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/thumbnail`}
 				alt={name}
+				width={256}
+				height={144}
 				placeholder="blur"
 			/>
 			<b>{name}</b>
