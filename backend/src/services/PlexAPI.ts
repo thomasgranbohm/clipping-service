@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { resolve } from 'path';
 
 const plex = axios.create({
 	baseURL: `http://${process.env.PLEX_URL}`,
@@ -102,7 +103,10 @@ export const getItemDetails = async (id: PlexId) => {
 		summary,
 		type,
 		duration,
-		filePath,
+		filePath: new String(filePath).replace(
+			process.env.PLEX_DIR as string,
+			resolve(process.cwd(), 'media')
+		),
 	};
 };
 
