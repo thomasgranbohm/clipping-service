@@ -1,3 +1,4 @@
+import { mkdir } from 'fs/promises';
 import { resolve } from 'path';
 import {
 	AfterCreate,
@@ -75,6 +76,8 @@ export class Clip extends Model {
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
+
+		await mkdir(instance.getPath());
 		generateClip(instance);
 	}
 
