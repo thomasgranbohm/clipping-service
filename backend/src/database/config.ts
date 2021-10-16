@@ -9,7 +9,7 @@ export const DATABASE_CONFIG: SequelizeOptions = {
 	database: DATABASE.NAME,
 	username: DATABASE.USERNAME,
 	password: DATABASE.PASSWORD,
-	logging: process.env.NODE_ENV !== 'production',
-	sync: { force: true },
+	logging: true,
+	sync: { force: process.env.NODE_ENV !== 'production' },
 	models: [Clip],
 };

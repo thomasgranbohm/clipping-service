@@ -30,7 +30,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ClipPage = ({ clip }) => {
-	const { slug, name, seasonName, showName } = clip;
+	const { slug, name, seasonTitle, showTitle } = clip;
 
 	return (
 		<>
@@ -38,13 +38,13 @@ const ClipPage = ({ clip }) => {
 				<title>Clip - {name}</title>
 				<meta
 					name="description"
-					content={`Clip from ${showName} ${seasonName}.`}
+					content={`Clip from ${showTitle} ${seasonTitle}.`}
 				/>
 				<meta property="og:title" content={`Clip - ${name}`} />
 				<meta property="og:site_name" content="Clipping Service" />
 				<meta
 					property="og:description"
-					content={`Clip from ${showName} ${seasonName}.`}
+					content={`Clip from ${showTitle} ${seasonTitle}.`}
 				/>
 				<meta
 					property="og:video"
