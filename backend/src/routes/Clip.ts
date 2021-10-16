@@ -117,13 +117,12 @@ router.get('/:slug/oembed', async (req, res) => {
 
 		return res.json({
 			version: '1.0',
-			type: 'video',
-			title: clip.name,
+			type: 'link',
 			provider_name: 'Clipping Service',
 			provider_url: process.env.FRONTEND_URL,
-			width: 320,
-			height: 200,
-			html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+			// width: 320,
+			// height: 200,
+			// html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
 		});
 	} catch (error) {
 		return res.status(400).json({ error });

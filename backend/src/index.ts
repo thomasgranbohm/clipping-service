@@ -30,6 +30,6 @@ server.use((err, _, res: Response, __) => {
 });
 
 server.listen(1337, async () => {
-	const s = await connectToDatabase();
+	await connectToDatabase();
 	console.log('Started!');
 });
