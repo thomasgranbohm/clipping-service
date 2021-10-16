@@ -1,4 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
+import NextImage from 'next/image';
 import classes from './ClipBlurb.module.scss';
 
 export type ClipBlurbProps = {
@@ -22,10 +23,11 @@ export type ClipBlurbProps = {
 const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
 	<Anchor href={`/clip/${slug}`}>
 		<div className={classes['container']}>
-			<img
+			<NextImage
 				className={classes['thumbnail']}
 				src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/thumbnail`}
 				alt={name}
+				placeholder="blur"
 			/>
 			<b>{name}</b>
 		</div>

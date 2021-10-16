@@ -59,7 +59,7 @@ const EpisodePage = ({ details, clips }) => {
 			<Breadcrumb {...rest} />
 			<h1>{episodeTitle}</h1>
 			<p>{summary}</p>
-			<ClipListing clips={clips} />
+			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);
 };

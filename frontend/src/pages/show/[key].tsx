@@ -10,7 +10,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 	return {
 		props: { ...(data as Object) },
-		revalidate: 1
+		revalidate: 1,
 	};
 };
 
@@ -64,7 +64,7 @@ const ShowPage = ({ details, clips }) => {
 				))}
 			</ul>
 			<p>{summary}</p>
-			<ClipListing clips={clips} />
+			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);
 };

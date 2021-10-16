@@ -11,7 +11,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 	return {
 		props: { ...(data as Object) },
-		revalidate: 1
+		revalidate: 1,
 	};
 };
 
@@ -65,7 +65,7 @@ const SeasonPage = ({ details, clips }) => {
 					</li>
 				))}
 			</ol>
-			<ClipListing clips={clips} />
+			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);
 };
