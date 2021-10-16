@@ -3,6 +3,8 @@ import { Clip } from '../database/models/Clip';
 import ffmpeg from 'ffmpeg-static';
 import { getItemDetails } from './PlexAPI';
 
+const BACKTRACK = 5;
+
 export const generateClip = async (clip: Clip) => {
 	const { filePath } = await getItemDetails(clip.metadataKey);
 
@@ -13,12 +15,14 @@ export const generateClip = async (clip: Clip) => {
 
 	const cmd = [
 		ffmpeg,
-		'-i',
-		`'${filePath}'`,
 		'-ss',
-		clip.start.toFixed(2),
-		'-to',
-		clip.end.toFixed(2),
+		Math.min(clip.start - BACKTRACK, 0).toFixed(4),
+		'-i',
+		filePath,
+		'-ss',
+		BACKTRACK.toFixed(4),
+		'-t',
+		(clip.end - clip.start).toFixed(2),
 		'-y',
 		CLIP_PATH,
 	].join(' ');
