@@ -7,9 +7,8 @@ import { Op } from 'sequelize';
 const router = Router();
 
 router.get(`/:id`, async (req, res) => {
-	const { filePath, ...details } = await getItemDetails(
-		parseInt(req.params.id)
-	);
+	const id = parseInt(req.params.id);
+	const { filePath, ...details } = await getItemDetails(id);
 
 	const clips = await Clip.findAll({
 		where: {
@@ -22,15 +21,16 @@ router.get(`/:id`, async (req, res) => {
 });
 
 router.get(`/:id/children`, async (req, res) => {
-	const details = await getItemChildren(parseInt(req.params.id));
+	const id = parseInt(req.params.id);
+	const details = await getItemChildren(id);
 
 	const clips = await Clip.findAll({
 		where: {
 			[Op.or]: [
 				{
-					showKey: req.params.id,
+					showKey: id,
 				},
-				{ seasonKey: req.params.id },
+				{ seasonKey: id },
 			],
 			ready: true,
 		},
