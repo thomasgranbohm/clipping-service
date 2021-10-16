@@ -47,24 +47,41 @@ export class Clip extends Model {
 
 	@AllowNull(false)
 	@Column
-	metadataId: number;
+	metadataKey: number;
 
 	@AllowNull(false)
 	@Column
-	showId: number;
+	showKey: number;
 
 	@AllowNull(false)
 	@Column
-	seasonId: number;
+	showTitle: string;
+
+	@AllowNull(false)
+	@Column
+	seasonKey: number;
+
+	@AllowNull(false)
+	@Column
+	seasonTitle: string;
+
+	@AllowNull(false)
+	@Column
+	libraryKey: number;
+
+	@AllowNull(false)
+	@Column
+	libraryTitle: string;
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
-		const { filePath } = await getItemDetails(instance.metadataId);
+		if (process.env.NODE_ENV !== 'production') return;
+		const { filePath } = await getItemDetails(instance.metadataKey);
 
 		if (!filePath)
 			return console.error(
 				'Could not find file for id: %d',
-				instance.metadataId
+				instance.metadataKey
 			);
 		const cmd = [
 			ffmpeg,

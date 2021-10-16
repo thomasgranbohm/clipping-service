@@ -11,25 +11,21 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-	const { name, metadataId, start, end } = req.body;
+	const { name, metadataKey, start, end } = req.body;
 
 	try {
-		const episode = await getItemDetails(metadataId);
+		const episode = await getItemDetails(metadataKey);
 
-		if (episode.type !== 'episode' || episode.key)
-			return {
-				name: 400,
+		if (episode.type !== 'episode' || !episode.key)
+			return res.status(400).json({
 				description: 'Cannot create a clip from a non-episode.',
+			});
+
+		if (end < start)
+			throw {
+				name: 400,
+				description: 'End cannot be before start.',
 			};
-
-		const metadata = episode['Metadata'].pop();
-
-		if (metadata)
-			if (end < start)
-				throw {
-					name: 400,
-					description: 'End cannot be before start.',
-				};
 
 		if (start < 0 || end > episode.duration)
 			throw {
@@ -41,24 +37,28 @@ router.post('/', async (req, res) => {
 			name,
 			start,
 			end,
-			metadataId,
-			seasonId: parseInt(metadata.parentRatingKey),
-			showId: parseInt(metadata.grandparentRatingKey),
+			metadataKey,
+			seasonKey: parseInt(episode.seasonKey),
+			showKey: parseInt(episode.showKey),
+			libraryKey: parseInt(episode.libraryKey),
+			seasonTitle: episode.seasonTitle,
+			showTitle: episode.showTitle,
+			libraryTitle: episode.libraryTitle,
 		});
 
-		return res.json({ clip });
+		return res.json(clip);
 	} catch (error) {
 		console.log(error);
 		return res.json({ error });
 	}
 });
 
-router.get('/:id', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -66,18 +66,18 @@ router.get('/:id', async (req, res) => {
 				description: 'Could not find clip.',
 			};
 
-		return res.json({ clip });
+		return res.json(clip);
 	} catch (error) {
-		return res.json({ error });
+		return res.status(404).json({ error });
 	}
 });
 
-router.get('/:id/watch', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug/watch', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -92,7 +92,7 @@ router.get('/:id/watch', async (req, res) => {
 
 		return res.sendFile(resolve(process.cwd(), 'clips', clip.slug + '.mp4'));
 	} catch (error) {
-		return res.json({ error });
+		return res.status(400).json({ error });
 	}
 });
 

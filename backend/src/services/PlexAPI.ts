@@ -22,15 +22,13 @@ const requestPlex = async (url) => {
 	} catch (error) {
 		if (error['isAxiosError'] === true) {
 			const ae = error as AxiosError;
-			return {
-				error: {
-					status: ae.response?.status || 500,
-					data: ae.response?.data || 'Something went wrong',
-				},
+			throw {
+				status: ae.response?.status || 500,
+				data: ae.response?.data || 'Something went wrong',
 			};
 		}
-		return {
-			error: 400,
+		throw {
+			status: 400,
 		};
 	}
 };
@@ -92,9 +90,9 @@ export const getItemDetails = async (id: PlexId) => {
 	const { file: filePath } = Part.pop();
 
 	return {
+		index,
 		key,
 		episodeTitle,
-		index,
 		seasonKey,
 		seasonTitle,
 		showKey,
