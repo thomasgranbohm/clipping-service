@@ -1,7 +1,8 @@
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import Video from 'components/Video/Video';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { privateAPI, publicAPI } from 'utils/api';
+import Head from 'next/head';
+import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const clip = await privateAPI(`/clips/${params.slug}`);
@@ -29,10 +30,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ClipPage = ({ clip }) => {
-	const { slug, name, id } = clip;
+	const { slug, name, seasonName, showName } = clip;
 
 	return (
 		<>
+			<Head>
+				<title>Clip - {name}</title>
+				<meta
+					name="description"
+					content={`Clip from ${showName} ${seasonName}.`}
+				/>
+				<meta property="og:title" content={`Clip - ${name}`} />
+				<meta property="og:site_name" content="Clipping Service" />
+				<meta
+					property="og:description"
+					content={`Clip from ${showName} ${seasonName}.`}
+				/>
+				<meta
+					property="og:video"
+					content={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/watch`}
+				/>
+			</Head>
 			<Breadcrumb {...clip} />
 			<h1>{name}</h1>
 			<Video slug={slug} />
