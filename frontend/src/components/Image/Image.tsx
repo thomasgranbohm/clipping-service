@@ -6,8 +6,8 @@ const Image = ({ className = '', src, alt, width, height }) => (
 	<NextImage
 		className={concat(classes['container'], className)}
 		src={`${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
-			/^https?:\/\/(.*?)$/g.exec(process.env.NEXT_PUBLIC_BACKEND_URL)[1],
-			'backend:1337'
+			process.env.NEXT_PUBLIC_BACKEND_URL,
+			'http://backend:1337'
 		)}${src}`}
 		// src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${src}`}
 		alt={alt}
@@ -16,8 +16,8 @@ const Image = ({ className = '', src, alt, width, height }) => (
 		layout={'intrinsic'}
 		placeholder="blur"
 		blurDataURL={`/_next/image?url=${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
-			/^https?:\/\/(.*?)$/g.exec(process.env.NEXT_PUBLIC_BACKEND_URL)[1],
-			'backend:1337'
+			process.env.NEXT_PUBLIC_BACKEND_URL,
+			'http://backend:1337'
 		)}${src}&w=8&q=1`}
 	/>
 );
