@@ -34,7 +34,7 @@ const LibraryPage = (props) => {
 			</Head>
 			<Breadcrumb />
 			<h1>Library</h1>
-			<ThumbnailListing type="show" items={contents.slice(0, 1)} />
+			<ThumbnailListing type="show" items={contents} />
 		</>
 	);
 };

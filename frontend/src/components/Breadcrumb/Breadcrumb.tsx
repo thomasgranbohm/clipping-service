@@ -22,7 +22,7 @@ const Breadcrumb = ({
 	showKey,
 	showTitle,
 }: BreadcrumbProps) => (
-	<h2 className={classes['container']}>
+	<nav className={classes['container']}>
 		<Anchor href="/">Clipping Service</Anchor>
 		{libraryKey && libraryTitle && (
 			<>
@@ -50,7 +50,7 @@ const Breadcrumb = ({
 				)}
 			</>
 		)}
-	</h2>
+	</nav>
 );
 
 export default Breadcrumb;

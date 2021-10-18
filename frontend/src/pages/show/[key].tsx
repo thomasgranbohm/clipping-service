@@ -57,7 +57,7 @@ const ShowPage = ({ details, clips }) => {
 			<Breadcrumb {...rest} />
 			<h1>{showTitle}</h1>
 			<p>{summary}</p>
-			<ThumbnailListing type="season" items={metadata.slice(0, 1)} />
+			<ThumbnailListing type="season" items={metadata} />
 			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);

@@ -13,14 +13,17 @@ type ThumbnailListingProps = {
 };
 
 const ThumbnailListing = ({ type, items }: ThumbnailListingProps) => (
-	<div className={concat(classes['container'], classes[type])}>
-		{items.map((props, i) => (
-			<>
-				{type === 'show' && <ShowThumbnail {...props} key={i} />}
-				{type === 'season' && <SeasonThumbnail {...props} key={i} />}
-				{type === 'episode' && <EpisodeThumbnail {...props} key={i} />}{' '}
-			</>
-		))}
+	<div className={classes['container']}>
+		{type !== 'show' && <h2 className={classes['title']}>{type + 's'}</h2>}
+		<div className={concat(classes['items'], classes[type])}>
+			{items.map((props, i) => (
+				<>
+					{type === 'show' && <ShowThumbnail {...props} key={i} />}
+					{type === 'season' && <SeasonThumbnail {...props} key={i} />}
+					{type === 'episode' && <EpisodeThumbnail {...props} key={i} />}{' '}
+				</>
+			))}
+		</div>
 	</div>
 );
 
