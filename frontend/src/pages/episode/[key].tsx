@@ -19,7 +19,9 @@ const getPaths = async () => {
 	const seasons = await getSeasonPaths();
 
 	for (const season of seasons) {
-		const epResp = await privateAPI(`/items/${season.seasonKey}/children`);
+		const epResp = await privateAPI(
+			`/items/${season.seasonKey}/children?paths`
+		);
 
 		for (const episode of epResp.data['details']['metadata']) {
 			if (episode.type !== 'episode') continue;

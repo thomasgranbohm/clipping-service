@@ -22,7 +22,7 @@ export const getPaths = async () => {
 	const shows = await getShowPaths();
 
 	for (const show of shows) {
-		const seResp = await privateAPI(`/items/${show.showKey}/children`);
+		const seResp = await privateAPI(`/items/${show.showKey}/children?paths`);
 
 		for (const season of seResp.data['details']['metadata']) {
 			if (season.type !== 'season') continue;

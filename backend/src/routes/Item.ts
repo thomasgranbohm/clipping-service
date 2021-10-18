@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Router } from 'express';
 import { IncomingMessage } from 'http';
 import { Op } from 'sequelize';
 import { Clip } from '../database/models/Clip';
@@ -10,31 +10,35 @@ router.get(`/:id`, async (req, res) => {
 	const id = parseInt(req.params.id);
 	const { filePath, ...details } = await getItemDetails(id);
 
-	const clips = await Clip.findAll({
-		where: {
-			metadataKey: req.params.id,
-			ready: true,
-		},
-	});
+	const clips = !req.query.paths
+		? await Clip.findAll({
+				where: {
+					metadataKey: req.params.id,
+					ready: true,
+				},
+		  })
+		: [];
 
 	return res.json({ details, clips });
 });
 
-router.get(`/:id/children`, async (req, res) => {
+router.get(`/:id/children`, async (req: Request, res) => {
 	const id = parseInt(req.params.id);
 	const details = await getItemChildren(id);
 
-	const clips = await Clip.findAll({
-		where: {
-			[Op.or]: [
-				{
-					showKey: id,
+	const clips = !req.query.paths
+		? await Clip.findAll({
+				where: {
+					[Op.or]: [
+						{
+							showKey: id,
+						},
+						{ seasonKey: id },
+					],
+					ready: true,
 				},
-				{ seasonKey: id },
-			],
-			ready: true,
-		},
-	});
+		  })
+		: [];
 
 	return res.json({ details, clips });
 });

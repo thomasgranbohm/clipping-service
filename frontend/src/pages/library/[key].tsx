@@ -13,11 +13,25 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	};
 };
 
+export const getPaths = async () => {
+	const paths = [];
+
+	const { data } = await privateAPI('/libraries?paths');
+
+	for (const library of data['libraries']) {
+		if (library.type !== 'show') continue;
+
+		paths.push(library);
+	}
+
+	return paths;
+};
+
 export const getStaticPaths: GetStaticPaths = async () => {
-	const { data } = await privateAPI('/libraries');
+	const paths = await getPaths();
 
 	return {
-		paths: (data as Object)['libraries'].map(({ key }) => ({
+		paths: paths.map(({ key }) => ({
 			params: { key },
 		})),
 		fallback: 'blocking',

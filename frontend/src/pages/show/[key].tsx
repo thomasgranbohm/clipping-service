@@ -3,6 +3,7 @@ import ClipListing from 'components/ClipListing/ClipListing';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
+import { getPaths as getLibraryPaths } from 'pages/library/[key]';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -17,12 +18,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 export const getPaths = async () => {
 	const paths = [];
 
-	const libResp = await privateAPI('/libraries');
+	const libraries = await getLibraryPaths();
 
-	for (const library of libResp.data['libraries']) {
+	for (const library of libraries) {
 		if (library.type !== 'show') continue;
 
-		const shResp = await privateAPI(`/libraries/${library.key}/contents`);
+		const shResp = await privateAPI(`/libraries/${library.key}/contents?paths`);
 
 		for (const show of shResp.data['contents']) {
 			if (show.type !== 'show') continue;
