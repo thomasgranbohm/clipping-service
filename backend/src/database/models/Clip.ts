@@ -31,7 +31,10 @@ export class Clip extends Model {
 	@BeforeCreate
 	@BeforeUpdate
 	static createSlug(instance: Clip) {
-		instance.slug = slugify(instance.name, { lower: true });
+		instance.slug = slugify(instance.name, {
+			lower: true,
+			remove: /[*+~.()'"!:@]/g,
+		});
 	}
 
 	@AllowNull(false)

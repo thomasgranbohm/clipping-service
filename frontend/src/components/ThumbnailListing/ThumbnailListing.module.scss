@@ -3,13 +3,26 @@
 .container {
 	display: grid;
 	gap: 1rem;
-	grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
 
-	@include medium-device {
-		grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+	&.show,
+	&.season {
+		grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+
+		@include medium-device {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+		}
+
+		@include large-device {
+			grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+		}
 	}
 
-	@include large-device {
+	&.episode {
 		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+
+		@include large-device {
+			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+		}
 	}
 }

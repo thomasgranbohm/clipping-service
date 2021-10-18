@@ -1,10 +1,11 @@
 import Anchor from 'components/Anchor/Anchor';
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import ClipListing from 'components/ClipListing/ClipListing';
+import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 import { getPaths as getShowPaths } from '../show/[key]';
-import Head from 'next/head';
-import ClipListing from 'components/ClipListing/ClipListing';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);
@@ -36,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const paths = await getPaths();
 
 	return {
-		paths: paths.map(({ key }) => ({ params: { key } })),
+		paths: paths.map(({ seasonKey }) => ({ params: { key: seasonKey } })),
 		fallback: 'blocking',
 	};
 };
@@ -58,13 +59,7 @@ const SeasonPage = ({ details, clips }) => {
 			</Head>
 			<Breadcrumb {...rest} />
 			<h1>{seasonTitle}</h1>
-			<ol>
-				{metadata.map(({ key, title }) => (
-					<li key={key}>
-						<Anchor href={`/episode/${key}`}>{title}</Anchor>
-					</li>
-				))}
-			</ol>
+			<ThumbnailListing type="episode" items={metadata} />
 			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);

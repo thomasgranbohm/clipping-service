@@ -9,8 +9,7 @@ const plex = axios.create({
 	},
 });
 
-const getMediaKey = (str = '') =>
-	str.indexOf('/') !== -1 ? str.split('/').pop() : null;
+const getMediaKey = (str = '') => str.replace('/library/metadata', '');
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)
@@ -162,12 +161,16 @@ export const getItemChildren = async (id: PlexId) => {
 			showArt: getMediaKey(showArt),
 			showTheme: getMediaKey(showTheme),
 			showThumb: getMediaKey(showThumb),
-			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
-				key: ratingKey,
-				index,
-				title,
-				type,
-			})),
+			metadata: metadata.map(
+				({ ratingKey, type, title, index, thumb, art }) => ({
+					seasonKey: ratingKey,
+					index,
+					title,
+					type,
+					seasonThumb: getMediaKey(thumb),
+					seasonArt: getMediaKey(art),
+				})
+			),
 		};
 	} else if (data.viewGroup === 'episode') {
 		// Season lookup
@@ -197,12 +200,16 @@ export const getItemChildren = async (id: PlexId) => {
 			seasonThumb: getMediaKey(seasonThumb),
 			showTheme: getMediaKey(showTheme),
 			showThumb: getMediaKey(showThumb),
-			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
-				key: ratingKey,
-				index,
-				title,
-				type,
-			})),
+			metadata: metadata.map(
+				({ ratingKey, type, title, index, thumb, art }) => ({
+					episodeKey: ratingKey,
+					index,
+					title,
+					type,
+					episodeThumb: getMediaKey(thumb),
+					episodeArt: getMediaKey(art),
+				})
+			),
 		};
 	}
 

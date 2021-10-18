@@ -53,4 +53,9 @@ router.get('/:id/:type/:mediaId', async (req, res) => {
 	(data as IncomingMessage).pipe(res);
 });
 
+router.use((err, req, res, next) => {
+	console.log(err);
+	res.status(501).send('Got error');
+});
+
 export default router;

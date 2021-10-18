@@ -19,7 +19,7 @@ const getPaths = async () => {
 	const seasons = await getSeasonPaths();
 
 	for (const season of seasons) {
-		const epResp = await privateAPI(`/items/${season.key}/children`);
+		const epResp = await privateAPI(`/items/${season.seasonKey}/children`);
 
 		for (const episode of epResp.data['details']['metadata']) {
 			if (episode.type !== 'episode') continue;
@@ -35,7 +35,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const paths = await getPaths();
 
 	return {
-		paths: paths.map(({ key }) => ({ params: { key } })),
+		paths: paths.map(({ episodeKey }) => ({ params: { key: episodeKey } })),
 		fallback: 'blocking',
 	};
 };

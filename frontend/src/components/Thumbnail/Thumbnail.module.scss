@@ -4,11 +4,19 @@
 	flex-direction: column;
 	gap: 0.5rem;
 
-	.thumbnail {
-		width: 100%;
-		height: calc(100% * 2 / 3);
+	&.season,
+	&.show {
+		.thumbnail {
+			width: 100%;
+			height: calc(100% * 2 / 3);
 
-		position: relative;
+			position: relative;
+		}
+	}
+
+	.episode .thumbnail {
+		height: 100%;
+		width: calc(100% * 9 / 16);
 	}
 
 	.title {

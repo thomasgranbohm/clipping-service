@@ -5,11 +5,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Component {...pageProps} />
-			{/* {process.env.NODE_ENV !== 'production' && (
+			{process.env.NODE_ENV !== 'production' && (
 				<pre>
 					<code>{JSON.stringify(pageProps, null, 4)}</code>
 				</pre>
-			)} */}
+			)}
 		</>
 	);
 }
