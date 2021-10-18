@@ -1,4 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
+import Image from 'components/Image/Image';
 import NextImage from 'next/image';
 import classes from './ClipBlurb.module.scss';
 
@@ -24,20 +25,12 @@ const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
 	<Anchor href={`/clip/${slug}`}>
 		<div className={classes['container']}>
 			{/* TODO: Needs fixing */}
-			<NextImage
+			<Image
 				className={classes['thumbnail']}
-				src={`${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
-					'localhost:9001/api',
-					'backend:1337'
-				)}/clips/${slug}/thumbnail`}
+				src={`/clips/${slug}/thumbnail`}
 				alt={name}
 				width={256}
 				height={144}
-				placeholder="blur"
-				blurDataURL={`_next/image?url=${process.env.NEXT_PUBLIC_BACKEND_URL.replace(
-					'localhost:9001/api',
-					'backend:1337'
-				)}/clips/${slug}/thumbnail&w=256&q=1`}
 			/>
 			<b>{name}</b>
 		</div>

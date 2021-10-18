@@ -1,5 +1,7 @@
 import Anchor from 'components/Anchor/Anchor';
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import Image from 'components/Image/Image';
+import { ShowThumbnailListing } from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
@@ -34,13 +36,7 @@ const LibraryPage = (props) => {
 			</Head>
 			<Breadcrumb />
 			<h1>Library</h1>
-			<ul>
-				{contents.map(({ key, title, type }) => (
-					<li key={key}>
-						<Anchor href={`/${type}/${key}`}>{title}</Anchor>
-					</li>
-				))}
-			</ul>
+			<ShowThumbnailListing items={contents} />
 		</>
 	);
 };

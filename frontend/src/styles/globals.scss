@@ -1,13 +1,15 @@
+@import 'styles/fonts';
+
 html,
 body {
 	padding: 0;
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 * {
 	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
 }
 
 body {
@@ -15,6 +17,7 @@ body {
 	width: 100%;
 	padding: 0 1rem;
 	margin: 1rem auto;
+	font-family: 'OpenSans';
 }
 
 h1,
@@ -23,5 +26,16 @@ h3,
 h4,
 h5,
 h6 {
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI;
 	margin: 0.25em 0;
+}
+
+p,
+ul,
+ol {
+	margin-block: 1rem;
+}
+
+ul {
+	margin-inline-start: 1.5rem;
 }

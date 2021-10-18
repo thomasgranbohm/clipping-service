@@ -37,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const paths = await getPaths();
 
 	return {
-		paths: paths.map(({ key }) => ({ params: { key: key } })),
+		paths: paths.map(({ showKey }) => ({ params: { key: showKey } })),
 		fallback: 'blocking',
 	};
 };
@@ -57,9 +57,9 @@ const ShowPage = ({ details, clips }) => {
 			<Breadcrumb {...rest} />
 			<h1>{showTitle}</h1>
 			<ul>
-				{metadata.map(({ key, title, type }) => (
-					<li key={key}>
-						<Anchor href={`/${type}/${key}`}>{title}</Anchor>
+				{metadata.map(({ showKey, title, type }) => (
+					<li key={showKey}>
+						<Anchor href={`/${type}/${showKey}`}>{title}</Anchor>
 					</li>
 				))}
 			</ul>

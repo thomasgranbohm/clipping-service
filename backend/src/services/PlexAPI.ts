@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { resolve } from 'path';
+import { pipeline } from 'stream/promises';
 
 const plex = axios.create({
 	baseURL: `http://${process.env.PLEX_URL}`,
@@ -7,6 +8,9 @@ const plex = axios.create({
 		'X-Plex-Token': process.env.PLEX_TOKEN,
 	},
 });
+
+const getMediaKey = (str = '') =>
+	str.indexOf('/') !== -1 ? str.split('/').pop() : null;
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)
@@ -50,11 +54,23 @@ export const getSpecificLibrary = async (id: PlexId) =>
 export const getLibraryContents = async (id: PlexId) => {
 	const data = await requestPlex(`/library/sections/${id}/all`);
 
-	const contents = data['Metadata'].map(({ title, ratingKey, type }) => ({
-		key: ratingKey,
-		title,
-		type,
-	}));
+	const contents = data['Metadata'].map(
+		({
+			title,
+			ratingKey,
+			type,
+			art: showArt,
+			theme: showTheme,
+			thumb: showThumb,
+		}) => ({
+			showKey: ratingKey,
+			title,
+			type,
+			showArt: getMediaKey(showArt),
+			showTheme: getMediaKey(showTheme),
+			showThumb: getMediaKey(showThumb),
+		})
+	);
 
 	return contents;
 };
@@ -104,11 +120,20 @@ export const getItemDetails = async (id: PlexId) => {
 		type,
 		duration,
 		filePath: new String(filePath).replace(
-			process.env.PLEX_DIR as string,
+			'/mnt/harddrives/Plex Media',
 			resolve(process.cwd(), 'media')
 		),
 	};
 };
+
+export const getMedia = async (
+	id: PlexId,
+	mediaId: PlexId,
+	type: 'thumb' | 'theme' | 'art'
+) =>
+	plex(`/library/metadata/${id}/${type}/${mediaId}`, {
+		responseType: 'stream',
+	});
 
 export const getItemChildren = async (id: PlexId) => {
 	const data = await requestPlex(`/library/metadata/${id}/children`);
@@ -122,6 +147,9 @@ export const getItemChildren = async (id: PlexId) => {
 			librarySectionTitle: libraryTitle,
 			librarySectionID: libraryKey,
 			summary,
+			art: showArt,
+			theme: showTheme,
+			thumb: showThumb,
 		} = data;
 
 		return {
@@ -131,6 +159,9 @@ export const getItemChildren = async (id: PlexId) => {
 			libraryKey,
 			libraryTitle,
 			summary,
+			showArt: getMediaKey(showArt),
+			showTheme: getMediaKey(showTheme),
+			showThumb: getMediaKey(showThumb),
 			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
 				key: ratingKey,
 				index,
@@ -141,11 +172,16 @@ export const getItemChildren = async (id: PlexId) => {
 	} else if (data.viewGroup === 'episode') {
 		// Season lookup
 		const {
-			title1: showTitle,
+			grandparentTitle: showTitle,
 			title2: seasonTitle,
 			grandparentRatingKey: showKey,
 			librarySectionTitle: libraryTitle,
 			librarySectionID: libraryKey,
+			art: seasonArt,
+			theme: seasonTheme,
+			thumb: seasonThumb,
+			grandparentTheme: showTheme,
+			grandparentThumb: showThumb,
 		} = data;
 
 		return {
@@ -156,6 +192,11 @@ export const getItemChildren = async (id: PlexId) => {
 			seasonTitle,
 			libraryKey,
 			libraryTitle,
+			seasonArt: getMediaKey(seasonArt),
+			seasonTheme: getMediaKey(seasonTheme),
+			seasonThumb: getMediaKey(seasonThumb),
+			showTheme: getMediaKey(showTheme),
+			showThumb: getMediaKey(showThumb),
 			metadata: metadata.map(({ ratingKey, type, title, index }) => ({
 				key: ratingKey,
 				index,
@@ -165,5 +206,5 @@ export const getItemChildren = async (id: PlexId) => {
 		};
 	}
 
-	return data;
+	return { ...data, viewGroup: 'none' };
 };

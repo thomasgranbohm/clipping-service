@@ -8,7 +8,7 @@ module.exports = {
 	reactStrictMode: true,
 	images: {
 		domains: urls,
-		deviceSizes: [1080, 1024, 720, 512, 256, 128, 64, 32, 16],
+		imageSizes: [1080, 1024, 720, 512, 384, 256, 128, 64, 32, 16, 8],
 	},
 	publicRuntimeConfig: {
 		imageDomains: urls,

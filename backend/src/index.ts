@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express, { Response } from 'express';
+import morgan from 'morgan';
 import { connectToDatabase } from './database';
 import Clip from './routes/Clip';
 import Item from './routes/Item';
@@ -13,6 +14,7 @@ server.use(
 	})
 );
 server.use(express.json());
+server.use(morgan('tiny'));
 
 server.get('/', (_, res) => {
 	res.send('Hello, World!');
