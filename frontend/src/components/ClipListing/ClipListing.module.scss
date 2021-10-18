@@ -1,25 +1,36 @@
+@import 'styles/mixins';
+
 .container {
 	.clips {
 		overflow-x: hidden;
 
-		margin-inline: -1rem;
-		padding-bottom: 0.5rem;
+		@include small-device {
+			margin-inline: -1rem;
+			padding-bottom: 0.5rem;
+		}
 
 		.inner {
-			display: flex;
-			flex-wrap: nowrap;
-			justify-content: flex-start;
-			align-items: center;
 			gap: 1rem;
 
-			flex-direction: row;
+			@include small-device {
+				display: flex;
+				flex-wrap: nowrap;
+				justify-content: flex-start;
+				align-items: center;
 
-			overflow: auto;
+				flex-direction: row;
 
-			padding-inline: 1rem;
-			scroll-padding: 1rem;
-			scroll-snap-type: x proximity;
-			scroll-snap-align: start;
+				overflow: auto;
+
+				padding-inline: 1rem;
+				scroll-padding: 1rem;
+				scroll-snap-type: x proximity;
+				scroll-snap-align: start;
+			}
+			@include medium-device {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+			}
 		}
 	}
 }
