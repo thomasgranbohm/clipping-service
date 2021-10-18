@@ -10,7 +10,7 @@ const Video = ({ slug, ready }) => {
 
 	return (
 		<div className={classes['container']}>
-			<video className={classes['video']} controls autoPlay>
+			<video className={classes['video']} controls autoPlay playsInline>
 				<source
 					src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/watch`}
 					type={'video/mp4'}
