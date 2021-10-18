@@ -3,5 +3,13 @@
 .container {
 	display: grid;
 	gap: 1rem;
-	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+
+	@include medium-device {
+		grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+	}
+
+	@include large-device {
+		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+	}
 }
