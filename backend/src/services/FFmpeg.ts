@@ -15,6 +15,7 @@ export const generateClip = async (clip: Clip) => {
 
 	const cmd = [
 		ffmpeg,
+
 		'-ss',
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		'-i',
@@ -23,6 +24,10 @@ export const generateClip = async (clip: Clip) => {
 		BACKTRACK.toFixed(4),
 		'-t',
 		(clip.end - clip.start).toFixed(2),
+		'-ac',
+		'2',
+		'-map_chapters',
+		'-1',
 		'-y',
 		CLIP_PATH,
 	].join(' ');
