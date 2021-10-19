@@ -158,9 +158,9 @@ router.get('/:slug/oembed', async (req, res) => {
 			thumbnail_height: 720,
 			thumbnail_url: `${process.env.FRONTEND_URL}/api/clips/${clip.slug}/thumbnail`,
 			thumbnail_width: 1200,
-			// width: 320,
-			// height: 200,
-			// html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+			width: 320,
+			height: 200,
+			html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
 		});
 	} catch (error) {
 		return res.status(400).json({ error });

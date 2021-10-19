@@ -1,2 +1,4 @@
 config/*.env
 !config/*.example.env
+
+media

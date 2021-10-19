@@ -1,6 +1,5 @@
 import cors from 'cors';
 import express, { Response } from 'express';
-import morgan from 'morgan';
 import { connectToDatabase } from './database';
 import Clip from './routes/Clip';
 import Item from './routes/Item';
@@ -14,7 +13,6 @@ server.use(
 	})
 );
 server.use(express.json());
-server.use(morgan('tiny'));
 
 server.use((err, _, res: Response, __) => {
 	console.log('Got error:', err.stack);

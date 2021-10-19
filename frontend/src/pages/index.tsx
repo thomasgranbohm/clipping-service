@@ -17,7 +17,7 @@ const Home = ({ ...props }) => {
 	return (
 		<>
 			<Head>
-				<title>Clipping Service</title>
+				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
 			<h1>Hello World!</h1>
 			<ul>

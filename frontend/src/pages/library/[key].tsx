@@ -44,7 +44,7 @@ const LibraryPage = (props) => {
 	return (
 		<>
 			<Head>
-				<title>Clipping Service</title>
+				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
 			<Breadcrumb />
 			<h1>Library</h1>
