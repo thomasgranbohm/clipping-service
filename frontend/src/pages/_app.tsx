@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {
-		if ('serviceWorker' in navigator) {
+		if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
 			navigator.serviceWorker
 				.register('/service-worker.js')
 				.then(() => console.log('Registration succeeded.'))

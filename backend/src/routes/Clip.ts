@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { createReadStream } from 'fs';
+import { stat } from 'fs/promises';
 import { Clip } from '../database/models/Clip';
 import { getItemDetails } from '../services/PlexAPI';
 
@@ -102,7 +104,34 @@ router.get('/:slug/watch', async (req, res) => {
 				description: 'File not ready yet.',
 			};
 
-		return res.sendFile(clip.getMediaPath());
+		const videoStat = await stat(clip.getMediaPath());
+		const { size } = videoStat;
+
+		const { range } = req.headers;
+		if (range) {
+			const parts = range.replace(/bytes=/, '').split('-');
+			const start = parseInt(parts[0], 10);
+			const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+
+			const chunkSize = end + start + 1;
+
+			const stream = createReadStream(clip.getMediaPath(), { start, end });
+			res.writeHead(206, {
+				'Content-Range': `bytes ${start}-${end}/${size}`,
+				'Accept-Ranges': 'bytes',
+				'Content-Length': chunkSize,
+				'Content-Type': 'video/mp4',
+			});
+
+			return stream.pipe(res);
+		} else {
+			res.writeHead(200, {
+				'Content-Length': size,
+				'Content-Type': 'video/mp4',
+			});
+
+			return createReadStream(clip.getMediaPath()).pipe(res);
+		}
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
