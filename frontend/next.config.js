@@ -7,10 +7,10 @@ const urls = [process.env.BACKEND_URL, process.env.NEXT_PUBLIC_BACKEND_URL].map(
 module.exports = {
 	reactStrictMode: true,
 	images: {
-		deviceSizes: [456, 768, 960, 1080, 1200, 1920, 2048],
 		domains: urls,
-		imageSizes: [1080, 1024, 720, 512, 384, 256, 128, 64, 32, 16, 8],
 		minimumCacheTTL: 60,
+		deviceSizes: [450, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+		imageSizes: [8, 16, 32, 48, 64, 96, 128, 256, 384],
 	},
 	publicRuntimeConfig: {
 		imageDomains: urls,
