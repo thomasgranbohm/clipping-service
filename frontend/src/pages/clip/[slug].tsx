@@ -10,7 +10,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	if (!clip) {
 		return {
 			notFound: true,
-			revalidate: 1
+			revalidate: 1,
 		};
 	}
 
@@ -50,6 +50,10 @@ const ClipPage = ({ clip }) => {
 				<meta
 					property="og:video"
 					content={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/watch`}
+				/>
+				<meta
+					property="og:image"
+					content={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/thumbnail`}
 				/>
 				<link
 					type="application/json+oembed"
