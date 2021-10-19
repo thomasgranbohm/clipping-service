@@ -1,4 +1,23 @@
-@import 'styles/fonts';
+@import 'includes.scss';
+
+:root {
+	--eerie-black: #{$eerie-black};
+	--jet: #{$jet};
+	--persian-green: #{$persian-green};
+	--gray: #{$gray};
+	--snow: #{$snow};
+
+	--color: var(--eerie-black);
+	--alt-color: var(--jet);
+	--background: var(--snow);
+	--accent: var(--persian-green);
+
+	@media (prefers-color-scheme: dark) {
+		--color: var(--snow);
+		--alt-color: var(--gray);
+		--background: var(--eerie-black);
+	}
+}
 
 html,
 body {
@@ -18,6 +37,9 @@ body {
 	padding: 0 1rem 8rem;
 	margin: 1rem auto;
 	font-family: 'OpenSans';
+
+	background: $background;
+	color: $color;
 }
 
 h1,

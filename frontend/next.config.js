@@ -9,6 +9,7 @@ module.exports = {
 	images: {
 		domains: urls,
 		imageSizes: [1080, 1024, 720, 512, 384, 256, 128, 64, 32, 16, 8],
+		minimumCacheTTL: 60,
 	},
 	publicRuntimeConfig: {
 		imageDomains: urls,
