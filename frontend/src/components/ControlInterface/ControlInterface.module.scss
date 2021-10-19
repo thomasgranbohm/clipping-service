@@ -6,8 +6,9 @@
 	justify-content: space-between;
 
 	.button {
-		padding: 1rem;
+		line-height: $height;
 		width: $height;
+		text-align: center;
 		height: 100%;
 		font-size: 2em;
 	}

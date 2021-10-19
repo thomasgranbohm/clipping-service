@@ -40,11 +40,21 @@ const Video = ({ duration, slug, ready }) => {
 			};
 		}
 		if (videoRef.current) {
+			videoRef.current.onplaying = () => {
+				if (!progressInterval) {
+					progressInterval = setInterval(
+						() => setTime(videoRef.current.currentTime),
+						16
+					);
+				}
+			};
 			videoRef.current.oncanplay = () => {
-				progressInterval = setInterval(
-					() => setTime(videoRef.current.currentTime),
-					16
-				);
+				if (!progressInterval) {
+					progressInterval = setInterval(
+						() => setTime(videoRef.current.currentTime),
+						16
+					);
+				}
 			};
 		}
 		return () => {
