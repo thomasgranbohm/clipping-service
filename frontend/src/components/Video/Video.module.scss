@@ -1,6 +1,28 @@
+$height: 4rem;
+
 .container {
 	position: relative;
 	background: black;
+	overflow: hidden;
+
+	display: flex;
+	align-items: center;
+
+	.controls {
+		position: absolute;
+		bottom: calc(-1 * #{$height});
+
+		transition: 0.1s bottom;
+
+		height: $height;
+		width: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 100;
+	}
+
+	&.hovering .controls {
+		bottom: 0px;
+	}
 
 	.video {
 		width: 100%;
@@ -8,5 +30,18 @@
 
 		background: black;
 		position: relative;
+		z-index: 1;
 	}
+
+	// &.fullscreen {
+	// 	position: absolute;
+	// 	top: 0;
+	// 	left: 0;
+	// 	width: 100vw;
+	// 	height: 100vh;
+	// }
+}
+
+:export {
+	height: $height;
 }

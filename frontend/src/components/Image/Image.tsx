@@ -12,7 +12,7 @@ const Image = ({ className = '', src, alt, width, height }) => (
 		alt={alt}
 		width={width}
 		height={height}
-		layout={'intrinsic'}
+		layout="responsive"
 		placeholder="blur"
 		// blurDataURL={`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0ntn5HwAEsgJWXUD+UAAAAABJRU5ErkJggg==`}
 		blurDataURL={`/_next/image?url=${process.env.NEXT_PUBLIC_BACKEND_URL.replace(

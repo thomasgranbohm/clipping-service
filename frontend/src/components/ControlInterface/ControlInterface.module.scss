@@ -1,0 +1,28 @@
+@import '../Video/Video.module.scss';
+
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	.button {
+		padding: 1rem;
+		width: $height;
+		height: 100%;
+		font-size: 2em;
+	}
+
+	user-select: none;
+
+	.left,
+	.right {
+		display: flex;
+		align-items: center;
+	}
+	.left {
+		justify-content: flex-start;
+	}
+	.right {
+		justify-content: flex-end;
+	}
+}

@@ -1,0 +1,30 @@
+.container {
+	--progress-height: 0.35rem;
+	position: absolute;
+	top: calc(-1 * var(--progress-height));
+	width: 100%;
+	height: var(--progress-height);
+
+	background: rgba(0, 0, 0, 0.5);
+
+	transition: 0.1s height, 0.1s top;
+
+	display: flex;
+	align-items: center;
+
+	.inner {
+		background-color: white;
+		width: 0;
+		height: 100%;
+
+		transition: 0.1s margin-top, 0.1s height;
+	}
+	&:hover,
+	&.hovering {
+		--progress-height: 1.5rem;
+
+		.inner {
+			height: 100%;
+		}
+	}
+}

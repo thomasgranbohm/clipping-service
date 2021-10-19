@@ -1,6 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
 import Image from 'components/Image/Image';
-import NextImage from 'next/image';
 import classes from './ClipBlurb.module.scss';
 
 export type ClipBlurbProps = {
@@ -22,7 +21,7 @@ export type ClipBlurbProps = {
 };
 
 const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
-	<Anchor href={`/clip/${slug}`}>
+	<Anchor href={`/clips/${slug}`}>
 		<div className={classes['container']}>
 			{/* TODO: Needs fixing */}
 			<Image

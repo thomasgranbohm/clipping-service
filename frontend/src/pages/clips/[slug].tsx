@@ -16,6 +16,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 	return {
 		props: { clip: clip.data },
+		revalidate: 1,
 	};
 };
 
