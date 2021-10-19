@@ -113,7 +113,7 @@ router.get('/:slug/watch', async (req, res) => {
 			const start = parseInt(parts[0], 10);
 			const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
 
-			const chunkSize = end + start + 1;
+			const chunkSize = end - start + 1;
 
 			const stream = createReadStream(clip.getMediaPath(), { start, end });
 			res.writeHead(206, {
