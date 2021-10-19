@@ -30,6 +30,7 @@ server.use('/libraries', Library);
 server.use('/items', Item);
 
 server.listen(1337, async () => {
-	await connectToDatabase();
+	const s = await connectToDatabase();
+	// await s.sync({ force: true });
 	console.log('Started!');
 });

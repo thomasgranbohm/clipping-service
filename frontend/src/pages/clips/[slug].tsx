@@ -32,7 +32,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ClipPage = ({ clip }) => {
-	const { slug, name, seasonTitle, showTitle, ready } = clip;
+	const { slug, name, seasonTitle, showTitle, ready, duration } = clip;
 
 	return (
 		<>
@@ -63,7 +63,7 @@ const ClipPage = ({ clip }) => {
 			</Head>
 			<Breadcrumb {...clip} />
 			<h1>{name}</h1>
-			<Video ready={ready} slug={slug} />
+			<Video duration={duration} ready={ready} slug={slug} />
 		</>
 	);
 };

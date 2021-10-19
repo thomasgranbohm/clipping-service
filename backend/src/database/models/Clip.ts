@@ -35,6 +35,7 @@ export class Clip extends Model {
 			lower: true,
 			remove: /[*+~.()'"!:@]/g,
 		});
+		instance.duration = instance.end - instance.start;
 	}
 
 	@AllowNull(false)
@@ -44,6 +45,9 @@ export class Clip extends Model {
 	@AllowNull(false)
 	@Column
 	end: number;
+
+	@Column
+	duration: number;
 
 	@Default(false)
 	@Column

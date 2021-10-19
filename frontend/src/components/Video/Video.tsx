@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { concat } from 'utils/functions';
 import classes from './Video.module.scss';
 
-const Video = ({ slug, ready }) => {
+const Video = ({ duration, slug, ready }) => {
 	if (!ready)
 		return (
 			<div className={classes['container']}>
@@ -20,7 +20,7 @@ const Video = ({ slug, ready }) => {
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const progressRef = useRef<HTMLDivElement>(null);
+	const progressRef = useRef<HTMLProgressElement>(null);
 
 	// onMount
 	useEffect(() => {
@@ -34,13 +34,16 @@ const Video = ({ slug, ready }) => {
 			containerRef.current.onmouseleave = () => {
 				hoverTimeout = setTimeout(() => setHovering(false), 1e3);
 			};
+			containerRef.current.onmousemove = () => {
+				if (hoverTimeout) clearTimeout(hoverTimeout);
+				if (hovering) hoverTimeout = setTimeout(() => setHovering(false), 1e3);
+			};
 		}
 		if (videoRef.current) {
 			videoRef.current.oncanplay = () => {
 				progressInterval = setInterval(
-					() =>
-						setTime(videoRef.current.currentTime / videoRef.current.duration),
-					5
+					() => setTime(videoRef.current.currentTime),
+					16
 				);
 			};
 		}
@@ -51,9 +54,10 @@ const Video = ({ slug, ready }) => {
 			if (containerRef.current) {
 				containerRef.current.onmousemove = null;
 				containerRef.current.onmouseleave = null;
+				containerRef.current.onmousemove = null;
 			}
 			if (setTime) setTime(0);
-			if (setHovering) setHovering(false);
+			if (hovering && setHovering) setHovering(false);
 		};
 	}, []);
 
@@ -73,9 +77,11 @@ const Video = ({ slug, ready }) => {
 		setFullscreen(!fullscreen);
 	};
 
-	const setTimeFromProgress = (percentage) => {
+	const setTimeFromProgress = (e) => {
 		if (videoRef.current) {
-			videoRef.current.currentTime = videoRef.current.duration * percentage;
+			videoRef.current.currentTime =
+				(videoRef.current.duration * e.nativeEvent.offsetX) /
+				progressRef.current.clientWidth;
 		}
 	};
 
@@ -88,7 +94,8 @@ const Video = ({ slug, ready }) => {
 				<ProgressBar
 					className={classes['progress']}
 					ref={progressRef}
-					time={time}
+					currentTime={time}
+					duration={duration}
 					setTimeFromProgress={setTimeFromProgress}
 				/>
 				<ControlInterface

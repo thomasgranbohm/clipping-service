@@ -1,3 +1,5 @@
+@import 'styles/includes';
+
 .container {
 	--progress-height: 0.35rem;
 	position: absolute;
@@ -12,13 +14,21 @@
 	display: flex;
 	align-items: center;
 
-	.inner {
-		background-color: white;
-		width: 0;
-		height: 100%;
+	&[value] {
+		-webkit-appearance: none;
+		appearance: none;
+		border: none;
 
-		transition: 0.1s margin-top, 0.1s height;
+		color: $accent;
 	}
+
+	&::-webkit-progress-bar {
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+	&[value]::-webkit-progress-value {
+		background: $accent;
+	}
+
 	&:hover,
 	&.hovering {
 		--progress-height: 1.5rem;
