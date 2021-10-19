@@ -8,3 +8,7 @@ $color: var(--color);
 $alt-color: var(--alt-color);
 $background: var(--background);
 $accent: var(--accent);
+
+:export {
+	accent: $persian-green;
+}

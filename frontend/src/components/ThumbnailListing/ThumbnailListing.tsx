@@ -2,7 +2,6 @@ import {
 	EpisodeThumbnail,
 	SeasonThumbnail,
 	ShowThumbnail,
-	ThumbnailProps,
 } from 'components/Thumbnail/Thumbnail';
 import { concat } from 'utils/functions';
 import classes from './ThumbnailListing.module.scss';
@@ -16,13 +15,11 @@ const ThumbnailListing = ({ type, items }: ThumbnailListingProps) => (
 	<div className={classes['container']}>
 		{type !== 'show' && <h2 className={classes['title']}>{type + 's'}</h2>}
 		<div className={concat(classes['items'], classes[type])}>
-			{items.map((props, i) => (
-				<>
-					{type === 'show' && <ShowThumbnail {...props} key={i} />}
-					{type === 'season' && <SeasonThumbnail {...props} key={i} />}
-					{type === 'episode' && <EpisodeThumbnail {...props} key={i} />}{' '}
-				</>
-			))}
+			{items.map((props, i) => {
+				if (type === 'show') return <ShowThumbnail {...props} key={i} />;
+				if (type === 'season') return <SeasonThumbnail {...props} key={i} />;
+				if (type === 'episode') return <EpisodeThumbnail {...props} key={i} />;
+			})}
 		</div>
 	</div>
 );
