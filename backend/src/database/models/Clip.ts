@@ -8,6 +8,7 @@ import {
 	BeforeDestroy,
 	BeforeUpdate,
 	Column,
+	DataType,
 	Default,
 	Model,
 	Table,
@@ -39,14 +40,20 @@ export class Clip extends Model {
 	}
 
 	@AllowNull(false)
-	@Column
+	@Column({
+		type: DataType.DECIMAL,
+	})
 	start: number;
 
 	@AllowNull(false)
-	@Column
+	@Column({
+		type: DataType.DECIMAL,
+	})
 	end: number;
 
-	@Column
+	@Column({
+		type: DataType.DECIMAL,
+	})
 	duration: number;
 
 	@Default(false)
