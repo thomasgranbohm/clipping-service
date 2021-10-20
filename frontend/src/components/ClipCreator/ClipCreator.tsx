@@ -83,8 +83,8 @@ const ClipCreator = ({ details }) => {
 							data: {
 								metadataKey: key,
 								name,
-								start,
-								end,
+								start: start / 1000,
+								end: end / 1000,
 							},
 						});
 						console.log(resp.data);
