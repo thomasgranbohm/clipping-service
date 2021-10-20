@@ -10,12 +10,14 @@
 	--color: var(--eerie-black);
 	--alt-color: var(--jet);
 	--background: var(--snow);
+	--alt-background: var(--gray);
 	--accent: var(--persian-green);
 
 	@media (prefers-color-scheme: dark) {
 		--color: var(--snow);
 		--alt-color: var(--gray);
 		--background: var(--eerie-black);
+		--alt-background: var(--jet);
 	}
 }
 

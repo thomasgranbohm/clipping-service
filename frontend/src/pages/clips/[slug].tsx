@@ -1,5 +1,5 @@
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
-import Video from 'components/Video/Video';
+import Player from 'components/Player/Player';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
@@ -63,7 +63,7 @@ const ClipPage = ({ clip }) => {
 			</Head>
 			<Breadcrumb {...clip} />
 			<h1>{name}</h1>
-			<Video duration={duration} ready={ready} slug={slug} />
+			<Player duration={duration} ready={ready} slug={slug} />
 		</>
 	);
 };
