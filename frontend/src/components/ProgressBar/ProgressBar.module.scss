@@ -1,15 +1,33 @@
 @import 'styles/includes';
 
 .container {
-	--progress-height: 0.35rem;
+	--progress-height: 0.5rem;
 	position: absolute;
-	top: calc(-1 * var(--progress-height));
-	width: 100%;
+	width: calc(100% - 2rem);
 	height: var(--progress-height);
+
+	margin-inline: 1rem;
+
+	z-index: 3;
+
+	bottom: calc(3 * var(--progress-height));
+
+	&:hover,
+	&.hovering {
+		bottom: 1rem;
+		--progress-height: 1.5rem;
+	}
+	@include medium-device {
+		--progress-height: 0.35rem;
+		top: calc(-1 * var(--progress-height));
+		bottom: unset;
+		width: 100%;
+		margin-inline: 0;
+	}
 
 	background: rgba(0, 0, 0, 0.5);
 
-	transition: 0.1s height, 0.1s top;
+	transition: 0.1s height, 0.1s top, 0.1s bottom;
 
 	display: flex;
 	align-items: center;
@@ -27,14 +45,5 @@
 	}
 	&[value]::-webkit-progress-value {
 		background: $accent;
-	}
-
-	&:hover,
-	&.hovering {
-		--progress-height: 1.5rem;
-
-		.inner {
-			height: 100%;
-		}
 	}
 }

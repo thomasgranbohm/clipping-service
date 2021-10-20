@@ -18,20 +18,16 @@ const ControlInterface = ({
 	className,
 }: ControlInterfaceProps) => (
 	<div className={concat(classes['container'], className)}>
-		<div className={classes['left']}>
-			<Icon
-				className={concat(classes['button'], classes['playOrPause'])}
-				onClick={toggleVideoState}
-				type={videoState ? 'pause' : 'play_arrow'}
-			/>
-		</div>
-		<div className={classes['right']}>
-			<Icon
-				onClick={toggleFullscreen}
-				type={fullscreen ? 'fullscreen_exit' : 'fullscreen'}
-				className={classes['button']}
-			/>
-		</div>
+		<Icon
+			className={concat(classes['button'], classes['videoState'])}
+			onClick={toggleVideoState}
+			type={videoState ? 'pause' : 'play_arrow'}
+		/>
+		<Icon
+			onClick={toggleFullscreen}
+			type={fullscreen ? 'fullscreen_exit' : 'fullscreen'}
+			className={concat(classes['button'], classes['fullscreen'])}
+		/>
 	</div>
 );
 

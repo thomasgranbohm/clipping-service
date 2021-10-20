@@ -1,16 +1,42 @@
-@import '../Video/Video.module.scss';
+@import 'styles/includes';
 
 .container {
-	display: flex;
+	z-index: 2;
+
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: 1fr;
+	grid-template-areas: '. videoState fullscreen';
 	align-items: center;
-	justify-content: space-between;
+	justify-items: center;
+
+	.button.videoState {
+		grid-area: videoState;
+	}
+	.button.fullscreen {
+		grid-area: fullscreen;
+	}
+
+	@include medium-device {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 
 	.button {
-		line-height: $height;
-		width: $height;
+		--dimension: 100%;
+		width: var(--dimension);
+		height: var(--dimension);
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		text-align: center;
-		height: 100%;
-		font-size: 2em;
+		font-size: 4em;
+
+		@include medium-device {
+			--dimension: 3rem;
+			font-size: 2em;
+		}
 	}
 
 	user-select: none;

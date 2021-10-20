@@ -1,4 +1,4 @@
-$height: 3rem;
+@import 'styles/includes';
 
 .container {
 	position: relative;
@@ -9,19 +9,35 @@ $height: 3rem;
 	align-items: center;
 
 	.controls {
-		position: absolute;
-		bottom: calc(-1 * #{$height});
+		--height: 100%;
 
-		transition: 0.1s bottom;
+		height: var(--height);
 
-		height: $height;
 		width: 100%;
 		background: rgba(0, 0, 0, 0.5);
-		z-index: 100;
+		z-index: 2;
+		position: absolute;
+
+		@include small-device {
+			opacity: 0;
+			transition: 0.1s opacity;
+		}
+
+		@include medium-device {
+			--height: 3rem;
+			bottom: calc(-1 * (var(--height) + 0.5rem));
+
+			transition: 0.1s bottom;
+		}
 	}
 
 	&.hovering .controls {
-		bottom: 0px;
+		@include small-device {
+			opacity: 100;
+		}
+		@include medium-device {
+			bottom: 0px;
+		}
 	}
 
 	.video {
@@ -32,8 +48,4 @@ $height: 3rem;
 		position: relative;
 		z-index: 1;
 	}
-}
-
-:export {
-	height: $height;
 }

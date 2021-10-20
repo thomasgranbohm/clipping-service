@@ -34,9 +34,11 @@ const Video = ({ duration, slug, ready }) => {
 			containerRef.current.onmouseleave = () => {
 				hoverTimeout = setTimeout(() => setHovering(false), 1e3);
 			};
-			containerRef.current.onmousemove = () => {
+			containerRef.current.onmousemove = (e) => {
+				if (!hovering) setHovering(true);
 				if (hoverTimeout) clearTimeout(hoverTimeout);
-				if (hovering) hoverTimeout = setTimeout(() => setHovering(false), 1e3);
+				if (e['path'] && e['path'].includes(containerRef.current))
+					hoverTimeout = setTimeout(() => setHovering(false), 1e3);
 			};
 		}
 		if (videoRef.current) {
