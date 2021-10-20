@@ -4,10 +4,10 @@ import Head from 'next/head';
 
 export const getStaticProps = async () => {
 	const { data } = await privateAPI('/clips');
-	console.log(data);
 
 	return {
 		props: data,
+		revalidate: 1,
 	};
 };
 
