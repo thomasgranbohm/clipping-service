@@ -28,8 +28,8 @@ const ClipBlurb = ({ name, slug }: ClipBlurbProps) => (
 				className={classes['thumbnail']}
 				src={`/clips/${slug}/thumbnail`}
 				alt={name}
-				width={1024}
 				height={576}
+				width={1024}
 			/>
 			<p className={classes['title']}>{name}</p>
 		</div>

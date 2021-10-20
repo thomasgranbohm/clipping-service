@@ -2,35 +2,30 @@
 
 .container {
 	.clips {
-		overflow-x: hidden;
+		gap: 1rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+	}
 
+	&.scroll .clips {
 		@include small-device {
-			margin-inline: -1rem;
-			padding-bottom: 0.5rem;
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: flex-start;
+			align-items: center;
+
+			flex-direction: row;
+
+			overflow: auto;
+
+			padding-inline: 1rem;
+			scroll-padding: 1rem;
+			scroll-snap-type: x proximity;
+			scroll-snap-align: start;
 		}
-
-		.inner {
-			gap: 1rem;
-
-			@include small-device {
-				display: flex;
-				flex-wrap: nowrap;
-				justify-content: flex-start;
-				align-items: center;
-
-				flex-direction: row;
-
-				overflow: auto;
-
-				padding-inline: 1rem;
-				scroll-padding: 1rem;
-				scroll-snap-type: x proximity;
-				scroll-snap-align: start;
-			}
-			@include medium-device {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-			}
+		@include medium-device {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
 		}
 	}
 }

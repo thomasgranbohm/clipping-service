@@ -1,17 +1,7 @@
-@import 'styles/mixins';
-
 .container {
+	width: 100%;
 	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
 	flex-direction: column;
-
-	width: 12rem;
-
-	@include medium-device {
-		width: 100%;
-	}
-
 	gap: 0.5rem;
 
 	.thumbnail {
