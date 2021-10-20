@@ -20,7 +20,8 @@
 
 		@include small-device {
 			opacity: 0;
-			transition: 0.1s opacity;
+			visibility: collapse;
+			transition: 0.1s opacity, 0s visibility 0.1s;
 		}
 
 		@include medium-device {
@@ -34,6 +35,8 @@
 	&.hovering .controls {
 		@include small-device {
 			opacity: 100;
+			visibility: visible;
+			transition: 0.1s opacity, 0s visibility 0s;
 		}
 		@include medium-device {
 			bottom: 0px;

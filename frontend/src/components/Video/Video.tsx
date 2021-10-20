@@ -120,7 +120,6 @@ const Video = ({ duration, slug, ready }) => {
 			</div>
 			<video
 				className={classes['video']}
-				onClick={playOrPause}
 				playsInline
 				poster={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/thumbnail`}
 				ref={videoRef}
