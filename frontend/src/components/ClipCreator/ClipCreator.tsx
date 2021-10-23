@@ -1,10 +1,11 @@
 import Video from 'components/Video/Video';
-import { SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
 import classes from './ClipCreator.module.scss';
 
 const MAX_CLIP_LENGTH = 60;
+const MINIMUM_CLIP_LENGTH = 1;
 
 const ClipCreator = ({ details }) => {
 	const { key, duration } = details;
@@ -19,16 +20,31 @@ const ClipCreator = ({ details }) => {
 
 	useEffect(() => {
 		if (videoRef.current) {
-			videoRef.current.currentTime = (time + start) / 1000;
+			videoRef.current.pause();
+			videoRef.current.currentTime = (time + end) / 1000;
+		}
+	}, [end]);
 
+	useEffect(() => {
+		if (videoRef.current) {
+			videoRef.current.pause();
+			videoRef.current.currentTime = (time + start) / 1000;
+		}
+	}, [start, time]);
+
+	useEffect(() => {
+		if (videoRef.current) {
 			videoRef.current.ontimeupdate = (e) => {
-				if (e.target['currentTime'] >= (time + end) / 1000) {
-					videoRef.current.currentTime = time;
+				if (e.target['currentTime'] > (time + end) / 1000) {
+					videoRef.current.currentTime = (time + start) / 1000;
 					videoRef.current.pause();
 					videoRef.current.ontimeupdate = null;
 				}
 			};
 		}
+		return () => {
+			if (videoRef.current) videoRef.current.ontimeupdate = null;
+		};
 	}, [end, start, time]);
 
 	return (
@@ -36,8 +52,8 @@ const ClipCreator = ({ details }) => {
 			<Video ref={videoRef} identifier={key} type="media" />
 			<div className={classes['crop-boundary']}>
 				<h3>
-					{new Date(time + start).toISOString().substr(14, 9)} -{' '}
-					{new Date(time + end).toISOString().substr(14, 9)}
+					{new Date(time + start).toISOString().substr(14, 8)} -{' '}
+					{new Date(time + end).toISOString().substr(14, 8)}
 				</h3>
 				<div className={classes['slider-container']}>
 					<h4>Start</h4>
@@ -51,7 +67,7 @@ const ClipCreator = ({ details }) => {
 							const newValue = parseInt(e.target.value);
 							setTime(newValue);
 						}}
-						max={duration}
+						max={duration - MAX_CLIP_LENGTH * 1e3}
 					/>
 				</div>
 				<div className={classes['slider-container']}>
@@ -66,7 +82,7 @@ const ClipCreator = ({ details }) => {
 						max={MAX_CLIP_LENGTH * 1e3}
 						onChange={(e) => {
 							const newValue = parseInt(e.target.value);
-							if (end <= newValue) return;
+							if (end - MINIMUM_CLIP_LENGTH * 1e3 <= newValue) return;
 							setStart(newValue);
 						}}
 					/>
@@ -76,11 +92,14 @@ const ClipCreator = ({ details }) => {
 						id="end"
 						value={end}
 						className={classes['range']}
+						onMouseUp={() =>
+							(videoRef.current.currentTime = (time + start) / 1000)
+						}
 						min={0}
 						max={MAX_CLIP_LENGTH * 1e3}
 						onChange={(e) => {
 							const newValue = parseInt(e.target.value);
-							if (start >= newValue) return;
+							if (start + MINIMUM_CLIP_LENGTH * 1e3 >= newValue) return;
 							setEnd(newValue);
 						}}
 					/>
