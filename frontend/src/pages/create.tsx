@@ -1,6 +1,7 @@
 import ClipCreator from 'components/ClipCreator/ClipCreator';
 import { GetServerSideProps } from 'next';
-import { privateAPI } from 'utils/api';
+import { useState } from 'react';
+import { privateAPI, publicAPI } from 'utils/api';
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 	if (query.key) {
@@ -21,11 +22,46 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 	};
 };
 
-const CreatePage = ({ details }) => (
-	<div>
-		<h1>Create Page</h1>
-		<ClipCreator details={details} />
-	</div>
-);
+const CreatePage = ({ key, details }) => {
+	const [keyInput, setKeyInput] = useState<string>();
+	const [detailState, setDetailState] = useState(details);
+
+	return (
+		<div>
+			<h1>Create Page</h1>
+			{!detailState ? (
+				<div className="search">
+					<input
+						type="text"
+						name="key"
+						id="key"
+						placeholder="Metadata Key"
+						value={keyInput}
+						onChange={(e) => setKeyInput(e.target.value)}
+					/>
+					<button
+						onClick={async (e) => {
+							e.preventDefault();
+
+							try {
+								const { data } = await publicAPI(`/items/${keyInput}`);
+
+								setDetailState(data['details']);
+							} catch (error) {
+								alert('Could not find clip with key: ' + keyInput);
+								setKeyInput('');
+							}
+						}}
+						type="submit"
+					>
+						Find episode
+					</button>
+				</div>
+			) : (
+				<ClipCreator details={detailState} />
+			)}
+		</div>
+	);
+};
 
 export default CreatePage;

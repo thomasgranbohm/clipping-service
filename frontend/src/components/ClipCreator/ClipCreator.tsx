@@ -1,6 +1,7 @@
 import Video from 'components/Video/Video';
-import { useEffect, useRef, useState } from 'react';
+import { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { publicAPI } from 'utils/api';
+import { concat } from 'utils/functions';
 import classes from './ClipCreator.module.scss';
 
 const MAX_CLIP_LENGTH = 60;
@@ -10,6 +11,7 @@ const ClipCreator = ({ details }) => {
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 
+	const [time, setTime] = useState(0);
 	const [start, setStart] = useState(0);
 	const [end, setEnd] = useState(MAX_CLIP_LENGTH * 1e3);
 
@@ -17,47 +19,72 @@ const ClipCreator = ({ details }) => {
 
 	useEffect(() => {
 		if (videoRef.current) {
-			videoRef.current.currentTime = start / 1000;
-			console.log(videoRef.current.currentTime);
+			videoRef.current.currentTime = (time + start) / 1000;
+
+			videoRef.current.ontimeupdate = (e) => {
+				if (e.target['currentTime'] >= (time + end) / 1000) {
+					videoRef.current.currentTime = time;
+					videoRef.current.pause();
+					videoRef.current.ontimeupdate = null;
+				}
+			};
 		}
-	}, [start, end]);
+	}, [end, start, time]);
 
 	return (
 		<div className={classes['container']}>
 			<Video ref={videoRef} identifier={key} type="media" />
 			<div className={classes['crop-boundary']}>
-				<input
-					type="range"
-					name="start"
-					id="start"
-					value={start}
-					className={classes['start']}
-					min={0}
-					max={duration}
-					onChange={(e) => {
-						const newValue = parseInt(e.target.value);
-						if (end <= newValue) return;
-						setStart(newValue);
-						if (end - newValue - MAX_CLIP_LENGTH * 1e3 > 0)
-							setEnd(Math.min(newValue + MAX_CLIP_LENGTH * 1e3, duration));
-					}}
-				/>
-				<input
-					type="range"
-					name="end"
-					id="end"
-					value={end}
-					className={classes['end']}
-					min={0}
-					max={duration}
-					onChange={(e) => {
-						const newValue = parseInt(e.target.value);
-						if (start >= newValue) return;
-						setEnd(newValue);
-						if (newValue - start - MAX_CLIP_LENGTH * 1e3 > 0)
-							setStart(Math.max(newValue - MAX_CLIP_LENGTH * 1e3, 0));
-					}}
-				/>
+				<h3>
+					{new Date(time + start).toISOString().substr(14, 9)} -{' '}
+					{new Date(time + end).toISOString().substr(14, 9)}
+				</h3>
+				<div className={classes['slider-container']}>
+					<h4>Start</h4>
+					<input
+						className={classes['range']}
+						type="range"
+						name="duration"
+						id="duration"
+						value={time}
+						onChange={(e) => {
+							const newValue = parseInt(e.target.value);
+							setTime(newValue);
+						}}
+						max={duration}
+					/>
+				</div>
+				<div className={classes['slider-container']}>
+					<h4>Precision</h4>
+					<input
+						type="range"
+						name="start"
+						id="start"
+						value={start}
+						className={concat(classes['range'], classes['start'])}
+						min={0}
+						max={MAX_CLIP_LENGTH * 1e3}
+						onChange={(e) => {
+							const newValue = parseInt(e.target.value);
+							if (end <= newValue) return;
+							setStart(newValue);
+						}}
+					/>
+					<input
+						type="range"
+						name="end"
+						id="end"
+						value={end}
+						className={classes['range']}
+						min={0}
+						max={MAX_CLIP_LENGTH * 1e3}
+						onChange={(e) => {
+							const newValue = parseInt(e.target.value);
+							if (start >= newValue) return;
+							setEnd(newValue);
+						}}
+					/>
+				</div>
 			</div>
 			<button
 				onClick={() =>
@@ -83,8 +110,8 @@ const ClipCreator = ({ details }) => {
 							data: {
 								metadataKey: key,
 								name,
-								start: start / 1000,
-								end: end / 1000,
+								start: (time + start) / 1000,
+								end: (time + end) / 1000,
 							},
 						});
 						console.log(resp.data);
