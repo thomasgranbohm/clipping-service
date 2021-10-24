@@ -8,6 +8,8 @@ const icons = [
 	'/icons/icon-512x512.png',
 ];
 
+const IMAGE_REGEX = /\/_next\/image(.*?)q=1/;
+
 self.addEventListener('install', (event) => {
 	console.log('Installed!');
 	event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(icons)));
@@ -20,7 +22,25 @@ self.addEventListener('fetch', (event) => {
 			.then((resp) => {
 				if (resp) return resp;
 
-				return fetch(event.request);
+				return fetch(event.request).then((response) => {
+					if (
+						!response ||
+						response.status !== 200 ||
+						response.type !== 'basic'
+					) {
+						return response;
+					}
+
+					if (IMAGE_REGEX.compile().test(response.url)) {
+						const responseToCache = response.clone();
+
+						caches.open(CACHE_NAME).then(function (cache) {
+							cache.put(event.request, responseToCache);
+						});
+					}
+
+					return response;
+				});
 			})
 			.catch((err) => console.error(err))
 	);
