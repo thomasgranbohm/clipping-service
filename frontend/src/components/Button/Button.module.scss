@@ -1,6 +1,5 @@
 .container {
-	padding-inline: 1rem;
-	padding-block: 0.5rem;
+	padding: 0.5rem 1rem;
 	border-radius: 4px;
 
 	font-size: 1rem;
@@ -21,12 +20,10 @@
 	appearance: none;
 	border: none;
 
-	margin-block: 0.5rem;
-
 	box-shadow: 0px 0 8px rgba(0, 0, 0, 0.5);
 
 	&:first-of-type {
-		margin-inline-end: 0.5rem;
+		margin-right: 0.5rem;
 	}
 
 	text-decoration: none;
