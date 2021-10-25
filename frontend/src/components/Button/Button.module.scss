@@ -37,17 +37,17 @@
 
 .download,
 .create {
-	background-color: hsl(120, 100, 30);
+	background-color: hsl(120, 100%, 30%);
 
 	&:hover {
-		background-color: hsl(120, 100, 35);
+		background-color: hsl(120, 100%, 35%);
 	}
 }
 
 .delete {
-	background-color: hsl(0, 100, 35);
+	background-color: hsl(0, 100%, 35%);
 
 	&:hover {
-		background-color: hsl(0, 100, 45);
+		background-color: hsl(0, 100%, 45%);
 	}
 }

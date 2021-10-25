@@ -1,18 +1,30 @@
-const CACHE_NAME = 'clipping-service-v1';
-// TODO: Add versioning...
+const BASE_NAME = 'clipping-service-0.1.0';
 
-const icons = [
-	'/icons/icon-192x192.png',
-	'/icons/icon-256x256.png',
-	'/icons/icon-384x384.png',
-	'/icons/icon-512x512.png',
+const CACHES = [
+	{
+		name: `${BASE_NAME}-images`,
+		regex: /\/_next\/image(.*?)q=1/,
+		files: [
+			'/icons/icon-192x192.png',
+			'/icons/icon-256x256.png',
+			'/icons/icon-384x384.png',
+			'/icons/icon-512x512.png',
+		],
+	},
 ];
-
-const IMAGE_REGEX = /\/_next\/image(.*?)q=1/;
 
 self.addEventListener('install', (event) => {
 	console.log('Installed!');
-	event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(icons)));
+
+	event.waitUntil(
+		Promise.all(
+			CACHES.map(({ files, name }) => {
+				return caches.open(name).then((cache) => cache.addAll(files));
+			})
+		)
+	);
+
+	self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -31,12 +43,14 @@ self.addEventListener('fetch', (event) => {
 						return response;
 					}
 
-					if (IMAGE_REGEX.compile().test(response.url)) {
-						const responseToCache = response.clone();
+					for (const { name, regex } of CACHES) {
+						if (regex.test(response.url)) {
+							const responseToCache = response.clone();
 
-						caches.open(CACHE_NAME).then(function (cache) {
-							cache.put(event.request, responseToCache);
-						});
+							caches
+								.open(name)
+								.then((cache) => cache.put(event.request, responseToCache));
+						}
 					}
 
 					return response;
