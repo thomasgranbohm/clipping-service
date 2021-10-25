@@ -2,6 +2,12 @@
 
 > You know when you are looking for that very specific clip from a TV Show but it doesn't exist?
 
+## Setup
+
+1. Copy every `*.example.env` to `*.env`
+2. Fill in the values
+3. Start!
+
 ## Requirements
 
 - `docker` and `docker-compose`

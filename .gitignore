@@ -1,4 +1,4 @@
-config/*.env
-!config/*.example.env
+*.env
+!*example.env
 
 media
