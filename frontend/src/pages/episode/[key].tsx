@@ -1,4 +1,5 @@
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import Button from 'components/Button/Button';
 import ClipListing from 'components/ClipListing/ClipListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -43,7 +44,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const EpisodePage = ({ details, clips }) => {
-	const { episodeTitle, summary, ...rest } = details;
+	const { episodeTitle, summary, key, ...rest } = details;
 	return (
 		<>
 			<Head>
@@ -61,6 +62,7 @@ const EpisodePage = ({ details, clips }) => {
 			<Breadcrumb {...rest} />
 			<h1>{episodeTitle}</h1>
 			<p>{summary}</p>
+			<Button type="create" href={`/create?key=${key}`} />
 			{clips.length > 0 && <ClipListing clips={clips} />}
 		</>
 	);

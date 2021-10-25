@@ -1,4 +1,5 @@
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import Button from 'components/Button/Button';
 import Player from 'components/Player/Player';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -64,6 +65,14 @@ const ClipPage = ({ clip }) => {
 			<Breadcrumb {...clip} />
 			<h1>{name}</h1>
 			<Player duration={duration} ready={ready} slug={slug} />
+			<Button
+				type="download"
+				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/download`}
+			/>
+			<Button
+				type="delete"
+				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}`}
+			/>
 		</>
 	);
 };

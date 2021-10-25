@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { createReadStream } from 'fs';
+import { lookup } from 'mime';
 import { Clip } from '../database/models/Clip';
 import { getItemDetails } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
@@ -62,8 +64,13 @@ router.get('/:slug', async (req, res) => {
 		});
 		if (!clip)
 			throw {
-				name: '404',
+				name: 404,
 				description: 'Could not find clip.',
+			};
+		else if (!clip.ready)
+			throw {
+				name: 400,
+				description: 'File not ready yet.',
 			};
 
 		return res.json(clip);
@@ -105,6 +112,38 @@ router.get('/:slug/watch', async (req, res) => {
 
 		return stream(req, res, clip.getMediaPath());
 	} catch (error) {
+		return res.status(400).json({ error });
+	}
+});
+
+router.get('/:slug/download', async (req, res) => {
+	const { slug } = req.params;
+
+	try {
+		const clip = await Clip.findOne({
+			where: { slug },
+		});
+		if (!clip)
+			throw {
+				name: '404',
+				description: 'Could not find clip.',
+			};
+		else if (!clip.ready)
+			throw {
+				name: 400,
+				description: 'File not ready yet.',
+			};
+
+		res.setHeader(
+			'Content-disposition',
+			`attachment; filename=${clip.slug}.mp4`
+		);
+		res.setHeader('Content-type', 'video/mp4');
+
+		const filestream = createReadStream(clip.getMediaPath());
+		filestream.pipe(res);
+	} catch (error) {
+		console.error(error);
 		return res.status(400).json({ error });
 	}
 });

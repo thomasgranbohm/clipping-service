@@ -17,6 +17,8 @@
 		grid-area: fullscreen;
 	}
 
+	color: white;
+
 	@include medium-device {
 		display: flex;
 		align-items: center;
