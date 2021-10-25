@@ -19,8 +19,11 @@ const Home = ({ ...props }) => {
 			<Head>
 				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
-			<h1>Hello World!</h1>
+			<h1>{process.env.NEXT_PUBLIC_PAGE_TITLE}</h1>
 			<ul>
+				<li>
+					<Anchor href={'/clips'}>Clips</Anchor>
+				</li>
 				{libraries.map(({ key, title }) => (
 					<li key={key}>
 						<Anchor href={`/library/${key}`}>{title}</Anchor>
