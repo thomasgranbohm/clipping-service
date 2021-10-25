@@ -3,7 +3,13 @@ import { concat } from 'utils/functions';
 import classes from './Icon.module.scss';
 
 type IconProps = {
-	type: 'fullscreen' | 'fullscreen_exit' | 'play_arrow' | 'pause';
+	type:
+		| 'fullscreen'
+		| 'fullscreen_exit'
+		| 'play_arrow'
+		| 'pause'
+		| 'download'
+		| 'clear';
 } & HTMLAttributes<HTMLElement>;
 
 const Icon = ({ className, type, ...props }: IconProps) => (
