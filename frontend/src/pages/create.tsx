@@ -4,7 +4,26 @@ import { GetServerSideProps } from 'next';
 import { useState } from 'react';
 import { privateAPI, publicAPI } from 'utils/api';
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+	query,
+	req,
+}) => {
+	try {
+		if (!req.headers.cookie) throw new Error();
+		await privateAPI('/verify', {
+			headers: {
+				cookie: req.headers.cookie,
+			},
+		});
+	} catch (err) {
+		return {
+			redirect: {
+				destination: '/login',
+				permanent: false,
+			},
+		};
+	}
+
 	if (query.key) {
 		try {
 			const { data } = await privateAPI(`/items/${query.key}`);
@@ -12,11 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 			return {
 				props: data,
 			};
-		} catch (err) {
-			return {
-				props: {},
-			};
-		}
+		} catch (err) {}
 	}
 	return {
 		props: {},
