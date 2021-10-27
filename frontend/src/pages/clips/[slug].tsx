@@ -1,5 +1,5 @@
-import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import Button from 'components/Button/Button';
+import Layout from 'components/Layout/Layout';
 import Player from 'components/Player/Player';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -32,11 +32,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const ClipPage = ({ clip }) => {
+const ClipPage = (props) => {
+	const { clip } = props;
 	const { slug, name, seasonTitle, showTitle, ready, duration } = clip;
 
 	return (
-		<>
+		<Layout {...clip}>
 			<Head>
 				<title>Clip - {name}</title>
 				<meta
@@ -62,8 +63,6 @@ const ClipPage = ({ clip }) => {
 					href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/oembed`}
 				/>
 			</Head>
-			<Breadcrumb {...clip} />
-			<h1>{name}</h1>
 			<Player duration={duration} ready={ready} slug={slug} />
 			<Button
 				type="download"
@@ -73,7 +72,7 @@ const ClipPage = ({ clip }) => {
 				type="delete"
 				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}`}
 			/>
-		</>
+		</Layout>
 	);
 };
 export default ClipPage;

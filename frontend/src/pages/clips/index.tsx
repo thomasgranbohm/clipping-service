@@ -1,6 +1,7 @@
 import ClipListing from 'components/ClipListing/ClipListing';
 import { privateAPI } from 'utils/api';
 import Head from 'next/head';
+import Layout from 'components/Layout/Layout';
 
 export const getStaticProps = async () => {
 	const { data } = await privateAPI('/clips');
@@ -11,13 +12,17 @@ export const getStaticProps = async () => {
 	};
 };
 
-const ClipsPage = ({ clips }) => (
-	<>
-		<Head>
-			<title>Clips</title>
-		</Head>
-		<ClipListing clips={clips} />
-	</>
-);
+const ClipsPage = (props) => {
+	const { clips } = props;
+
+	return (
+		<Layout {...props}>
+			<Head>
+				<title>Clips</title>
+			</Head>
+			<ClipListing clips={clips} />
+		</Layout>
+	);
+};
 
 export default ClipsPage;

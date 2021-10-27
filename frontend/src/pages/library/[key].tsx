@@ -1,4 +1,4 @@
-import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
+import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -42,14 +42,9 @@ const LibraryPage = (props) => {
 	const { contents } = props;
 
 	return (
-		<>
-			<Head>
-				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
-			</Head>
-			<Breadcrumb />
-			<h1>Library</h1>
-			<ThumbnailListing type="show" items={contents} />
-		</>
+		<Layout {...contents}>
+			<ThumbnailListing type="show" items={contents.items} />
+		</Layout>
 	);
 };
 

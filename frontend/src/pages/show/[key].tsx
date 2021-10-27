@@ -1,5 +1,5 @@
-import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import ClipListing from 'components/ClipListing/ClipListing';
+import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -25,7 +25,7 @@ export const getPaths = async () => {
 
 		const shResp = await privateAPI(`/libraries/${library.key}/contents?paths`);
 
-		for (const show of shResp.data['contents']) {
+		for (const show of shResp.data['contents']['items']) {
 			if (show.type !== 'show') continue;
 			paths.push(show);
 		}
@@ -43,11 +43,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const ShowPage = ({ details, clips }) => {
+const ShowPage = (props) => {
+	const { details, clips } = props;
 	const { showTitle, summary, metadata, ...rest } = details;
 
 	return (
-		<>
+		<Layout {...details}>
 			<Head>
 				<title>{showTitle}</title>
 				<meta name="description" content={summary} />
@@ -55,12 +56,10 @@ const ShowPage = ({ details, clips }) => {
 				<meta property="og:description" content={summary} />
 				<meta property="og:site_name" content="Clipping Service" />
 			</Head>
-			<Breadcrumb {...rest} />
-			<h1>{showTitle}</h1>
 			<p>{summary}</p>
 			<ThumbnailListing type="season" items={metadata} />
 			{clips.length > 0 && <ClipListing clips={clips} />}
-		</>
+		</Layout>
 	);
 };
 

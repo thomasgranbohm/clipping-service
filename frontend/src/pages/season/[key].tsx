@@ -1,6 +1,5 @@
-import Anchor from 'components/Anchor/Anchor';
-import Breadcrumb from 'components/Breadcrumb/Breadcrumb';
 import ClipListing from 'components/ClipListing/ClipListing';
+import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -42,11 +41,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const SeasonPage = ({ details, clips }) => {
+const SeasonPage = (props) => {
+	const { details, clips } = props;
 	const { seasonTitle, metadata, ...rest } = details;
 
 	return (
-		<>
+		<Layout {...details}>
 			<Head>
 				<title>
 					{seasonTitle} - {rest.showTitle}
@@ -57,11 +57,9 @@ const SeasonPage = ({ details, clips }) => {
 				/>
 				<meta property="og:site_name" content="Clipping Service" />
 			</Head>
-			<Breadcrumb {...rest} />
-			<h1>{seasonTitle}</h1>
 			<ThumbnailListing type="episode" items={metadata} />
 			{clips.length > 0 && <ClipListing clips={clips} />}
-		</>
+		</Layout>
 	);
 };
 

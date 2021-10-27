@@ -34,10 +34,6 @@ body {
 }
 
 body {
-	max-width: calc(960px - 2rem);
-	width: 100%;
-	padding: 0 1rem 8rem;
-	margin: 1rem auto;
 	font-family: 'OpenSans', sans-serif;
 
 	background: $background;
@@ -62,4 +58,10 @@ ol {
 
 ul {
 	margin-left: 1.5rem;
+}
+
+footer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

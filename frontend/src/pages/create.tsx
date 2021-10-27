@@ -1,4 +1,5 @@
 import ClipCreator from 'components/ClipCreator/ClipCreator';
+import Layout from 'components/Layout/Layout';
 import { GetServerSideProps } from 'next';
 import { useState } from 'react';
 import { privateAPI, publicAPI } from 'utils/api';
@@ -22,12 +23,13 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 	};
 };
 
-const CreatePage = ({ key, details }) => {
+const CreatePage = (props) => {
+	const { details } = props;
 	const [keyInput, setKeyInput] = useState<string>();
 	const [detailState, setDetailState] = useState(details);
 
 	return (
-		<div>
+		<Layout {...props}>
 			<h1>Create Page</h1>
 			{!detailState ? (
 				<div className="search">
@@ -60,7 +62,7 @@ const CreatePage = ({ key, details }) => {
 			) : (
 				<ClipCreator details={detailState} />
 			)}
-		</div>
+		</Layout>
 	);
 };
 

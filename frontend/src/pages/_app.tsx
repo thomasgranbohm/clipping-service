@@ -1,8 +1,8 @@
-import '../styles/globals.scss';
-import colors from 'styles/_colors.module.scss';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useEffect } from 'react';
+import 'styles/globals.scss';
+import colors from 'styles/_colors.module.scss';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {

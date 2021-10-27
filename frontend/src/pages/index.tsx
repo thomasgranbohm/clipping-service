@@ -1,4 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
+import Layout from 'components/Layout/Layout';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
@@ -15,11 +16,10 @@ const Home = ({ ...props }) => {
 	const { libraries } = props;
 
 	return (
-		<>
+		<Layout {...props}>
 			<Head>
 				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
-			<h1>{process.env.NEXT_PUBLIC_PAGE_TITLE}</h1>
 			<ul>
 				<li>
 					<Anchor href={'/clips'}>Clips</Anchor>
@@ -30,7 +30,7 @@ const Home = ({ ...props }) => {
 					</li>
 				))}
 			</ul>
-		</>
+		</Layout>
 	);
 };
 

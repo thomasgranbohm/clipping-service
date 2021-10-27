@@ -9,7 +9,7 @@ const plex = axios.create({
 	},
 });
 
-const getMediaKey = (str = '') => str.replace('/library/metadata', '');
+const getMediaKey = (str = '') => str.replace('/library/metadata/', '');
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)
@@ -71,7 +71,11 @@ export const getLibraryContents = async (id: PlexId) => {
 		})
 	);
 
-	return contents;
+	return {
+		libraryKey: data['librarySectionID'],
+		libraryTitle: data['librarySectionTitle'],
+		items: contents,
+	};
 };
 
 export const getItemDetails = async (id: PlexId) => {
