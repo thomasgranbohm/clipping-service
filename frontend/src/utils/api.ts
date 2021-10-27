@@ -7,3 +7,8 @@ export const privateAPI = axios.create({
 export const publicAPI = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 });
+
+export const internalAPI = axios.create({
+	baseURL: process.env.NEXT_PUBLIC_FRONTEND_URL,
+	withCredentials: true,
+});

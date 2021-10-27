@@ -21,3 +21,4 @@
 - Search features
 - Authentication for creating clips
 - Transcoding or some solution for media that browsers don't support
+- Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format

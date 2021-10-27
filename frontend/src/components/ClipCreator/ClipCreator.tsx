@@ -1,6 +1,6 @@
 import Video from 'components/Video/Video';
 import { useEffect, useRef, useState } from 'react';
-import { publicAPI } from 'utils/api';
+import { internalAPI, publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
 import classes from './ClipCreator.module.scss';
 
@@ -124,6 +124,7 @@ const ClipCreator = ({ details }) => {
 				onClick={async (e) => {
 					e.preventDefault();
 					try {
+						await internalAPI.get('/api/verify');
 						const resp = await publicAPI('/clips', {
 							method: 'POST',
 							data: {

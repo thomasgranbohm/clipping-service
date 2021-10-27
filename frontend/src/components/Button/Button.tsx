@@ -2,7 +2,7 @@ import Anchor from 'components/Anchor/Anchor';
 import Icon from 'components/Icon/Icon';
 import { useRouter } from 'next/dist/client/router';
 import { FC } from 'react';
-import { publicAPI } from 'utils/api';
+import { internalAPI, publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
 import classes from './Button.module.scss';
 
@@ -38,6 +38,7 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 
 	const onClick = async () => {
 		try {
+			await internalAPI.get('/api/verify');
 			const resp = await publicAPI(href, {
 				method: 'DELETE',
 			});
