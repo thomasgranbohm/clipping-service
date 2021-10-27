@@ -12,9 +12,13 @@ const LoginPage = () => {
 		e.preventDefault();
 
 		try {
-			await publicAPI.post('/login', {
-				password,
-			});
+			await publicAPI.post(
+				'/login',
+				{
+					password,
+				},
+				{ withCredentials: true }
+			);
 
 			if ('redirect' in router.query) {
 				const redirect = router.query.redirect.toString();

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
 import { lookup } from 'mime';
+import { totalmem } from 'os';
 import { Clip } from '../database/models/Clip';
 import { getItemDetails } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
@@ -8,8 +9,18 @@ import { stream } from '../services/Streamer';
 const router = Router();
 
 router.get('/', async (req, res) => {
-	const clips = await Clip.findAll();
-	return res.json({ clips });
+	const offset =
+		(req.query.offset && parseInt(req.query.offset.toString())) || 0;
+
+	const clips = await Clip.findAll({
+		offset,
+		limit: 10,
+		order: [['createdAt', 'DESC']],
+	});
+
+	const count = await Clip.count();
+
+	return res.json({ clips, total: count });
 });
 
 router.post('/', async (req, res) => {
@@ -51,7 +62,7 @@ router.post('/', async (req, res) => {
 		return res.json(clip);
 	} catch (error) {
 		console.log(error);
-		return res.json({ error });
+		return res.status(400).json({ error });
 	}
 });
 

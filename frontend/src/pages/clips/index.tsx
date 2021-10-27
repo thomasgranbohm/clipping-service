@@ -13,14 +13,14 @@ export const getStaticProps = async () => {
 };
 
 const ClipsPage = (props) => {
-	const { clips } = props;
+	const { clips, total } = props;
 
 	return (
 		<Layout {...props}>
 			<Head>
 				<title>Clips</title>
 			</Head>
-			<ClipListing clips={clips} />
+			<ClipListing clips={clips} total={total} />
 		</Layout>
 	);
 };
