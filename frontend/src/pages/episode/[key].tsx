@@ -5,6 +5,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getPaths as getSeasonPaths } from 'pages/season/[key]';
 import { privateAPI } from 'utils/api';
+import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}`);
@@ -46,6 +47,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const EpisodePage = (props) => {
 	const { details, clips } = props;
 	const { episodeTitle, summary, key, ...rest } = details;
+
+	const { loggedIn } = useLoggedIn();
+
 	return (
 		<Layout {...details}>
 			<Head>
@@ -61,7 +65,7 @@ const EpisodePage = (props) => {
 				<meta property="og:site_name" content="Clipping Service" />
 			</Head>
 			<p>{summary}</p>
-			<Button type="create" href={`/create?key=${key}`} />
+			{loggedIn && <Button type="create" href={`/create?key=${key}`} />}
 			{clips.length > 0 && <ClipListing clips={clips} />}
 		</Layout>
 	);

@@ -7,8 +7,6 @@ import Clip from './routes/Clip';
 import Item from './routes/Item';
 import Library from './routes/Library';
 
-console.log(process.cwd());
-
 const server = express();
 
 server.use(

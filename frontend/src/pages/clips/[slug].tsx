@@ -4,6 +4,7 @@ import Player from 'components/Player/Player';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
+import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const clip = await privateAPI(`/clips/${params.slug}`);
@@ -35,6 +36,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const ClipPage = (props) => {
 	const { clip } = props;
 	const { slug, name, seasonTitle, showTitle, ready, duration } = clip;
+
+	const { loggedIn } = useLoggedIn();
 
 	return (
 		<Layout {...clip}>
@@ -68,10 +71,12 @@ const ClipPage = (props) => {
 				type="download"
 				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}/download`}
 			/>
-			<Button
-				type="delete"
-				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}`}
-			/>
+			{loggedIn && (
+				<Button
+					type="delete"
+					href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${slug}`}
+				/>
+			)}
 		</Layout>
 	);
 };
