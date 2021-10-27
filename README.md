@@ -11,6 +11,7 @@
 ## Requirements
 
 - `docker` and `docker-compose`
+- OpenSSL
 - Plex Media Server setup
 
 ## What's left to do
