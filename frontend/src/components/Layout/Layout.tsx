@@ -39,7 +39,7 @@ const Layout: FC = ({ children, ...props }) => {
 				<Breadcrumbs links={links} />
 				<h1>{top.title}</h1>
 			</header>
-			<article>{children}</article>
+			<article className={classes['content']}>{children}</article>
 			<footer>
 				<Anchor href={'https://github.com/thomasgranbohm/clipping-service'}>
 					Source code

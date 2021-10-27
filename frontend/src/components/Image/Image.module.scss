@@ -1,6 +1,8 @@
 .container {
 	transition: 0.1s;
-
-	object-fit: cover;
-	display: block;
+	.image {
+		object-fit: cover;
+		display: block;
+		transition: 0.1s;
+	}
 }
