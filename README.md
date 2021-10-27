@@ -15,11 +15,9 @@
 
 ## What's left to do
 
-- Download clip button
 - Better clip creating UI
 - Enhanced video player
 - Startpage with navigation
 - Search features
-- Button for download and delete
 - Authentication for creating clips
 - Transcoding or some solution for media that browsers don't support
