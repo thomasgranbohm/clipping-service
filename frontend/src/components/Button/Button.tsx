@@ -39,7 +39,7 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 
 	const onClick = async () => {
 		try {
-			await axios.get('/api/verify', {
+			await publicAPI.get('/verify', {
 				withCredentials: true,
 			});
 			const resp = await publicAPI(href, {

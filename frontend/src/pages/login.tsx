@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useState } from 'react';
+import { publicAPI } from 'utils/api';
 
 const LoginPage = () => {
 	const [password, setPassword] = useState<string>('');
@@ -11,7 +12,7 @@ const LoginPage = () => {
 		e.preventDefault();
 
 		try {
-			await axios.post('/api/login', {
+			await publicAPI.post('/login', {
 				password,
 			});
 

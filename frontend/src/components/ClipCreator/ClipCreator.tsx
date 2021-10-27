@@ -125,7 +125,7 @@ const ClipCreator = ({ details }) => {
 				onClick={async (e) => {
 					e.preventDefault();
 					try {
-						await axios.get('/api/verify', {
+						await publicAPI.get('/verify', {
 							withCredentials: true,
 						});
 						const resp = await publicAPI('/clips', {
