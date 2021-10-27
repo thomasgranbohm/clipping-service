@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Video from 'components/Video/Video';
 import { useEffect, useRef, useState } from 'react';
 import { internalAPI, publicAPI } from 'utils/api';
@@ -124,7 +125,9 @@ const ClipCreator = ({ details }) => {
 				onClick={async (e) => {
 					e.preventDefault();
 					try {
-						await internalAPI.get('/api/verify');
+						await axios.get('/api/verify', {
+							withCredentials: true,
+						});
 						const resp = await publicAPI('/clips', {
 							method: 'POST',
 							data: {

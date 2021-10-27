@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Anchor from 'components/Anchor/Anchor';
 import Icon from 'components/Icon/Icon';
 import { useRouter } from 'next/dist/client/router';
@@ -38,7 +39,9 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 
 	const onClick = async () => {
 		try {
-			await internalAPI.get('/api/verify');
+			await axios.get('/api/verify', {
+				withCredentials: true,
+			});
 			const resp = await publicAPI(href, {
 				method: 'DELETE',
 			});
