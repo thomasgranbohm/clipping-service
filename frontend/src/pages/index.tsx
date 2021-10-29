@@ -1,35 +1,37 @@
 import Anchor from 'components/Anchor/Anchor';
+import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
+import LibraryListing from 'components/LibraryListing/LibraryListing';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async () => {
-	const { data } = await privateAPI('/libraries');
+	const [libraryResp, clipResp] = await Promise.all([
+		privateAPI('/libraries'),
+		privateAPI('/clips'),
+	]);
 
 	return {
-		props: { ...(data as Object) },
+		props: {
+			libraries: libraryResp.data['libraries'],
+			clipResponse: clipResp.data,
+		},
 	};
 };
 
 const Home = ({ ...props }) => {
-	const { libraries } = props;
+	const { clipResponse, libraries } = props;
+	const { clips, total } = clipResponse;
 
 	return (
 		<Layout {...props}>
 			<Head>
 				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
-			<ul>
-				<li>
-					<Anchor href={'/clips'}>Clips</Anchor>
-				</li>
-				{libraries.map(({ key, title }) => (
-					<li key={key}>
-						<Anchor href={`/library/${key}`}>{title}</Anchor>
-					</li>
-				))}
-			</ul>
+			<h2>Libraries</h2>
+			<LibraryListing libraries={libraries} />
+			<ClipListing clips={clips} total={total} />
 		</Layout>
 	);
 };

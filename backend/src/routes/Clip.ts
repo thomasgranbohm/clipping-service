@@ -11,10 +11,12 @@ const router = Router();
 router.get('/', async (req, res) => {
 	const offset =
 		(req.query.offset && parseInt(req.query.offset.toString())) || 0;
+	const limit =
+		(req.query.limit && parseInt(req.query.limit.toString())) || 10;
 
 	const clips = await Clip.findAll({
 		offset,
-		limit: 10,
+		limit,
 		order: [['createdAt', 'DESC']],
 	});
 
