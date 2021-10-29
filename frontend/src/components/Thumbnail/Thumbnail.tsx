@@ -65,7 +65,7 @@ type ClipThumbnailProps = {
 export const ClipThumbnail = ({ name, slug }: ClipThumbnailProps) => (
 	<Thumbnail
 		metadataKey={slug}
-		thumbnailType={'clip'}
+		thumbnailType="clip"
 		type="clips"
 		title={name}
 		thumb={`/clips/${slug}/thumbnail`}

@@ -6,6 +6,13 @@
 	flex-direction: column;
 	gap: 0.5rem;
 
+	&.clip,
+	&.episode {
+		.thumbnail {
+			height: 100%;
+			width: calc(100% * 9 / 16);
+		}
+	}
 	&.season,
 	&.show {
 		.thumbnail {
@@ -27,16 +34,9 @@
 		}
 	}
 
-	&.clip,
-	&.episode {
-		.thumbnail {
-			height: 100%;
-			width: calc(100% * 9 / 16);
-		}
-	}
-
 	.thumbnail {
 		border-radius: 4px;
+		overflow: hidden;
 	}
 
 	.title {
