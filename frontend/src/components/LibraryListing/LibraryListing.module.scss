@@ -4,7 +4,7 @@
 	.library {
 		display: block;
 		margin: 0.5rem 0;
-		@include medium-device {
+		@include small-device {
 			margin: 0;
 			height: 3rem;
 			line-height: 3rem;

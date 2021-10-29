@@ -16,7 +16,7 @@ export const ShowThumbnail = ({
 	<Thumbnail
 		{...props}
 		metadataKey={showKey}
-		thumb={showThumb}
+		thumb={`/items/${showThumb}`}
 		thumbnailType="show"
 	/>
 );
@@ -34,7 +34,7 @@ export const SeasonThumbnail = ({
 	<Thumbnail
 		{...props}
 		metadataKey={seasonKey}
-		thumb={seasonThumb}
+		thumb={`/items/${seasonThumb}`}
 		thumbnailType="season"
 	/>
 );
@@ -42,20 +42,33 @@ export const SeasonThumbnail = ({
 type EpisodeThumbnailProps = {
 	episodeKey: string;
 	episodeThumb: string;
-	episodeArt: string;
 } & Exclude<ThumbnailProps, 'metadataKey thumb'>;
 
 export const EpisodeThumbnail = ({
 	episodeThumb,
 	episodeKey,
-	episodeArt,
 	...props
 }: EpisodeThumbnailProps) => (
 	<Thumbnail
 		{...props}
 		metadataKey={episodeKey}
-		thumb={episodeThumb}
+		thumb={`/items/${episodeThumb}`}
 		thumbnailType="episode"
+	/>
+);
+
+type ClipThumbnailProps = {
+	name: string;
+	slug: string;
+};
+
+export const ClipThumbnail = ({ name, slug }: ClipThumbnailProps) => (
+	<Thumbnail
+		metadataKey={slug}
+		thumbnailType={'clip'}
+		type="clips"
+		title={name}
+		thumb={`/clip/${slug}/thumbnail`}
 	/>
 );
 
@@ -64,7 +77,7 @@ export type ThumbnailProps = {
 	metadataKey: string;
 	thumb: string;
 	title: string;
-	thumbnailType: 'show' | 'season' | 'episode';
+	thumbnailType: 'show' | 'season' | 'episode' | 'clip';
 };
 
 const Thumbnail = ({ type, metadataKey, thumb, title }: ThumbnailProps) => (
@@ -75,7 +88,7 @@ const Thumbnail = ({ type, metadataKey, thumb, title }: ThumbnailProps) => (
 				className={classes['thumbnail']}
 				height={576}
 				width={type === 'show' || type === 'season' ? 384 : 1024}
-				src={`/items/${thumb}`}
+				src={thumb}
 			/>
 			<p className={classes['title']} title={title}>
 				{title}

@@ -27,9 +27,16 @@
 		}
 	}
 
-	.episode .thumbnail {
-		height: 100%;
-		width: calc(100% * 9 / 16);
+	&.clip,
+	&.episode {
+		.thumbnail {
+			height: 100%;
+			width: calc(100% * 9 / 16);
+		}
+	}
+
+	.thumbnail {
+		border-radius: 4px;
 	}
 
 	.title {

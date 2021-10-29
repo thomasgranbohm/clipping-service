@@ -1,17 +1,17 @@
-import classes from './ClipListing.module.scss';
-import ClipBlurb, { ClipBlurbProps } from '../ClipBlurb/ClipBlurb';
-import { concat } from 'utils/functions';
+import { ClipThumbnail } from 'components/Thumbnail/Thumbnail';
 import { useState } from 'react';
-import useObserver from 'utils/hooks';
 import { publicAPI } from 'utils/api';
+import { concat } from 'utils/functions';
+import useObserver from 'utils/hooks';
+import classes from './ClipListing.module.scss';
 
 type ClipListingProps = {
-	clips: [ClipBlurbProps];
+	clips: [];
 	total?: number;
 };
 
 const ClipListing = ({ clips, total }: ClipListingProps) => {
-	const [stateClips, setStateClips] = useState<ClipBlurbProps[]>(clips);
+	const [stateClips, setStateClips] = useState<Array<any>>(clips);
 
 	const sentinel = useObserver(
 		async () => {
@@ -30,7 +30,7 @@ const ClipListing = ({ clips, total }: ClipListingProps) => {
 			<h2>Clips</h2>
 			<div className={classes['clips']}>
 				{stateClips.map((clip) => (
-					<ClipBlurb key={clip.id} {...clip} />
+					<ClipThumbnail {...clip} />
 				))}
 			</div>
 			{total && sentinel}
