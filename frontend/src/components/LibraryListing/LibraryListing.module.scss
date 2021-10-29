@@ -1,7 +1,13 @@
+@import 'styles/includes';
+
 .container {
 	.library {
-		display: inline-block;
-		height: 3rem;
-		line-height: 3rem;
+		display: block;
+		margin: 0.5rem 0;
+		@include medium-device {
+			margin: 0;
+			height: 3rem;
+			line-height: 3rem;
+		}
 	}
 }
