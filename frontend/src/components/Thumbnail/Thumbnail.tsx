@@ -68,7 +68,7 @@ export const ClipThumbnail = ({ name, slug }: ClipThumbnailProps) => (
 		thumbnailType={'clip'}
 		type="clips"
 		title={name}
-		thumb={`/clip/${slug}/thumbnail`}
+		thumb={`/clips/${slug}/thumbnail`}
 	/>
 );
 
