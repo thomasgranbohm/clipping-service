@@ -24,3 +24,4 @@
 - Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format
 - Pagination and intersection observers for clips, since Plex's API doesn't support it
 - Improved UI and UX
+- Database for pagination and faster load times (revalidate with the Plex Media Server data after load)

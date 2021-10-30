@@ -83,13 +83,15 @@ export type ThumbnailProps = {
 const Thumbnail = ({ type, metadataKey, thumb, title }: ThumbnailProps) => (
 	<Anchor href={`/${type}/${metadataKey}`}>
 		<div className={concat(classes['container'], classes[type])}>
-			<Image
-				alt={title}
-				className={classes['thumbnail']}
-				height={576}
-				width={type === 'show' || type === 'season' ? 384 : 1024}
-				src={thumb}
-			/>
+			<div className={classes['thumbnail-container']}>
+				<Image
+					alt={title}
+					className={classes['thumbnail']}
+					height={576}
+					width={type === 'show' || type === 'season' ? 384 : 1024}
+					src={thumb}
+				/>
+			</div>
 			<p className={classes['title']} title={title}>
 				{title}
 			</p>
