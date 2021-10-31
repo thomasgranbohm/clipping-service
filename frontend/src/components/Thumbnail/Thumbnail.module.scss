@@ -36,17 +36,14 @@
 
 	.thumbnail-container {
 		overflow: hidden;
+		border-radius: 6px;
+		overflow: hidden;
 	}
 	.thumbnail {
 		transition: transform 0.2s ease-in-out;
 	}
 	&:hover .thumbnail {
 		transform: scale(1.02);
-	}
-
-	.thumbnail-container {
-		border-radius: 6px;
-		overflow: hidden;
 	}
 
 	.title {
