@@ -1,56 +1,57 @@
-export type PlexId = number | string;
+export type PlexId = number;
 
-export type ShortLibrary = {
-	libraryId: PlexId;
+export type ShortLibraryType = {
+	libraryId: number;
 	libraryTitle: string;
 };
 
-export type Library = {
-	items: ShortShow[];
-} & ShortLibrary;
+export type LibraryType = {
+	items: ShortShowType[];
+} & ShortLibraryType;
 
-export type ShortShow = {
-	showId: PlexId;
+export type ShortShowType = {
+	showId: number;
 	showTitle: string;
 	showTheme: string;
 	showThumb: string;
 	type: 'show';
 };
 
-export type Show = ShortShow &
-	ShortLibrary & {
+export type ShowType = ShortShowType &
+	ShortLibraryType & {
 		showArt: string;
 		summary: string;
-		items: ShortSeason[];
+		items: ShortSeasonType[];
 	};
 
-export type ShortSeason = {
+export type ShortSeasonType = {
 	index: number;
-	seasonId: PlexId;
+	seasonId: number;
 	seasonTitle: string;
+	seasonTheme: string;
 	seasonThumb: string;
 	type: 'season';
 };
 
-export type Season = Omit<ShortSeason, 'index'> &
-	Omit<ShortShow, 'type'> &
-	ShortLibrary & {
-		items: ShortEpisode[];
+export type SeasonType = Omit<ShortSeasonType, 'index'> &
+	Omit<ShortShowType, 'type'> &
+	ShortLibraryType & {
+		items: ShortEpisodeType[];
 	};
 
-export type ShortEpisode = {
+export type ShortEpisodeType = {
 	episodeArt: string;
-	episodeId: PlexId;
+	episodeId: number;
 	episodeThumb: string;
 	episodeTitle: string;
 	index: string;
 	type: 'episode';
 };
 
-export type Episode = ShortEpisode &
-	Omit<ShortSeason, 'type' | 'index'> &
-	Omit<ShortShow, 'type'> &
-	ShortLibrary & {
+export type EpisodeType = ShortEpisodeType &
+	Omit<ShortSeasonType, 'type' | 'index'> &
+	Omit<ShortShowType, 'type'> &
+	ShortLibraryType & {
 		duration: number;
 		filePath: string;
 		summary: string;

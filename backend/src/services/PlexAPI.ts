@@ -1,15 +1,13 @@
 import axios, { AxiosError } from 'axios';
-import { resolve } from 'path';
 import {
-	Episode,
-	Library,
-	PlexId,
-	Season,
-	ShortEpisode,
-	ShortLibrary,
-	ShortSeason,
-	ShortShow,
-	Show
+	EpisodeType,
+	LibraryType,
+	SeasonType,
+	ShortEpisodeType,
+	ShortLibraryType,
+	ShortSeasonType,
+	ShortShowType,
+	ShowType,
 } from 'types';
 
 const plex = axios.create({
@@ -45,13 +43,13 @@ const requestPlex = async (url) => {
 	}
 };
 
-export const getAllLibraries = async (): Promise<ShortLibrary[]> => {
+export const getAllLibraries = async (): Promise<ShortLibraryType[]> => {
 	const data = await requestPlex(`/library/sections`);
 
 	const libraries = data['Directory']
 		.filter((lib) => lib.type === 'show')
 		.map(
-			({ key, title }): ShortLibrary => ({
+			({ key, title }): ShortLibraryType => ({
 				libraryId: key,
 				libraryTitle: title,
 			})
@@ -60,36 +58,35 @@ export const getAllLibraries = async (): Promise<ShortLibrary[]> => {
 	return libraries;
 };
 
-export const getSpecificLibrary = async (id: PlexId) =>
+export const getSpecificLibrary = async (id: number) =>
 	requestPlex(`/library/sections/${id}`);
 
-export const getLibraryContents = async (id: PlexId): Promise<Library> => {
+export const getLibraryContents = async (id: number): Promise<LibraryType> => {
 	const data = await requestPlex(`/library/sections/${id}/all`);
 
 	const contents = data['Metadata'].map(
-		({
-			title,
-			ratingKey,
-			type,
-			theme: showTheme,
-			thumb: showThumb,
-		}): ShortShow => ({
-			showId: ratingKey,
+		({ title, ratingKey, type, theme, thumb }): ShortShowType => ({
+			showId: parseInt(ratingKey),
 			showTitle: title,
 			type,
-			showTheme: getMediaId(showTheme),
-			showThumb: getMediaId(showThumb),
+			showTheme: getMediaId(theme),
+			showThumb: getMediaId(thumb),
 		})
 	);
 
 	return {
-		libraryId: data['librarySectionID'],
+		libraryId: parseInt(data['librarySectionID']),
 		libraryTitle: data['librarySectionTitle'],
 		items: contents,
 	};
 };
 
-export const getItemDetails = async (id: PlexId) => {
+/**
+ * Get episode
+ * @param id
+ */
+
+export const getItemDetails = async (id: number) => {
 	const data = await requestPlex(`/library/metadata/${id}`);
 
 	const {
@@ -105,11 +102,12 @@ export const getItemDetails = async (id: PlexId) => {
 		parentArt: seasonArt,
 		parentRatingKey: seasonId,
 		parentTitle: seasonTitle,
+		parentTheme: seasonTheme,
 		parentThumb: seasonThumb,
+		grandparentRatingKey: showId,
 		grandparentTitle: showTitle,
 		grandparentThumb: showThumb,
 		grandparentTheme: showTheme,
-		grandparentRatingKey: showId,
 		art,
 		thumb,
 		summary,
@@ -132,36 +130,40 @@ export const getItemDetails = async (id: PlexId) => {
 		episodeId: ratingKey,
 		episodeThumb: getMediaId(thumb),
 		episodeTitle,
-		filePath: new String(filePath).replace(
-			'/mnt/harddrives/Plex Media',
-			resolve(process.cwd(), 'media')
-		),
+		filePath: new String(filePath).replace('/mnt/harddrives/Plex Media', ''),
 		index,
-		libraryId,
+		libraryId: parseInt(libraryId),
 		libraryTitle,
 		seasonArt: getMediaId(seasonArt),
-		seasonId,
+		seasonId: parseInt(seasonId),
 		seasonTitle,
+		seasonTheme: getMediaId(seasonTheme),
 		seasonThumb: getMediaId(seasonThumb),
-		showId,
+		showId: parseInt(showId),
 		showTitle,
 		showTheme: getMediaId(showTheme),
 		showThumb: getMediaId(showThumb),
 		summary,
 		type: 'episode',
-	} as Episode;
+	} as EpisodeType;
 };
 
 export const getMedia = async (
-	id: PlexId,
-	mediaId: PlexId,
+	id: number,
+	mediaId: number,
 	type: 'thumb' | 'theme' | 'art'
 ) =>
 	plex(`/library/metadata/${id}/${type}/${mediaId}`, {
 		responseType: 'stream',
 	});
 
-export const getItemChildren = async (id: PlexId): Promise<Show | Season> => {
+/**
+ * This is for getting a show or a season
+ * @param id
+ */
+export const getItemChildren = async (
+	id: number
+): Promise<ShowType | SeasonType> => {
 	const data = await requestPlex(`/library/metadata/${id}/children`);
 
 	const { Metadata: metadata, key } = data;
@@ -180,20 +182,21 @@ export const getItemChildren = async (id: PlexId): Promise<Show | Season> => {
 
 		return {
 			type: 'show',
-			showId: key,
+			showId: parseInt(key),
 			showTitle,
 			summary,
 			showArt: getMediaId(showArt),
 			showTheme: getMediaId(showTheme),
 			showThumb: getMediaId(showThumb),
-			libraryId,
+			libraryId: parseInt(libraryId),
 			libraryTitle,
 			items: metadata.map(
-				({ ratingKey, title, index, thumb }): ShortSeason => ({
+				({ ratingKey, title, index, thumb, theme }): ShortSeasonType => ({
 					index,
 					seasonId: ratingKey,
 					seasonTitle: title,
 					seasonThumb: getMediaId(thumb),
+					seasonTheme: getMediaId(theme),
 					type: 'season',
 				})
 			),
@@ -215,28 +218,28 @@ export const getItemChildren = async (id: PlexId): Promise<Show | Season> => {
 
 		return {
 			type: 'season',
-			seasonId: key,
+			seasonId: parseInt(key),
 			seasonTitle,
 			seasonArt: getMediaId(seasonArt),
 			seasonTheme: getMediaId(seasonTheme),
 			seasonThumb: getMediaId(seasonThumb),
-			showId,
+			showId: parseInt(showId),
 			showTitle,
 			showTheme: getMediaId(showTheme),
 			showThumb: getMediaId(showThumb),
-			libraryId,
+			libraryId: parseInt(libraryId),
 			libraryTitle,
 			items: metadata.map(
-				({ ratingKey, type, title, index, thumb, art }): ShortEpisode => ({
+				({ ratingKey, type, title, index, thumb, art }): ShortEpisodeType => ({
 					episodeArt: getMediaId(art),
-					episodeId: ratingKey,
+					episodeId: parseInt(ratingKey),
 					episodeTitle: title,
 					episodeThumb: getMediaId(thumb),
 					index,
 					type,
 				})
 			),
-		} as Season;
+		} as SeasonType;
 	}
 
 	return { ...data, viewGroup: 'none' };

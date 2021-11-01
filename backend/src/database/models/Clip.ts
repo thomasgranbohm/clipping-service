@@ -7,9 +7,11 @@ import {
 	BeforeCreate,
 	BeforeDestroy,
 	BeforeUpdate,
+	BelongsTo,
 	Column,
 	DataType,
 	Default,
+	ForeignKey,
 	Model,
 	Table,
 	Unique,
@@ -17,6 +19,7 @@ import {
 import slugify from 'slugify';
 import { CLIPS_DIR } from '../../constants';
 import { generateClip } from '../../services/FFmpeg';
+import { Episode } from './Episode';
 
 @Table
 export class Clip extends Model {
@@ -87,6 +90,14 @@ export class Clip extends Model {
 	@AllowNull(false)
 	@Column
 	libraryTitle: string;
+
+	// Episode
+	@ForeignKey(() => Episode)
+	@Column
+	episodeId: number;
+
+	@BelongsTo(() => Episode)
+	episode: Episode;
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {

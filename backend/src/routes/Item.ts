@@ -63,8 +63,8 @@ router.get('/:id/:type/:mediaId', async (req, res) => {
 		return res.status(400).json({ error: `${type} not allowed.` });
 
 	const { data } = await getMedia(
-		id,
-		mediaId,
+		parseInt(id),
+		parseInt(mediaId),
 		type as 'thumb' | 'theme' | 'art'
 	);
 	(data as IncomingMessage).pipe(res);

@@ -2,7 +2,7 @@ import cors from 'cors';
 import express, { Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
-import { connectToDatabase } from './database';
+import { connectToDatabase, syncAll } from './database';
 import Clip from './routes/Clip';
 import Item from './routes/Item';
 import Library from './routes/Library';
@@ -68,6 +68,9 @@ server.get('/verify', async (req, res) => {
 
 server.listen(1337, async () => {
 	const s = await connectToDatabase();
-	// await s.sync({ force: true });
+	if (process.env.NODE_ENV === 'production') {
+		await s.sync({ force: true });
+		await syncAll();
+	}
 	console.log('Started!');
 });
