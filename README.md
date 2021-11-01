@@ -18,10 +18,10 @@
 
 - Better clip creating UI
 - Enhanced video player
-- Startpage with navigation
 - Search features
 - Transcoding or some solution for media that browsers don't support
 - Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format
-- Pagination and intersection observers for clips, since Plex's API doesn't support it
+- Pagination and intersection observers for episodes, seasons, shows, and libraries
 - Improved UI and UX
-- Database for pagination and faster load times (revalidate with the Plex Media Server data after load)
+- Database revalidation with the Plex Media Server data after load
+- Backend error handling
