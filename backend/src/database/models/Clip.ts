@@ -18,7 +18,7 @@ import {
 } from 'sequelize-typescript';
 import slugify from 'slugify';
 import { CLIPS_DIR } from '../../constants';
-import { generateClip } from '../../services/FFmpeg';
+import { generateClip } from 'services/FFmpeg';
 import { Episode } from './Episode';
 
 @Table

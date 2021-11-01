@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
-import { Clip } from '../database/models/Clip';
-import DatabaseLimit from '../middlewares/DatabaseLimit';
-import { getItemDetails } from '../services/PlexAPI';
-import { stream } from '../services/Streamer';
+import { Clip } from 'database/models/Clip';
+import DatabaseLimit from 'middlewares/DatabaseLimit';
+import { getItemDetails } from 'services/PlexAPI';
+import { stream } from 'services/Streamer';
 
 const router = Router();
 

@@ -3,10 +3,10 @@ import { promises as fs } from 'fs';
 import { readdir, unlink } from 'fs/promises';
 import { resolve } from 'path';
 import { promisify } from 'util';
-// import { Episode } from '../database/models/Episode';
-// import { Movie } from '../database/models/Movie';
-// import { Season } from '../database/models/Season';
-// import { Show } from '../database/models/Show';
+// import { Episode } from 'database/models/Episode';
+// import { Movie } from 'database/models/Movie';
+// import { Season } from 'database/models/Season';
+// import { Show } from 'database/models/Show';
 import ffprobe from 'ffprobe-static';
 
 const execWait = promisify(exec);

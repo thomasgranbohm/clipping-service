@@ -4,7 +4,7 @@ import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
-import { getPaths as getShowPaths } from '../show/[key]';
+import { getPaths as getShowPaths } from 'show/[key]';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { data } = await privateAPI(`/items/${params.key}/children`);

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { Season } from '../database/models/Season';
-import { Show } from '../database/models/Show';
-import DatabaseLimit from '../middlewares/DatabaseLimit';
+import { Season } from 'database/models/Season';
+import { Show } from 'database/models/Show';
+import DatabaseLimit from 'middlewares/DatabaseLimit';
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { Clip } from '../database/models/Clip';
-import { Episode } from '../database/models/Episode';
-import DatabaseLimit from '../middlewares/DatabaseLimit';
+import { Clip } from 'database/models/Clip';
+import { Episode } from 'database/models/Episode';
+import DatabaseLimit from 'middlewares/DatabaseLimit';
 
 const router = Router();
 

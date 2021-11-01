@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { Episode } from '../database/models/Episode';
-import { Season } from '../database/models/Season';
-import DatabaseLimit from '../middlewares/DatabaseLimit';
+import { Episode } from 'database/models/Episode';
+import { Season } from 'database/models/Season';
+import DatabaseLimit from 'middlewares/DatabaseLimit';
 
 const router = Router();
 
@@ -36,8 +36,6 @@ router.get('/:id/episodes', DatabaseLimit, async (req, res) => {
 		}),
 		Episode.count({ where: { seasonId: req.params.id } }),
 	]);
-
-	console.log(offset);
 
 	return res.json({ episodes, offset, total });
 });

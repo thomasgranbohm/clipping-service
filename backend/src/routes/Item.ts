@@ -1,9 +1,9 @@
 import { Request, Router } from 'express';
 import { IncomingMessage } from 'http';
 import { Op } from 'sequelize';
-import { stream } from '../services/Streamer';
-import { Clip } from '../database/models/Clip';
-import { getItemChildren, getItemDetails, getMedia } from '../services/PlexAPI';
+import { stream } from 'services/Streamer';
+import { Clip } from 'database/models/Clip';
+import { getItemChildren, getItemDetails, getMedia } from 'services/PlexAPI';
 
 const router = Router();
 
