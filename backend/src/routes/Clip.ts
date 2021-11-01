@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
-import { lookup } from 'mime';
-import { totalmem } from 'os';
 import { Clip } from '../database/models/Clip';
 import { getItemDetails } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
@@ -11,8 +9,7 @@ const router = Router();
 router.get('/', async (req, res) => {
 	const offset =
 		(req.query.offset && parseInt(req.query.offset.toString())) || 0;
-	const limit =
-		(req.query.limit && parseInt(req.query.limit.toString())) || 10;
+	const limit = (req.query.limit && parseInt(req.query.limit.toString())) || 10;
 
 	const clips = await Clip.findAll({
 		offset,
@@ -31,7 +28,7 @@ router.post('/', async (req, res) => {
 	try {
 		const episode = await getItemDetails(metadataKey);
 
-		if (episode.type !== 'episode' || !episode.key)
+		if (episode.type !== 'episode' || !episode.episodeId)
 			return res.status(400).json({
 				description: 'Cannot create a clip from a non-episode.',
 			});
@@ -53,9 +50,9 @@ router.post('/', async (req, res) => {
 			start,
 			end,
 			metadataKey,
-			seasonKey: parseInt(episode.seasonKey),
-			showKey: parseInt(episode.showKey),
-			libraryKey: parseInt(episode.libraryKey),
+			seasonId: episode.seasonId,
+			showId: episode.showId,
+			libraryId: episode.libraryId,
 			seasonTitle: episode.seasonTitle,
 			showTitle: episode.showTitle,
 			libraryTitle: episode.libraryTitle,

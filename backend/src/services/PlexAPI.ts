@@ -1,6 +1,16 @@
 import axios, { AxiosError } from 'axios';
 import { resolve } from 'path';
-import { pipeline } from 'stream/promises';
+import {
+	Episode,
+	Library,
+	PlexId,
+	Season,
+	ShortEpisode,
+	ShortLibrary,
+	ShortSeason,
+	ShortShow,
+	Show
+} from 'types';
 
 const plex = axios.create({
 	baseURL: `http://${process.env.PLEX_URL}`,
@@ -9,14 +19,12 @@ const plex = axios.create({
 	},
 });
 
-const getMediaKey = (str = '') => str.replace('/library/metadata/', '');
+const getMediaId = (str = '') => str.replace('/library/metadata/', '');
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)
 		.map(([key, value]) => ({ [key.toLowerCase()]: value }))
 		.reduce((prev, curr) => ({ ...prev, ...curr }), {});
-
-type PlexId = number | string;
 
 const requestPlex = async (url) => {
 	try {
@@ -37,12 +45,17 @@ const requestPlex = async (url) => {
 	}
 };
 
-export const getAllLibraries = async () => {
+export const getAllLibraries = async (): Promise<ShortLibrary[]> => {
 	const data = await requestPlex(`/library/sections`);
 
 	const libraries = data['Directory']
 		.filter((lib) => lib.type === 'show')
-		.map(({ key, title, type }) => ({ key, title, type }));
+		.map(
+			({ key, title }): ShortLibrary => ({
+				libraryId: key,
+				libraryTitle: title,
+			})
+		);
 
 	return libraries;
 };
@@ -50,7 +63,7 @@ export const getAllLibraries = async () => {
 export const getSpecificLibrary = async (id: PlexId) =>
 	requestPlex(`/library/sections/${id}`);
 
-export const getLibraryContents = async (id: PlexId) => {
+export const getLibraryContents = async (id: PlexId): Promise<Library> => {
 	const data = await requestPlex(`/library/sections/${id}/all`);
 
 	const contents = data['Metadata'].map(
@@ -58,21 +71,19 @@ export const getLibraryContents = async (id: PlexId) => {
 			title,
 			ratingKey,
 			type,
-			art: showArt,
 			theme: showTheme,
 			thumb: showThumb,
-		}) => ({
-			showKey: ratingKey,
-			title,
+		}): ShortShow => ({
+			showId: ratingKey,
+			showTitle: title,
 			type,
-			showArt: getMediaKey(showArt),
-			showTheme: getMediaKey(showTheme),
-			showThumb: getMediaKey(showThumb),
+			showTheme: getMediaId(showTheme),
+			showThumb: getMediaId(showThumb),
 		})
 	);
 
 	return {
-		libraryKey: data['librarySectionID'],
+		libraryId: data['librarySectionID'],
 		libraryTitle: data['librarySectionTitle'],
 		items: contents,
 	};
@@ -84,24 +95,30 @@ export const getItemDetails = async (id: PlexId) => {
 	const {
 		Metadata: metadata,
 		librarySectionTitle: libraryTitle,
-		librarySectionID: libraryKey,
+		librarySectionID: libraryId,
 	} = data;
 
 	const {
-		ratingKey: key,
+		ratingKey,
 		type,
 		title: episodeTitle,
-		grandparentTitle: showTitle,
+		parentArt: seasonArt,
+		parentRatingKey: seasonId,
 		parentTitle: seasonTitle,
-		parentRatingKey: seasonKey,
-		grandparentRatingKey: showKey,
+		parentThumb: seasonThumb,
+		grandparentTitle: showTitle,
+		grandparentThumb: showThumb,
+		grandparentTheme: showTheme,
+		grandparentRatingKey: showId,
+		art,
+		thumb,
 		summary,
 		index,
 		Media,
 	} = metadata.pop();
 
 	if (type !== 'episode')
-		return {
+		throw {
 			error: 400,
 			description: `Type ${type} is not episode.`,
 		};
@@ -110,23 +127,29 @@ export const getItemDetails = async (id: PlexId) => {
 	const { file: filePath } = Part.pop();
 
 	return {
-		index,
-		key,
-		episodeTitle,
-		seasonKey,
-		seasonTitle,
-		showKey,
-		showTitle,
-		libraryKey,
-		libraryTitle,
-		summary,
-		type,
 		duration,
+		episodeArt: getMediaId(art),
+		episodeId: ratingKey,
+		episodeThumb: getMediaId(thumb),
+		episodeTitle,
 		filePath: new String(filePath).replace(
 			'/mnt/harddrives/Plex Media',
 			resolve(process.cwd(), 'media')
 		),
-	};
+		index,
+		libraryId,
+		libraryTitle,
+		seasonArt: getMediaId(seasonArt),
+		seasonId,
+		seasonTitle,
+		seasonThumb: getMediaId(seasonThumb),
+		showId,
+		showTitle,
+		showTheme: getMediaId(showTheme),
+		showThumb: getMediaId(showThumb),
+		summary,
+		type: 'episode',
+	} as Episode;
 };
 
 export const getMedia = async (
@@ -138,7 +161,7 @@ export const getMedia = async (
 		responseType: 'stream',
 	});
 
-export const getItemChildren = async (id: PlexId) => {
+export const getItemChildren = async (id: PlexId): Promise<Show | Season> => {
 	const data = await requestPlex(`/library/metadata/${id}/children`);
 
 	const { Metadata: metadata, key } = data;
@@ -148,7 +171,7 @@ export const getItemChildren = async (id: PlexId) => {
 		const {
 			parentTitle: showTitle,
 			librarySectionTitle: libraryTitle,
-			librarySectionID: libraryKey,
+			librarySectionID: libraryId,
 			summary,
 			art: showArt,
 			theme: showTheme,
@@ -156,23 +179,22 @@ export const getItemChildren = async (id: PlexId) => {
 		} = data;
 
 		return {
-			key,
 			type: 'show',
+			showId: key,
 			showTitle,
-			libraryKey,
-			libraryTitle,
 			summary,
-			showArt: getMediaKey(showArt),
-			showTheme: getMediaKey(showTheme),
-			showThumb: getMediaKey(showThumb),
-			metadata: metadata.map(
-				({ ratingKey, type, title, index, thumb, art }) => ({
-					seasonKey: ratingKey,
+			showArt: getMediaId(showArt),
+			showTheme: getMediaId(showTheme),
+			showThumb: getMediaId(showThumb),
+			libraryId,
+			libraryTitle,
+			items: metadata.map(
+				({ ratingKey, title, index, thumb }): ShortSeason => ({
 					index,
-					title,
-					type,
-					seasonThumb: getMediaKey(thumb),
-					seasonArt: getMediaKey(art),
+					seasonId: ratingKey,
+					seasonTitle: title,
+					seasonThumb: getMediaId(thumb),
+					type: 'season',
 				})
 			),
 		};
@@ -181,9 +203,9 @@ export const getItemChildren = async (id: PlexId) => {
 		const {
 			grandparentTitle: showTitle,
 			title2: seasonTitle,
-			grandparentRatingKey: showKey,
+			grandparentRatingKey: showId,
 			librarySectionTitle: libraryTitle,
-			librarySectionID: libraryKey,
+			librarySectionID: libraryId,
 			art: seasonArt,
 			theme: seasonTheme,
 			thumb: seasonThumb,
@@ -192,29 +214,29 @@ export const getItemChildren = async (id: PlexId) => {
 		} = data;
 
 		return {
-			key,
 			type: 'season',
-			showTitle,
-			showKey,
+			seasonId: key,
 			seasonTitle,
-			libraryKey,
+			seasonArt: getMediaId(seasonArt),
+			seasonTheme: getMediaId(seasonTheme),
+			seasonThumb: getMediaId(seasonThumb),
+			showId,
+			showTitle,
+			showTheme: getMediaId(showTheme),
+			showThumb: getMediaId(showThumb),
+			libraryId,
 			libraryTitle,
-			seasonArt: getMediaKey(seasonArt),
-			seasonTheme: getMediaKey(seasonTheme),
-			seasonThumb: getMediaKey(seasonThumb),
-			showTheme: getMediaKey(showTheme),
-			showThumb: getMediaKey(showThumb),
-			metadata: metadata.map(
-				({ ratingKey, type, title, index, thumb, art }) => ({
-					episodeKey: ratingKey,
+			items: metadata.map(
+				({ ratingKey, type, title, index, thumb, art }): ShortEpisode => ({
+					episodeArt: getMediaId(art),
+					episodeId: ratingKey,
+					episodeTitle: title,
+					episodeThumb: getMediaId(thumb),
 					index,
-					title,
 					type,
-					episodeThumb: getMediaKey(thumb),
-					episodeArt: getMediaKey(art),
 				})
 			),
-		};
+		} as Season;
 	}
 
 	return { ...data, viewGroup: 'none' };
