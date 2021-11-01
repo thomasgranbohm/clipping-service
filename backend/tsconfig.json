@@ -15,15 +15,22 @@
 		"strictFunctionTypes": false,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
-		"baseUrl": "./src/"
-		// "paths": {
-		// 	"database/*": ["database/*"],
-		// 	"lib/*": ["lib/*"],
-		// 	"middlewares/*": ["middlewares/*"],
-		// 	"routes/*": ["routes/*"],
-		// 	"services/*": ["services/*"]
-		// }
+		"baseUrl": "./src/",
+		"paths": {
+			"database/*": ["database/*"],
+			"lib/*": ["lib/*"],
+			"middlewares/*": ["middlewares/*"],
+			"routes/*": ["routes/*"],
+			"services/*": ["services/*"]
+		}
 	},
 	"include": ["**/*.ts"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
+
+	// ts-node config for development
+	"ts-node": {
+		"files": true,
+		"require": ["tsconfig-paths/register"]
+	},
+	"files": ["src/index.ts", "src/custom.d.ts"]
 }

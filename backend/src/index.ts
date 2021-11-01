@@ -1,11 +1,13 @@
-import cors from 'cors';
-import express, { Response } from 'express';
-import { sign, verify } from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import { sign, verify } from 'jsonwebtoken';
 import { connectToDatabase, syncAll } from './database';
 import Clip from './routes/Clip';
-import Item from './routes/Item';
+import Episode from './routes/Episode';
 import Library from './routes/Library';
+import Season from './routes/Season';
+import Show from './routes/Show';
 
 const server = express();
 
@@ -18,11 +20,6 @@ server.use(
 server.use(express.json());
 server.use(cookieParser());
 
-server.use((err, _, res: Response, __) => {
-	console.log('Got error:', err.stack);
-	res.status(400).send(err.message);
-});
-
 server.get('/', (_, res) => {
 	res.send('Hello, World!');
 });
@@ -30,8 +27,10 @@ server.get('/', (_, res) => {
 server.use('/clips', Clip);
 
 // Plex API
+server.use('/episodes', Episode);
 server.use('/libraries', Library);
-server.use('/items', Item);
+server.use('/seasons', Season);
+server.use('/shows', Show);
 
 server.post('/login', async (req, res) => {
 	if ('password' in req.body === false)

@@ -4,7 +4,7 @@ import {
 	getAllLibraries,
 	getItemChildren,
 	getItemDetails,
-	getLibraryContents,
+	getLibraryContents
 } from '../services/PlexAPI';
 import { DATABASE_CONFIG } from './config';
 import { Episode } from './models/Episode';
@@ -15,7 +15,7 @@ import { Show } from './models/Show';
 export const connectToDatabase = () => new Sequelize(DATABASE_CONFIG);
 
 export const syncAll = async () => {
-	console.log('Syncing all...');
+	console.time('Synced');
 	const libraries = await getAllLibraries();
 
 	for (const { libraryId } of libraries) {
@@ -36,8 +36,7 @@ export const syncAll = async () => {
 			} = (await getItemChildren(showId)) as ShowType;
 
 			const createdShow = await Show.create({
-				id: showId,
-				library: createdLibrary,
+				libraryId: createdLibrary.id,
 				summary,
 				title: showTitle,
 				theme: showTheme,
@@ -54,7 +53,7 @@ export const syncAll = async () => {
 
 				const createdSeason = await Season.create({
 					index: seasonIndex,
-					show: createdShow,
+					showId: createdShow.id,
 					title: seasonTitle,
 					theme: seasonTheme,
 					thumb: seasonThumb,
@@ -68,7 +67,7 @@ export const syncAll = async () => {
 						duration,
 						filePath,
 						index: episodeIndex,
-						season: createdSeason,
+						seasonId: createdSeason.id,
 						summary,
 						title: episodeTitle,
 						thumb: episodeThumb,
@@ -77,5 +76,5 @@ export const syncAll = async () => {
 			}
 		}
 	}
-	console.log('Done!');
+	console.timeEnd('Synced');
 };

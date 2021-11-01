@@ -1,25 +1,24 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
 import { Clip } from '../database/models/Clip';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { getItemDetails } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
-	const offset =
-		(req.query.offset && parseInt(req.query.offset.toString())) || 0;
-	const limit = (req.query.limit && parseInt(req.query.limit.toString())) || 10;
+router.get('/', DatabaseLimit, async (req, res) => {
+	const { limit, offset } = req;
+	const [clips, total] = await Promise.all([
+		Clip.findAll({
+			limit,
+			offset,
+			order: [['createdAt', 'DESC']],
+		}),
+		Clip.count(),
+	]);
 
-	const clips = await Clip.findAll({
-		offset,
-		limit,
-		order: [['createdAt', 'DESC']],
-	});
-
-	const count = await Clip.count();
-
-	return res.json({ clips, total: count });
+	return res.json({ clips, total });
 });
 
 router.post('/', async (req, res) => {
@@ -65,12 +64,12 @@ router.post('/', async (req, res) => {
 	}
 });
 
-router.get('/:slug', async (req, res) => {
-	const { slug } = req.params;
+router.get('/:id', async (req, res) => {
+	const { id } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { slug },
+			where: { id },
 		});
 		if (!clip)
 			throw {
@@ -89,11 +88,11 @@ router.get('/:slug', async (req, res) => {
 	}
 });
 
-router.delete('/:slug', async (req, res) => {
-	const { slug } = req.params;
+router.delete('/:id', async (req, res) => {
+	const { id } = req.params;
 
 	try {
-		const clip = await Clip.findOne({ where: { slug } });
+		const clip = await Clip.findOne({ where: { id } });
 		await clip.destroy();
 
 		return res.json({ deleted: clip });
@@ -102,12 +101,12 @@ router.delete('/:slug', async (req, res) => {
 	}
 });
 
-router.get('/:slug/watch', async (req, res) => {
-	const { slug } = req.params;
+router.get('/:id/watch', async (req, res) => {
+	const { id } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { slug },
+			where: { id },
 		});
 		if (!clip)
 			throw {
@@ -126,12 +125,12 @@ router.get('/:slug/watch', async (req, res) => {
 	}
 });
 
-router.get('/:slug/download', async (req, res) => {
-	const { slug } = req.params;
+router.get('/:id/download', async (req, res) => {
+	const { id } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { slug },
+			where: { id },
 		});
 		if (!clip)
 			throw {
@@ -158,12 +157,12 @@ router.get('/:slug/download', async (req, res) => {
 	}
 });
 
-router.get('/:slug/thumbnail', async (req, res) => {
-	const { slug } = req.params;
+router.get('/:id/thumbnail', async (req, res) => {
+	const { id } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { slug },
+			where: { id },
 		});
 		if (!clip)
 			throw {
@@ -182,12 +181,12 @@ router.get('/:slug/thumbnail', async (req, res) => {
 	}
 });
 
-router.get('/:slug/oembed', async (req, res) => {
-	const { slug } = req.params;
+router.get('/:id/oembed', async (req, res) => {
+	const { id } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { slug },
+			where: { id },
 		});
 		if (!clip)
 			throw {

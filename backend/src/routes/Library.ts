@@ -1,28 +1,59 @@
 import { Router } from 'express';
-import {
-	getAllLibraries,
-	getLibraryContents,
-	getSpecificLibrary,
-} from '../services/PlexAPI';
+import { Library } from '../database/models/Library';
+import { Show } from '../database/models/Show';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
-	const libraries = await getAllLibraries();
+router.get('/', DatabaseLimit, async (req, res) => {
+	const { limit, offset } = req;
+	const [libraries, total] = await Promise.all([
+		Library.findAll({
+			limit,
+			offset,
+			order: [['title', 'ASC']],
+		}),
+		Library.count(),
+	]);
 
-	return res.json({ libraries });
+	return res.json({ libraries, offset, total });
 });
 
 router.get('/:id', async (req, res) => {
-	const lib = await getSpecificLibrary(parseInt(req.params.id));
+	const id = parseInt(req.params.id);
+	if (Number.isNaN(id))
+		throw {
+			status: 404,
+		};
 
-	return res.json(lib);
+	const library = await Library.findOne({ where: { id: id } });
+
+	return res.json({ library });
 });
 
-router.get('/:id/contents', async (req, res) => {
-	const contents = await getLibraryContents(parseInt(req.params.id));
+router.get('/:id/shows', DatabaseLimit, async (req, res) => {
+	const id = parseInt(req.params.id);
+	if (Number.isNaN(id))
+		throw {
+			status: 404,
+		};
 
-	return res.json({ contents });
+	const { limit, offset } = req;
+	const [shows, total] = await Promise.all([
+		Show.findAll({
+			limit,
+			offset,
+			order: [['title', 'ASC']],
+			where: { libraryId: id },
+		}),
+		Show.count({ where: { libraryId: id } }),
+	]);
+
+	return res.json({ offset, shows, total });
 });
+
+router.get('/:id/shows/:showId', async (req, res) =>
+	res.redirect(`/shows/${req.params.showId}`)
+);
 
 export default router;
