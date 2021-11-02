@@ -6,6 +6,7 @@ import { connectToDatabase, syncAll } from './database';
 import Clip from './routes/Clip';
 import Episode from './routes/Episode';
 import Library from './routes/Library';
+import Path from './routes/Path';
 import Season from './routes/Season';
 import Show from './routes/Show';
 
@@ -29,6 +30,7 @@ server.use('/clips', Clip);
 // Plex API
 server.use('/episodes', Episode);
 server.use('/libraries', Library);
+server.use('/paths', Path);
 server.use('/seasons', Season);
 server.use('/shows', Show);
 
