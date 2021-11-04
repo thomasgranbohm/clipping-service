@@ -7,37 +7,40 @@ const router = Router();
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const shows = await Show.findAll({
+	const items = await Show.findAll({
 		limit: limit,
 		offset: offset,
 		order: [['title', 'ASC']],
 	});
 	const total = await Show.count();
 
-	return res.json({ shows, offset, total });
+	return res.json({ items, offset, total, type: 'show' });
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:slug', async (req, res) => {
 	const show = await Show.findOne({
-		where: { id: req.params.id },
+		where: { slug: req.params.slug },
 	});
 
 	return res.json({ show });
 });
 
-router.get('/:id/seasons', DatabaseLimit, async (req, res) => {
+router.get('/:slug/seasons', DatabaseLimit, async (req, res) => {
+	const { slug } = req.params;
+	const { id } = await Show.findOne({ where: { slug }, attributes: ['id'] });
+
 	const { limit, offset } = req;
-	const [seasons, total] = await Promise.all([
+	const [items, total] = await Promise.all([
 		Season.findAll({
 			limit,
 			offset,
 			order: [['index', 'ASC']],
-			where: { showId: req.params.id },
+			where: { showId: id },
 		}),
-		Season.count({ where: { showId: req.params.id } }),
+		Season.count({ where: { showId: id } }),
 	]);
 
-	return res.json({ offset, seasons, total });
+	return res.json({ items, offset, total, type: 'season' });
 });
 
 router.get('/:id/seasons/:seasonId', async (req, res) =>

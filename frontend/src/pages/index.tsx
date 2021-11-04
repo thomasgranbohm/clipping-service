@@ -7,31 +7,28 @@ import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async () => {
-	const [libraryResp, clipResp] = await Promise.all([
+	const [{ data: libraries }, { data: clips }] = await Promise.all([
 		privateAPI('/libraries'),
 		privateAPI('/clips'),
 	]);
 
 	return {
 		props: {
-			libraries: libraryResp.data['libraries'],
-			clipResponse: clipResp.data,
+			libraries,
+			clips,
 		},
 	};
 };
 
-const Home = ({ ...props }) => {
-	const { clipResponse, libraries } = props;
-	const { clips, total } = clipResponse;
-
+const Home = ({ clips, libraries }) => {
 	return (
-		<Layout {...props}>
+		<Layout>
 			<Head>
 				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
 			</Head>
 			<h2>Libraries</h2>
-			<LibraryListing libraries={libraries} />
-			<ClipListing clips={clips} total={total} />
+			<LibraryListing {...libraries} />
+			<ClipListing {...clips} />
 		</Layout>
 	);
 };

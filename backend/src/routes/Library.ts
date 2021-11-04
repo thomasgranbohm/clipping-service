@@ -2,12 +2,13 @@ import { Router } from 'express';
 import { Library } from 'database/models/Library';
 import { Show } from 'database/models/Show';
 import DatabaseLimit from 'middlewares/DatabaseLimit';
+import { BaseModel } from 'database/models/BaseModel';
 
 const router = Router();
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [libraries, total] = await Promise.all([
+	const [items, total] = await Promise.all([
 		Library.findAll({
 			limit,
 			offset,
@@ -16,30 +17,24 @@ router.get('/', DatabaseLimit, async (req, res) => {
 		Library.count(),
 	]);
 
-	return res.json({ libraries, offset, total });
+	return res.json({ items, offset, total, type: 'library' });
 });
 
-router.get('/:id', async (req, res) => {
-	const id = parseInt(req.params.id);
-	if (Number.isNaN(id))
-		throw {
-			status: 404,
-		};
+router.get('/:slug', async (req, res) => {
+	const slug = req.params.slug as string;
 
-	const library = await Library.findOne({ where: { id: id } });
+	const library = await Library.findOne({ where: { slug } });
 
-	return res.json({ library });
+	return res.json(library);
 });
 
-router.get('/:id/shows', DatabaseLimit, async (req, res) => {
-	const id = parseInt(req.params.id);
-	if (Number.isNaN(id))
-		throw {
-			status: 404,
-		};
-
+router.get('/:slug/shows', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [shows, total] = await Promise.all([
+	const slug = req.params.slug as string;
+
+	const { id } = await Library.findOne({ where: { slug }, attributes: ['id'] });
+
+	const [items, total] = await Promise.all([
 		Show.findAll({
 			limit,
 			offset,
@@ -49,7 +44,7 @@ router.get('/:id/shows', DatabaseLimit, async (req, res) => {
 		Show.count({ where: { libraryId: id } }),
 	]);
 
-	return res.json({ offset, shows, total });
+	return res.json({ offset, items, total, type: 'show' });
 });
 
 router.get('/:id/shows/:showId', async (req, res) =>

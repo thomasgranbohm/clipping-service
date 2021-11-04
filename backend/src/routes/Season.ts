@@ -2,12 +2,13 @@ import { Router } from 'express';
 import { Episode } from 'database/models/Episode';
 import { Season } from 'database/models/Season';
 import DatabaseLimit from 'middlewares/DatabaseLimit';
+import { Show } from 'database/models/Show';
 
 const router = Router();
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [seasons, total] = await Promise.all([
+	const [items, total] = await Promise.all([
 		Season.findAll({
 			limit,
 			offset,
@@ -16,28 +17,57 @@ router.get('/', DatabaseLimit, async (req, res) => {
 		Season.count(),
 	]);
 
-	return res.json({ offset, seasons, total });
+	return res.json({ offset, items, total, type: 'season' });
 });
 
-router.get('/:id', async (req, res) => {
-	const season = await Season.findOne({ where: { id: req.params.id } });
+router.get('/:slug/:index', async (req, res) => {
+	const { index, slug } = req.params;
+	const season = await Season.findOne({
+		where: { index },
+		include: [
+			{
+				model: Show,
+				where: { slug },
+				attributes: ['title'],
+			},
+		],
+	});
 
-	return res.json({ season });
+	return res.json(season);
 });
 
-router.get('/:id/episodes', DatabaseLimit, async (req, res) => {
+router.get('/:slug/:index/episodes', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [episodes, total] = await Promise.all([
+	const { index, slug } = req.params;
+
+	const where = {
+		include: [
+			{
+				model: Season,
+				where: { index },
+				attributes: [],
+				include: [
+					{
+						model: Show,
+						where: { slug },
+						attributes: [],
+					},
+				],
+			},
+		],
+	};
+
+	const [items, total] = await Promise.all([
 		Episode.findAll({
 			limit,
 			offset,
 			order: [['index', 'ASC']],
-			where: { seasonId: req.params.id },
+			...where,
 		}),
-		Episode.count({ where: { seasonId: req.params.id } }),
+		Episode.count(where),
 	]);
 
-	return res.json({ episodes, offset, total });
+	return res.json({ items, offset, total, type: 'episode' });
 });
 
 router.get('/:id/episodes/:episodeId', async (req, res) =>

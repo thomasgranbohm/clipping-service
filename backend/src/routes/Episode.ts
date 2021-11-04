@@ -2,12 +2,14 @@ import { Router } from 'express';
 import { Clip } from 'database/models/Clip';
 import { Episode } from 'database/models/Episode';
 import DatabaseLimit from 'middlewares/DatabaseLimit';
+import { Season } from 'database/models/Season';
+import { Show } from 'database/models/Show';
 
 const router = Router();
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [episodes, total] = await Promise.all([
+	const [items, total] = await Promise.all([
 		Episode.findAll({
 			limit,
 			order: [['index', 'ASC']],
@@ -16,24 +18,82 @@ router.get('/', DatabaseLimit, async (req, res) => {
 		Episode.count(),
 	]);
 
-	return res.json({ episodes, offset, total });
+	return res.json({ items, offset, total, type: 'episode' });
 });
 
-router.get('/:id', async (req, res) => {
-	const episode = await Episode.findOne({ where: { id: req.params.id } });
+router.get('/:showSlug/:seasonIndex/:episodeSlug', async (req, res) => {
+	const { episodeSlug, seasonIndex, showSlug } = req.params;
 
-	return res.json({ episode });
+	const episode = await Episode.findOne({
+		where: { slug: episodeSlug },
+		include: [
+			{
+				model: Season,
+				where: { index: seasonIndex },
+				attributes: ['index'],
+				include: [
+					{
+						model: Show,
+						where: { slug: showSlug },
+						attributes: ['title'],
+					},
+				],
+			},
+		],
+	});
+
+	return res.json(episode);
 });
 
-router.get('/:id/clips', DatabaseLimit, async (req, res) => {
-	const { limit, offset } = req;
-	const [clips, total] = await Promise.all([
-		Clip.findAll({ limit, offset, where: { episodeId: req.params.id } }),
-		Clip.count({ where: { episodeId: req.params.id } }),
-	]);
+router.get(
+	'/:showSlug/:seasonIndex/:episodeSlug/clips',
+	DatabaseLimit,
+	async (req, res) => {
+		const { limit, offset } = req;
+		const { episodeSlug, seasonIndex, showSlug } = req.params;
 
-	return res.json({ clips, offset, total });
-});
+		const where = {
+			where: { slug: episodeSlug },
+			include: [
+				{
+					model: Season,
+					where: { index: seasonIndex },
+					attributes: ['index'],
+					include: [
+						{
+							model: Show,
+							where: { slug: showSlug },
+							attributes: ['title'],
+						},
+					],
+				},
+			],
+		};
+
+		const [items, total] = await Promise.all([
+			Clip.findAll({
+				limit,
+				offset,
+				include: [
+					{
+						model: Episode,
+						...where,
+					},
+				],
+			}),
+			Clip.count({
+				include: [
+					{
+						model: Episode,
+						...where,
+					},
+				],
+			}),
+		]);
+
+		return res.json({ items, offset, total, type: 'clip' });
+	}
+);
 
 router.get('/:id/clips/:clipId', async (req, res) =>
 	res.redirect(`/clips/${req.params.clipId}`)

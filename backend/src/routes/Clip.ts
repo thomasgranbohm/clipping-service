@@ -9,7 +9,7 @@ const router = Router();
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const [clips, total] = await Promise.all([
+	const [items, total] = await Promise.all([
 		Clip.findAll({
 			limit,
 			offset,
@@ -18,7 +18,7 @@ router.get('/', DatabaseLimit, async (req, res) => {
 		Clip.count(),
 	]);
 
-	return res.json({ clips, total });
+	return res.json({ items, offset, total });
 });
 
 router.post('/', async (req, res) => {

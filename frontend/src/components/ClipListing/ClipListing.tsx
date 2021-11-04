@@ -6,34 +6,34 @@ import useObserver from 'utils/hooks';
 import classes from './ClipListing.module.scss';
 
 type ClipListingProps = {
-	clips: [];
+	items: [];
 	total?: number;
 };
 
-const ClipListing = ({ clips, total }: ClipListingProps) => {
-	const [stateClips, setStateClips] = useState<Array<any>>(clips);
+const ClipListing = ({ items, total }: ClipListingProps) => {
+	// const [stateClips, setStateClips] = useState<Array<any>>(items);
 
-	const sentinel = useObserver(
-		async () => {
-			const { data } = await publicAPI(`/clips?offset=${stateClips.length}`);
-			const newClips = data['clips'];
+	// const sentinel = useObserver(
+	// 	async () => {
+	// 		const { data } = await publicAPI(`/clips?offset=${stateClips.length}`);
+	// 		const newClips = data['clips'];
 
-			setStateClips([...stateClips, ...newClips]);
-		},
-		{
-			condition: stateClips.length === total,
-		}
-	);
+	// 		setStateClips([...stateClips, ...newClips]);
+	// 	},
+	// 	{
+	// 		condition: stateClips.length === total,
+	// 	}
+	// );
 
 	return (
 		<div className={concat(classes['container'])}>
 			<h2>Clips</h2>
 			<div className={classes['clips']}>
-				{stateClips.map((clip) => (
+				{items.map((clip) => (
 					<ClipThumbnail {...clip} />
 				))}
 			</div>
-			{total && sentinel}
+			{/* {total && sentinel} */}
 		</div>
 	);
 };

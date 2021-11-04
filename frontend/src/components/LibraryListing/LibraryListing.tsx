@@ -2,14 +2,14 @@ import Anchor from 'components/Anchor/Anchor';
 import classes from './LibraryListing.module.scss';
 
 type LibraryListingProps = {
-	libraries: { key: string; title: string }[];
+	items: { title: string; slug: string }[];
 };
 
-const LibraryListing = ({ libraries }: LibraryListingProps) => (
+const LibraryListing = ({ items }: LibraryListingProps) => (
 	<ul className={classes['container']}>
-		{libraries.map(({ key, title }) => (
-			<li key={key}>
-				<Anchor href={`/library/${key}`} className={classes['library']}>
+		{items.map(({ slug, title }) => (
+			<li key={slug}>
+				<Anchor href={`/${slug}`} className={classes['library']}>
 					{title}
 				</Anchor>
 			</li>
