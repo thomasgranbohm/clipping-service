@@ -23,7 +23,7 @@ router.get('/libraries', async (req, res) => {
 		attributes: ['slug'],
 	});
 
-	return res.json({ libraries: libraries.map(({ slug }) => `/${slug}`) });
+	return res.json(libraries.map(({ slug }) => `/${slug}`));
 });
 
 router.get('/shows', async (req, res) => {

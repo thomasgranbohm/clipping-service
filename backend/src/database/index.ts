@@ -18,7 +18,7 @@ export const syncAll = async () => {
 	console.time('Synced');
 	const libraries = await getAllLibraries();
 
-	for (const { libraryId } of libraries) {
+	for await (const { libraryId } of libraries) {
 		const { items: shows, libraryTitle } = await getLibraryContents(libraryId);
 		const createdLibrary = await Library.create({
 			id: libraryId,
@@ -26,7 +26,7 @@ export const syncAll = async () => {
 			type: 'show',
 		});
 
-		for (const { showId } of shows) {
+		for await (const { showId } of shows) {
 			const {
 				items: seasons,
 				showTheme,
@@ -36,6 +36,7 @@ export const syncAll = async () => {
 			} = (await getItemChildren(showId)) as ShowType;
 
 			const createdShow = await Show.create({
+				id: showId,
 				libraryId: createdLibrary.id,
 				summary,
 				title: showTitle,
@@ -43,7 +44,7 @@ export const syncAll = async () => {
 				thumb: showThumb,
 			});
 
-			for (const { index: seasonIndex, seasonId } of seasons) {
+			for await (const { index: seasonIndex, seasonId } of seasons) {
 				const {
 					items: episodes,
 					seasonTheme,
@@ -52,6 +53,7 @@ export const syncAll = async () => {
 				} = (await getItemChildren(seasonId)) as SeasonType;
 
 				const createdSeason = await Season.create({
+					id: seasonId,
 					index: seasonIndex,
 					showId: createdShow.id,
 					title: seasonTitle,
@@ -59,11 +61,12 @@ export const syncAll = async () => {
 					thumb: seasonThumb,
 				});
 
-				for (const { index: episodeIndex, episodeId } of episodes) {
+				for await (const { index: episodeIndex, episodeId } of episodes) {
 					const { duration, episodeThumb, episodeTitle, filePath, summary } =
 						await getItemDetails(episodeId);
 
 					const createdEpisode = await Episode.create({
+						id: episodeId,
 						duration,
 						filePath,
 						index: episodeIndex,

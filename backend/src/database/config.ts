@@ -16,5 +16,5 @@ export const DATABASE_CONFIG: SequelizeOptions = {
 	logging: false,
 	// logging: process.env.NODE_ENV !== 'production' && console.debug,
 	sync: { force: true },
-	models: [Clip, Episode, Season, Show, Library],
+	models: [Library, Show, Season, Episode, Clip],
 };

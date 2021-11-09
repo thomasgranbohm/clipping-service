@@ -19,7 +19,7 @@ export const SeasonThumbnail = ({
 }: SeasonThumbnailProps) => (
 	<Thumbnail
 		{...props}
-		slug={`${index.toString()}`}
+		slug={index.toString()}
 		thumb={`/items/${thumb}`}
 		thumbnailType="season"
 	/>

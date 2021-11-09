@@ -1,4 +1,3 @@
-import Anchor from 'components/Anchor/Anchor';
 import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import LibraryListing from 'components/LibraryListing/LibraryListing';
@@ -8,19 +7,20 @@ import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async () => {
 	const [{ data: libraries }, { data: clips }] = await Promise.all([
-		privateAPI('/libraries'),
+		privateAPI('/?items'),
 		privateAPI('/clips'),
 	]);
 
 	return {
 		props: {
 			libraries,
-			clips,
+			clips: [],
 		},
 	};
 };
 
 const Home = ({ clips, libraries }) => {
+	console.log(libraries);
 	return (
 		<Layout>
 			<Head>
@@ -28,7 +28,7 @@ const Home = ({ clips, libraries }) => {
 			</Head>
 			<h2>Libraries</h2>
 			<LibraryListing {...libraries} />
-			<ClipListing {...clips} />
+			{/* <ClipListing {...clips} /> */}
 		</Layout>
 	);
 };

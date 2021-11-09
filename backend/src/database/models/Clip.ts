@@ -26,7 +26,7 @@ export class Clip extends Model {
 	@Unique
 	@AllowNull(false)
 	@Column
-	name: string;
+	title: string;
 
 	@Unique
 	@Column
@@ -35,7 +35,7 @@ export class Clip extends Model {
 	@BeforeCreate
 	@BeforeUpdate
 	static createSlug(instance: Clip) {
-		instance.slug = slugify(instance.name, {
+		instance.slug = slugify(instance.title, {
 			lower: true,
 			remove: /[*+~.()'"!:@]/g,
 		});

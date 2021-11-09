@@ -17,7 +17,8 @@ const plex = axios.create({
 	},
 });
 
-const getMediaId = (str = '') => str.replace('/library/metadata/', '');
+const getMediaId = (str = '') =>
+	str.replace(/\/library\/metadata\/(.*?)\/(thumb|theme)\//g, '');
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)

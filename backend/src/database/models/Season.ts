@@ -1,15 +1,31 @@
 import {
 	BelongsTo,
 	Column,
+	DefaultScope,
 	ForeignKey,
 	HasMany,
 	Model,
-	Table,
+	Scopes,
+	Table
 } from 'sequelize-typescript';
 import { Episode } from './Episode';
 import { Show } from './Show';
 
-@Table
+@DefaultScope(() => ({
+	include: [
+		{
+			model: Show.scope('stripped'),
+		},
+	],
+}))
+@Scopes(() => ({
+	stripped: {
+		attributes: ['index'],
+	},
+}))
+@Table({
+	timestamps: false,
+})
 export class Season extends Model {
 	@Column
 	title!: string;

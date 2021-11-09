@@ -4,9 +4,11 @@ import {
 	BelongsTo,
 	Column,
 	DataType,
+	DefaultScope,
 	ForeignKey,
 	HasMany,
 	Model,
+	Scopes,
 	Table,
 } from 'sequelize-typescript';
 import slugify from 'slugify';
@@ -14,7 +16,22 @@ import { BaseModel } from './BaseModel';
 import { Library } from './Library';
 import { Season } from './Season';
 
-@Table
+@DefaultScope(() => ({
+	attributes: { exclude: ['libraryId'] },
+	include: [
+		{
+			model: Library.scope('stripped'),
+		},
+	],
+}))
+@Scopes(() => ({
+	stripped: {
+		attributes: ['id', 'slug', 'title', 'thumb'],
+	},
+}))
+@Table({
+	timestamps: false,
+})
 export class Show extends Model {
 	@Column
 	title!: string;

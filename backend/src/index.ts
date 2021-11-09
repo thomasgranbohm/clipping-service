@@ -9,6 +9,7 @@ import Library from './routes/Library';
 import Path from './routes/Path';
 import Season from './routes/Season';
 import Show from './routes/Show';
+import ApiRouter from './routes/Router';
 
 const server = express();
 
@@ -20,19 +21,11 @@ server.use(
 );
 server.use(express.json());
 server.use(cookieParser());
-
-server.get('/', (_, res) => {
-	res.send('Hello, World!');
-});
-
 server.use('/clips', Clip);
 
 // Plex API
-server.use('/episodes', Episode);
-server.use('/libraries', Library);
 server.use('/paths', Path);
-server.use('/seasons', Season);
-server.use('/shows', Show);
+server.use('/', ApiRouter);
 
 server.post('/login', async (req, res) => {
 	if ('password' in req.body === false)

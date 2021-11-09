@@ -5,8 +5,8 @@ import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const [{ data: library }, { data: shows }] = await Promise.all([
-		privateAPI.get(`/libraries/${params.library}`),
-		privateAPI.get(`/libraries/${params.library}/shows`),
+		privateAPI.get(`/${params.library}/`),
+		privateAPI.get(`/${params.library}/?items`),
 	]);
 
 	return {
@@ -19,12 +19,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const resp = await privateAPI('/paths/libraries');
-	const libraries = resp.data['libraries'] as any[];
+	const resp = await privateAPI('/?items');
+	const items = resp.data['items'] as any[];
 
 	return {
-		paths: libraries.map((library) => ({
-			params: { library },
+		paths: items.map(({ slug }) => ({
+			params: { library: slug },
 		})),
 		fallback: 'blocking',
 	};

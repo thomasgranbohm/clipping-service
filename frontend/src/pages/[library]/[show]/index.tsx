@@ -2,13 +2,14 @@ import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const [{ data: show }, { data: seasons }] = await Promise.all([
-		privateAPI(`/shows/${params.show}`),
-		privateAPI(`/shows/${params.show}/seasons`),
+		privateAPI(`/${params.library}/${params.show}`),
+		privateAPI(`/${params.library}/${params.show}/?items`),
 	]);
 
 	return {
@@ -30,6 +31,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const ShowPage = ({ show, seasons }) => {
 	const { title, summary } = show;
+
+	console.log(seasons);
 
 	return (
 		<Layout>
