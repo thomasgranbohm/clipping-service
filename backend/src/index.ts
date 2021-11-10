@@ -9,7 +9,6 @@ import Library from './routes/Library';
 import Path from './routes/Path';
 import Season from './routes/Season';
 import Show from './routes/Show';
-import ApiRouter from './routes/Router';
 
 const server = express();
 
@@ -21,11 +20,22 @@ server.use(
 );
 server.use(express.json());
 server.use(cookieParser());
-server.use('/clips', Clip);
 
 // Plex API
+server.use('/clips', Clip);
+server.use('/episodes', Episode);
+server.use('/libraries', Library);
 server.use('/paths', Path);
-server.use('/', ApiRouter);
+server.use(`/seasons`, Season);
+server.use(`/shows`, Show);
+server.use((err, _, res, __) => {
+	console.error('Got error:', err);
+
+	if ('status' in err) {
+		res.status(parseInt(err.status));
+	}
+	return res.json(err);
+});
 
 server.post('/login', async (req, res) => {
 	if ('password' in req.body === false)
@@ -60,11 +70,15 @@ server.get('/verify', async (req, res) => {
 	}
 });
 
-server.listen(1337, async () => {
+const main = async () => {
 	const s = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
 		await s.sync({ force: true });
 		await syncAll();
 	}
-	console.log('Started!');
-});
+	server.listen(1337, async () => {
+		console.log('Started!');
+	});
+};
+
+main();

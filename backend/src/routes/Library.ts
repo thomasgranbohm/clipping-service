@@ -1,10 +1,18 @@
-import { Router } from 'express';
 import { Library } from 'database/models/Library';
 import { Show } from 'database/models/Show';
+import { Router } from 'express';
 import DatabaseLimit from 'middlewares/DatabaseLimit';
-import { BaseModel } from 'database/models/BaseModel';
+import { Includeable } from 'sequelize/types';
 
 const router = Router();
+
+export const getLibraryWhereOptions = (library: any): Includeable => {
+	return {
+		attributes: [],
+		model: Library,
+		where: { slug: library.toString() },
+	};
+};
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
@@ -32,16 +40,14 @@ router.get('/:slug/shows', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const slug = req.params.slug as string;
 
-	const { id } = await Library.findOne({ where: { slug }, attributes: ['id'] });
-
 	const [items, total] = await Promise.all([
 		Show.findAll({
 			limit,
 			offset,
 			order: [['title', 'ASC']],
-			where: { libraryId: id },
+			include: [getLibraryWhereOptions(slug)],
 		}),
-		Show.count({ where: { libraryId: id } }),
+		Show.count({ include: [getLibraryWhereOptions(slug)] }),
 	]);
 
 	return res.json({ offset, items, total, type: 'show' });

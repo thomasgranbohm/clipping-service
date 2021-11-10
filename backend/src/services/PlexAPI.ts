@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { IncomingMessage } from 'http';
 import {
 	EpisodeType,
 	LibraryType,
@@ -17,8 +18,7 @@ const plex = axios.create({
 	},
 });
 
-const getMediaId = (str = '') =>
-	str.replace(/\/library\/metadata\/(.*?)\/(thumb|theme)\//g, '');
+const getMediaId = (str = '') => str.replace(/\/library\/metadata\//g, '');
 
 const toLowerCase = (obj: Object) =>
 	Object.entries(obj)
@@ -150,13 +150,11 @@ export const getItemDetails = async (id: number) => {
 };
 
 export const getMedia = async (
-	id: number,
-	mediaId: number,
-	type: 'thumb' | 'theme' | 'art'
-) =>
-	plex(`/library/metadata/${id}/${type}/${mediaId}`, {
+	thumb: string
+): Promise<AxiosResponse<IncomingMessage>> =>
+	plex(`/library/metadata/${thumb}`, {
 		responseType: 'stream',
-	});
+	}) as Promise<AxiosResponse<IncomingMessage>>;
 
 /**
  * This is for getting a show or a season

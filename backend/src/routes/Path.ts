@@ -13,8 +13,6 @@ const reduce = (items: any[], search: string) =>
 	items.reduce((p, c) => [...p, c[search]], []);
 
 router.get('/', async (req, res) => {
-	console.log('Slash');
-
 	return res.send('Paths');
 });
 

@@ -4,21 +4,45 @@ import { Clip } from 'database/models/Clip';
 import DatabaseLimit from 'middlewares/DatabaseLimit';
 import { getItemDetails } from 'services/PlexAPI';
 import { stream } from 'services/Streamer';
+import { Includeable } from 'sequelize/types';
+import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
+import MissingArgs from 'middlewares/MissingArgs';
 
 const router = Router();
 
+export const getClipWhereOptions = (
+	clip: any,
+	...args: Parameters<typeof getEpisodeWhereOptions>
+): Includeable => {
+	return {
+		attributes: [],
+		model: Clip,
+		where: { slug: clip.toString() },
+		include: [getEpisodeWhereOptions(...args)],
+	};
+};
+
+export const CLIP_REQUIRED_ARGS = ['season', ...EPISODE_REQUIRED_ARGS];
+
+router.use(MissingArgs(CLIP_REQUIRED_ARGS));
+
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
+	const { episode, library, season, show } = req.query;
+
 	const [items, total] = await Promise.all([
 		Clip.findAll({
 			limit,
 			offset,
 			order: [['createdAt', 'DESC']],
+			include: [getEpisodeWhereOptions(episode, season, show, library)],
 		}),
-		Clip.count(),
+		Clip.count({
+			include: [getEpisodeWhereOptions(episode, season, show, library)],
+		}),
 	]);
 
-	return res.json({ items, offset, total });
+	return res.json({ items, offset, total, type: "clip" });
 });
 
 router.post('/', async (req, res) => {
@@ -66,10 +90,12 @@ router.post('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
 	const { id } = req.params;
+	const { episode, library, season, show } = req.query;
 
 	try {
 		const clip = await Clip.findOne({
 			where: { id },
+			include: [getEpisodeWhereOptions(episode, season, show, library)]
 		});
 		if (!clip)
 			throw {

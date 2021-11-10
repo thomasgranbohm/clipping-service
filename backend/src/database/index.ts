@@ -56,9 +56,9 @@ export const syncAll = async () => {
 					id: seasonId,
 					index: seasonIndex,
 					showId: createdShow.id,
-					title: seasonTitle,
-					theme: seasonTheme,
-					thumb: seasonThumb,
+					title: seasonTitle.length !== 0 ? seasonTitle : showTitle,
+					theme: seasonTheme.length !== 0 ? seasonTheme : showTheme,
+					thumb: seasonThumb.length !== 0 ? seasonThumb : showThumb,
 				});
 
 				for await (const { index: episodeIndex, episodeId } of episodes) {
