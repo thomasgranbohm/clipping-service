@@ -28,11 +28,15 @@ const ClipListing = ({ items, total }: ClipListingProps) => {
 	return (
 		<div className={concat(classes['container'])}>
 			<h2>Clips</h2>
-			<div className={classes['clips']}>
-				{items.map((clip) => (
-					<ClipThumbnail {...clip} />
-				))}
-			</div>
+			{items instanceof Array && items.length > 0 ? (
+				<div className={classes['clips']}>
+					{items.map((clip) => (
+						<ClipThumbnail {...clip} />
+					))}
+				</div>
+			) : (
+				<p>Oof baboof, no clips...</p>
+			)}
 			{/* {total && sentinel} */}
 		</div>
 	);
