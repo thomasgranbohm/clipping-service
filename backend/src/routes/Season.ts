@@ -55,7 +55,7 @@ router.get('/:index', async (req, res) => {
 	return res.json(season);
 });
 
-router.get('/:index/episodes', DatabaseLimit, async (req, res) => {
+router.get('/:index/items', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const { index } = req.params;
 	const { library, show } = req.query;
@@ -100,7 +100,7 @@ router.get('/:index/thumbnail', async (req, res) => {
 	}
 });
 
-router.get('/:id/episodes/:episodeId', async (req, res) =>
+router.get('/:id/items/:episodeId', async (req, res) =>
 	res.redirect(`/episodes/${req.params.episodeId}`)
 );
 

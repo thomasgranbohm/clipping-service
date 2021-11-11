@@ -56,7 +56,7 @@ router.get('/:slug', async (req, res) => {
 	return res.json(episode);
 });
 
-router.get('/:slug/clips', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const { slug } = req.params;
 	const { library, season, show } = req.query;
@@ -99,7 +99,7 @@ router.get('/:slug/thumbnail', async (req, res) => {
 	}
 });
 
-router.get('/:id/clips/:clipId', async (req, res) =>
+router.get('/:id/items/:clipId', async (req, res) =>
 	res.redirect(`/clips/${req.params.clipId}`)
 );
 

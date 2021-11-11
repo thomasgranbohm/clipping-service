@@ -34,42 +34,38 @@ export const generateBackendURL = (path: string): URL => {
 
 export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
 	const parseLinks = (localLinks?: JointBreadcrumbType): BreadcrumbData[] => {
-		if ('season' in localLinks) {
+		if (localLinks === undefined) {
+			return [{ href: '', title: process.env.NEXT_PUBLIC_PAGE_TITLE }];
+		} else if ('season' in localLinks) {
 			return [
-				{ href: localLinks.slug, title: localLinks.title },
 				...parseLinks(localLinks.season),
+				{ href: localLinks.slug, title: localLinks.title },
 			];
 		} else if ('show' in localLinks) {
 			return [
+				...parseLinks(localLinks.show),
 				{
 					href: localLinks.index.toString(),
 					title: `Season ${localLinks.index.toString()}`,
 				},
-				...parseLinks(localLinks.show),
 			];
 		} else if ('library' in localLinks) {
 			return [
-				{ href: localLinks.slug, title: localLinks.title },
 				...parseLinks(localLinks.library),
+				{ href: localLinks.slug, title: localLinks.title },
 			];
 		} else {
-			return [{ href: localLinks.slug, title: localLinks.title }];
+			return [
+				...parseLinks(),
+				{ href: localLinks.slug, title: localLinks.title },
+			];
 		}
 	};
-
-	const base = { href: '/', title: process.env.NEXT_PUBLIC_PAGE_TITLE };
-		if (!links) return [base];
-
-	// ah yes, understandable code.
-	// its 01:27 and i need to sleep
-
-		return [base, ...parseLinks(links).reverse()].map(
-		({ href, title }, i, arr) => ({
-			href: `/${arr
-				.slice(0, i)
-				.map((a) => a.href)
-				.join('/')}/${href}`,
-			title,
-		})
-	);
+	return parseLinks(links).map(({ href, title }, i, arr) => ({
+		href: `${arr
+			.slice(0, i)
+			.map((a) => a.href)
+			.join('/')}/${href}`,
+		title,
+	}));
 };

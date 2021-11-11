@@ -6,7 +6,7 @@ import { privateAPI } from 'utils/api';
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const [{ data: library }, { data: shows }] = await Promise.all([
 		privateAPI.get(`/library/${params.library}/`),
-		privateAPI.get(`/library/${params.library}/shows`),
+		privateAPI.get(`/library/${params.library}/items`),
 	]);
 
 	return {
@@ -32,8 +32,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const LibraryPage = (props) => {
 	const { shows, library } = props;
-
-	console.log(library);
 
 	return (
 		<Layout links={library}>

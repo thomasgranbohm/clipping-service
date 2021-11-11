@@ -3,7 +3,11 @@ import {
 	SeasonThumbnail,
 	ShowThumbnail,
 } from 'components/Thumbnail/Thumbnail';
-import { concat } from 'utils/functions';
+import { useRouter } from 'next/dist/client/router';
+import { useState } from 'react';
+import { publicAPI } from 'utils/api';
+import { concat, generateBackendURL } from 'utils/functions';
+import useObserver from 'utils/hooks';
 import classes from './ThumbnailListing.module.scss';
 
 type ThumbnailListingProps = {
@@ -19,9 +23,25 @@ const ThumbnailListing = ({
 	total,
 	type,
 }: ThumbnailListingProps) => {
+	const [stateItems, setStateItems] = useState(items);
+	const router = useRouter();
+	const sentinel = useObserver(
+		async () => {
+			const url = generateBackendURL(router.asPath);
+			url.searchParams.append('offset', stateItems.length.toString());
+
+			const { data } = await publicAPI(`${url.pathname}/items${url.search}`);
+			setStateItems([...stateItems, ...(data['items'] as [])]);
+		},
+		{
+			stoppingCondition: stateItems.length === total,
+			rootMargin: '256px',
+		}
+	);
+
 	return (
 		<div className={concat(classes['container'], classes[type])}>
-			{items.map((props, i) => {
+			{stateItems.map((props, i) => {
 				if (type === 'show')
 					return <ShowThumbnail type={type} {...props} key={i} />;
 				if (type === 'season')
@@ -29,6 +49,7 @@ const ThumbnailListing = ({
 				if (type === 'episode')
 					return <EpisodeThumbnail type={type} {...props} key={i} />;
 			})}
+			{sentinel}
 		</div>
 	);
 };

@@ -35,7 +35,7 @@ router.get('/:slug', async (req, res) => {
 	return res.json(library);
 });
 
-router.get('/:slug/shows', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const slug = req.params.slug as string;
 
@@ -52,7 +52,7 @@ router.get('/:slug/shows', DatabaseLimit, async (req, res) => {
 	return res.json({ offset, items, total, type: 'show' });
 });
 
-router.get('/:id/shows/:showId', async (req, res) =>
+router.get('/:id/items/:showId', async (req, res) =>
 	res.redirect(`/shows/${req.params.showId}`)
 );
 

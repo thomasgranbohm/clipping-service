@@ -53,7 +53,7 @@ router.get('/:slug', async (req, res) => {
 	return res.json(show);
 });
 
-router.get('/:slug/seasons', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 	const { slug } = req.params;
 	const library = req.query.library as string;
 
@@ -98,7 +98,7 @@ router.get('/:slug/thumbnail', async (req, res) => {
 	}
 });
 
-router.get('/:id/seasons/:seasonId', async (req, res) =>
+router.get('/:id/items/:seasonId', async (req, res) =>
 	res.redirect(`/seasons/${req.params.seasonId}`)
 );
 

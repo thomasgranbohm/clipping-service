@@ -8,7 +8,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { library, show, season: index } = params;
 	const [{ data: season }, { data: episodes }] = await Promise.all([
 		privateAPI(`/season/${index}/?library=${library}&show=${show}`),
-		privateAPI(`/season/${index}/episodes?library=${library}&show=${show}`),
+		privateAPI(`/season/${index}/items?library=${library}&show=${show}`),
 	]);
 
 	return {
@@ -34,8 +34,10 @@ const SeasonPage = ({ season, episodes }) => {
 	return (
 		<Layout links={season}>
 			<Head>
-				<title>{title}</title>
-				<meta property="og:title" content={`${title}`} />
+				<title>
+					{show.title} - {title}
+				</title>
+				<meta property="og:title" content={`${show.title} - ${title}`} />
 				<meta property="og:site_name" content="Clipping Service" />
 			</Head>
 			<ThumbnailListing {...episodes} />

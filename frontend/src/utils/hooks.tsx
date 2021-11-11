@@ -18,19 +18,18 @@ export const useLoggedIn = () => {
 const useObserver = (
 	callback: () => {},
 	options?: {
-		condition?: boolean;
+		stoppingCondition?: boolean;
 	} & IntersectionObserverInit
 ) => {
 	const ref = useRef(null);
 	const [loading, setLoading] = useState(false);
 
-	const { condition, ...rest } = options;
+	const { stoppingCondition: stoppingCondition, ...rest } = options;
 
 	useEffect(() => {
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
-				if (!entry.isIntersecting || condition || loading) return;
-				if (process.env.NEXT_PUBLIC_OFFLINE) return;
+				if (!entry.isIntersecting || stoppingCondition || loading) return;
 
 				setLoading(true);
 				await callback();
@@ -53,7 +52,7 @@ const useObserver = (
 		};
 	});
 
-	const sentinel = !condition && <div ref={ref}></div>;
+	const sentinel = !stoppingCondition && <div ref={ref}></div>;
 
 	return sentinel;
 };

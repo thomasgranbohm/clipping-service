@@ -1,8 +1,5 @@
 import { ClipThumbnail } from 'components/Thumbnail/Thumbnail';
-import { useState } from 'react';
-import { publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
-import useObserver from 'utils/hooks';
 import classes from './ClipListing.module.scss';
 
 type ClipListingProps = {

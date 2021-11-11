@@ -7,7 +7,7 @@ import { privateAPI } from 'utils/api';
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const [{ data: show }, { data: seasons }] = await Promise.all([
 		privateAPI(`/show/${params.show}?library=${params.library}`),
-		privateAPI(`/show/${params.show}/seasons?library=${params.library}`),
+		privateAPI(`/show/${params.show}/items?library=${params.library}`),
 	]);
 
 	return {

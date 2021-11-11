@@ -8,14 +8,12 @@ import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { library, show, season, episode: episodeSlug } = params;
+	const urlParams = `library=${library}&show=${show}&season=${season}`;
 	const [{ data: episode }, { data: clips }] = await Promise.all([
-		privateAPI(
-			`/episode/${episodeSlug}/?library=${library}&show=${show}&season=${season}`
-		),
-		privateAPI(
-			`/episode/${episodeSlug}/clips?library=${library}&show=${show}&season=${season}`
-		),
+		privateAPI(`/episode/${episodeSlug}/?${urlParams.toString()}`),
+		privateAPI(`/episode/${episodeSlug}/items?${urlParams.toString()}`),
 	]);
+
 	return {
 		props: {
 			episode,
@@ -45,9 +43,11 @@ const EpisodePage = ({ episode, clips }) => {
 	return (
 		<Layout links={episode}>
 			<Head>
-				<title>{/* {title} - {show.title} */}</title>
+				<title>
+					{title} - {show.title}
+				</title>
 				<meta name="description" content={summary} />
-				<meta property="og:title" content={`${title}`} />
+				<meta property="og:title" content={`${title} - ${show.title}`} />
 				<meta property="og:description" content={summary} />
 				<meta property="og:site_name" content="Clipping Service" />
 			</Head>
