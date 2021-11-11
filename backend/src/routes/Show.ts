@@ -15,8 +15,7 @@ export const getShowWhereOptions = (
 	...args: Parameters<typeof getLibraryWhereOptions>
 ): Includeable => {
 	return {
-		attributes: [],
-		model: Show,
+		model: Show.scope('stripped'),
 		where: { slug: show.toString() },
 		include: [getLibraryWhereOptions(...args)],
 	};
@@ -51,7 +50,7 @@ router.get('/:slug', async (req, res) => {
 		include: [getLibraryWhereOptions(library.toString())],
 	});
 
-	return res.json({ show });
+	return res.json(show);
 });
 
 router.get('/:slug/seasons', DatabaseLimit, async (req, res) => {

@@ -1,65 +1,54 @@
 import Anchor from 'components/Anchor/Anchor';
 import Image from 'components/Image/Image';
 import { useRouter } from 'next/dist/client/router';
-import { concat } from 'utils/functions';
+import { concat, generateBackendURL } from 'utils/functions';
 import classes from './Thumbnail.module.scss';
 
-export const ShowThumbnail = ({ thumb, ...props }: ThumbnailProps) => (
-	<Thumbnail {...props} thumb={`/items/${thumb}`} thumbnailType="show" />
+export const ShowThumbnail = (props: ThumbnailProps) => (
+	<Thumbnail {...props} thumbnailType="show" />
 );
 
 type SeasonThumbnailProps = {
 	index: number;
 } & Exclude<ThumbnailProps, 'slug'>;
 
-export const SeasonThumbnail = ({
-	thumb,
-	index,
-	...props
-}: SeasonThumbnailProps) => (
-	<Thumbnail
-		{...props}
-		slug={index.toString()}
-		thumb={`/items/${thumb}`}
-		thumbnailType="season"
-	/>
+export const SeasonThumbnail = ({ index, ...props }: SeasonThumbnailProps) => (
+	<Thumbnail {...props} slug={index.toString()} thumbnailType="season" />
 );
 
-export const EpisodeThumbnail = ({ thumb, ...props }: ThumbnailProps) => (
-	<Thumbnail {...props} thumb={`/items/${thumb}`} thumbnailType="episode" />
+export const EpisodeThumbnail = (props: ThumbnailProps) => (
+	<Thumbnail {...props} thumbnailType="episode" />
 );
 
 export const ClipThumbnail = ({ slug, ...props }: ThumbnailProps) => (
-	<Thumbnail
-		{...props}
-		slug={slug}
-		thumbnailType="clip"
-		type="clips"
-		thumb={`/clips/${slug}/thumbnail`}
-	/>
+	<Thumbnail {...props} slug={slug} thumbnailType="clip" type="clips" />
 );
 
 export type ThumbnailProps = {
 	type: string;
 	slug: string;
-	thumb: string;
 	title: string;
 	thumbnailType: 'show' | 'season' | 'episode' | 'clip';
 };
 
-const Thumbnail = ({ type, slug, thumb, title }: ThumbnailProps) => {
+const Thumbnail = ({ type, slug, thumbnailType, title }: ThumbnailProps) => {
 	const router = useRouter();
+	const backendURL = generateBackendURL(`${router.asPath}/${slug}`);
 
 	return (
 		<Anchor href={`${router.asPath}/${slug}`}>
-			<div className={concat(classes['container'], classes[type])}>
+			<div className={concat(classes['container'], classes[thumbnailType])}>
 				<div className={classes['thumbnail-container']}>
 					<Image
 						alt={title}
 						className={classes['thumbnail']}
 						height={576}
-						width={type === 'show' || type === 'season' ? 384 : 1024}
-						src={thumb}
+						width={
+							thumbnailType === 'show' || thumbnailType === 'season'
+								? 384
+								: 1024
+						}
+						src={`${backendURL.origin}${backendURL.pathname}/thumbnail${backendURL.search}`}
 					/>
 				</div>
 				<p className={classes['title']} title={title}>

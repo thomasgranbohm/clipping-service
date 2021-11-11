@@ -22,12 +22,12 @@ server.use(express.json());
 server.use(cookieParser());
 
 // Plex API
-server.use('/clips', Clip);
-server.use('/episodes', Episode);
-server.use('/libraries', Library);
-server.use('/paths', Path);
-server.use(`/seasons`, Season);
-server.use(`/shows`, Show);
+server.use('/clip', Clip);
+server.use('/episode', Episode);
+server.use('/library', Library);
+server.use('/path', Path);
+server.use(`/season`, Season);
+server.use(`/show`, Show);
 server.use((err, _, res, __) => {
 	console.error('Got error:', err);
 

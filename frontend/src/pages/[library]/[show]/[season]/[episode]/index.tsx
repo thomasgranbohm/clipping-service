@@ -8,12 +8,14 @@ import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { library, show, season, episode: episodeSlug } = params;
-	const url = `/${library}/${show}/${season}/${episodeSlug}`;
 	const [{ data: episode }, { data: clips }] = await Promise.all([
-		privateAPI(url),
-		privateAPI(`${url}/?items`),
+		privateAPI(
+			`/episode/${episodeSlug}/?library=${library}&show=${show}&season=${season}`
+		),
+		privateAPI(
+			`/episode/${episodeSlug}/clips?library=${library}&show=${show}&season=${season}`
+		),
 	]);
-
 	return {
 		props: {
 			episode,
@@ -24,7 +26,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const { data } = await privateAPI('/paths/episodes');
+	const { data } = await privateAPI('/path/episodes');
 
 	return {
 		paths: (data as any[]).map((data) => ({
@@ -40,10 +42,8 @@ const EpisodePage = ({ episode, clips }) => {
 	const { loggedIn } = useLoggedIn();
 	const router = useRouter();
 
-	console.log(episode);
-
 	return (
-		<Layout>
+		<Layout links={episode}>
 			<Head>
 				<title>{/* {title} - {show.title} */}</title>
 				<meta name="description" content={summary} />

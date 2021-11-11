@@ -1,27 +1,43 @@
 import Anchor from 'components/Anchor/Anchor';
+import { flattenLinks } from 'utils/functions';
+import { BreadcrumbData, JointBreadcrumbType } from 'utils/types';
 import classes from './Breadcrumb.module.scss';
 
 const Breadcrumb = ({ href, title, slash }) => (
 	<>
-		<Anchor href={href}>{title}</Anchor>
+		<Anchor href={`${href}`}>{title}</Anchor>
 		{slash && <span className={classes['slash']}>/</span>}
 	</>
 );
 
+type Library = {
+	slug: string;
+	title: string;
+};
+type Show = {
+	slug: string;
+	title: string;
+	library: Library;
+};
+type Season = {
+	index: number;
+	show: Show;
+};
+type Episode = {
+	title: string;
+	slug: string;
+	season: Season;
+};
+
 type BreadcrumbsProps = {
-	links: { href: string; title: string }[];
+	links: BreadcrumbData[];
 };
 
 const Breadcrumbs = ({ links }: BreadcrumbsProps) => (
 	<nav className={classes['container']}>
 		{links &&
-			links.map(({ href, title }, i) => (
-				<Breadcrumb
-					key={i}
-					href={href}
-					slash={i !== links.length - 1}
-					title={title}
-				/>
+			links.map((props, i, arr) => (
+				<Breadcrumb key={i} {...props} slash={i !== arr.length - 1} />
 			))}
 	</nav>
 );

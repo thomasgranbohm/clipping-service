@@ -19,8 +19,7 @@ export const getEpisodeWhereOptions = (
 	...args: Parameters<typeof getSeasonWhereOptions>
 ): Includeable => {
 	return {
-		attributes: [],
-		model: Episode,
+		model: Episode.scope('stripped'),
 		where: { slug: episode.toString() },
 		include: [getSeasonWhereOptions(...args)],
 	};

@@ -7,8 +7,8 @@ import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async () => {
 	const [{ data: libraries }, { data: clips }] = await Promise.all([
-		privateAPI('/?items'),
-		privateAPI('/clips'),
+		privateAPI('/library'),
+		privateAPI('/clip'),
 	]);
 
 	return {
@@ -20,7 +20,6 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Home = ({ clips, libraries }) => {
-	console.log(libraries);
 	return (
 		<Layout>
 			<Head>
@@ -28,7 +27,7 @@ const Home = ({ clips, libraries }) => {
 			</Head>
 			<h2>Libraries</h2>
 			<LibraryListing {...libraries} />
-			{/* <ClipListing {...clips} /> */}
+			<ClipListing {...clips} />
 		</Layout>
 	);
 };

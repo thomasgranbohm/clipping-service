@@ -8,8 +8,7 @@ const router = Router();
 
 export const getLibraryWhereOptions = (library: any): Includeable => {
 	return {
-		attributes: [],
-		model: Library,
+		model: Library.scope('stripped'),
 		where: { slug: library.toString() },
 	};
 };

@@ -24,7 +24,7 @@ export const getClipWhereOptions = (
 
 export const CLIP_REQUIRED_ARGS = ['season', ...EPISODE_REQUIRED_ARGS];
 
-router.use(MissingArgs(CLIP_REQUIRED_ARGS));
+// router.use(MissingArgs(CLIP_REQUIRED_ARGS));
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
@@ -35,14 +35,14 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			limit,
 			offset,
 			order: [['createdAt', 'DESC']],
-			include: [getEpisodeWhereOptions(episode, season, show, library)],
+			// include: [getEpisodeWhereOptions(episode, season, show, library)],
 		}),
 		Clip.count({
-			include: [getEpisodeWhereOptions(episode, season, show, library)],
+			// include: [getEpisodeWhereOptions(episode, season, show, library)],
 		}),
 	]);
 
-	return res.json({ items, offset, total, type: "clip" });
+	return res.json({ items, offset, total, type: 'clip' });
 });
 
 router.post('/', async (req, res) => {
@@ -95,7 +95,7 @@ router.get('/:id', async (req, res) => {
 	try {
 		const clip = await Clip.findOne({
 			where: { id },
-			include: [getEpisodeWhereOptions(episode, season, show, library)]
+			// include: [getEpisodeWhereOptions(episode, season, show, library)],
 		});
 		if (!clip)
 			throw {

@@ -16,8 +16,7 @@ export const getSeasonWhereOptions = (
 	...args: Parameters<typeof getShowWhereOptions>
 ): Includeable => {
 	return {
-		attributes: [],
-		model: Season,
+		model: Season.scope("stripped"),
 		where: { index: parseInt(season) },
 		include: [getShowWhereOptions(...args)],
 	};
@@ -34,10 +33,10 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			limit,
 			offset,
 			order: [['index', 'ASC']],
-			include: [getShowWhereOptions(show.toString(), library.toString())],
+			include: [getShowWhereOptions(show, library)],
 		}),
 		Season.count({
-			include: [getShowWhereOptions(show.toString(), library.toString())],
+			include: [getShowWhereOptions(show, library)],
 		}),
 	]);
 
@@ -50,7 +49,7 @@ router.get('/:index', async (req, res) => {
 
 	const season = await Season.findOne({
 		where: { index },
-		include: [getShowWhereOptions(show.toString(), library.toString())],
+		include: [getShowWhereOptions(show, library)],
 	});
 
 	return res.json(season);
@@ -66,14 +65,10 @@ router.get('/:index/episodes', DatabaseLimit, async (req, res) => {
 			limit,
 			offset,
 			order: [['index', 'ASC']],
-			include: [
-				getSeasonWhereOptions(index, show.toString(), library.toString()),
-			],
+			include: [getSeasonWhereOptions(index, show, library)],
 		}),
 		Episode.count({
-			include: [
-				getSeasonWhereOptions(index, show.toString(), library.toString()),
-			],
+			include: [getSeasonWhereOptions(index, show, library)],
 		}),
 	]);
 
