@@ -27,7 +27,7 @@ const Home = ({ clips, libraries }) => {
 			</Head>
 			<h2>Libraries</h2>
 			<LibraryListing {...libraries} />
-			<ClipListing {...clips} />
+			{/* <ClipListing {...clips} /> */}
 		</Layout>
 	);
 };

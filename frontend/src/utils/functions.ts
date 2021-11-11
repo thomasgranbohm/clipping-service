@@ -32,8 +32,8 @@ export const generateBackendURL = (path: string): URL => {
 	return url;
 };
 
-export const flattenLinks = (links: JointBreadcrumbType): BreadcrumbData[] => {
-	const parseLinks = (localLinks: JointBreadcrumbType): BreadcrumbData[] => {
+export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
+	const parseLinks = (localLinks?: JointBreadcrumbType): BreadcrumbData[] => {
 		if ('season' in localLinks) {
 			return [
 				{ href: localLinks.slug, title: localLinks.title },
@@ -57,17 +57,19 @@ export const flattenLinks = (links: JointBreadcrumbType): BreadcrumbData[] => {
 		}
 	};
 
+	const base = { href: '/', title: process.env.NEXT_PUBLIC_PAGE_TITLE };
+		if (!links) return [base];
+
 	// ah yes, understandable code.
 	// its 01:27 and i need to sleep
 
-	return [
-		{ href: '/', title: process.env.NEXT_PUBLIC_PAGE_TITLE },
-		...parseLinks(links).reverse(),
-	].map(({ href, title }, i, arr) => ({
-		href: `/${arr
-			.slice(0, i)
-			.map((a) => a.href)
-			.join('/')}/${href}`,
-		title,
-	}));
+		return [base, ...parseLinks(links).reverse()].map(
+		({ href, title }, i, arr) => ({
+			href: `/${arr
+				.slice(0, i)
+				.map((a) => a.href)
+				.join('/')}/${href}`,
+			title,
+		})
+	);
 };
