@@ -13,7 +13,11 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 		.join(' ');
 
 export const addToURL = (url: URL, endpoint): URL =>
-	new URL(`${url.origin}${url.pathname}/${endpoint}${url.search}`);
+	new URL(
+		`${url.origin}${url.pathname}${
+			!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : ''
+		}${endpoint}${url.search}`
+	);
 
 export const generateBackendURL = (path: string): URL => {
 	const queryNames = ['library', 'show', 'season', 'episode'];
@@ -23,7 +27,11 @@ export const generateBackendURL = (path: string): URL => {
 	const endpoint = queryNames[slashes.length];
 
 	const url = addToURL(
-		new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
+		new URL(
+			typeof window !== 'undefined'
+				? process.env.NEXT_PUBLIC_BACKEND_URL
+				: process.env.BACKEND_URL
+		),
 		`${endpoint}/${slug}`
 	);
 

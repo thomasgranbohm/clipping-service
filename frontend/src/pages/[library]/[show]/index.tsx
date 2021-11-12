@@ -46,6 +46,11 @@ const ShowPage = ({ show, seasons }) => {
 					property="og:image"
 					content={addToURL(backendURL, 'thumbnail').href}
 				/>
+				<link
+					rel="alternate"
+					type="application/json+oembed"
+					href={`/oembed?url=${router.pathname}`}
+				/>
 			</Head>
 			<p>{summary}</p>
 			<ThumbnailListing {...seasons} />

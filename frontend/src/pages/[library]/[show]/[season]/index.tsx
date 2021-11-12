@@ -48,6 +48,7 @@ const SeasonPage = ({ season, episodes }) => {
 					property="og:image"
 					content={addToURL(backendURL, 'thumbnail').href}
 				/>
+				<link rel="alternate" type="application/json+oembed" href={`/oembed?url=${router.pathname}`} />
 			</Head>
 			<ThumbnailListing {...episodes} />
 			{/* {clips.length > 0 && <ClipListing clips={clips} />} */}

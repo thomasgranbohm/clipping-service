@@ -31,7 +31,12 @@ const ThumbnailListing = ({
 			const url = generateBackendURL(router.asPath);
 			url.searchParams.append('offset', stateItems.length.toString());
 
-			const { data } = await axios.get(`${url.pathname}/items${url.search}`);
+			const { data } = await publicAPI.get(
+				`${url.origin}${url.pathname}/items${url.search}`.replace(
+					process.env.NEXT_PUBLIC_BACKEND_URL,
+					''
+				)
+			);
 			setStateItems([...stateItems, ...(data['items'] as [])]);
 		},
 		{

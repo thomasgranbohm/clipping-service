@@ -57,6 +57,7 @@ const EpisodePage = ({ episode, clips }) => {
 					property="og:image"
 					content={addToURL(backendURL, 'thumbnail').href}
 				/>
+				<link rel="alternate" type="application/json+oembed" href={`/oembed?url=${router.pathname}`} />
 			</Head>
 			<p>{summary}</p>
 			{loggedIn && (
