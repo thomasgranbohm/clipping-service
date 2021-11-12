@@ -1,8 +1,10 @@
 import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
+import { addToURL, generateBackendURL } from 'utils/functions';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const [{ data: show }, { data: seasons }] = await Promise.all([
@@ -29,6 +31,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const ShowPage = ({ show, seasons }) => {
 	const { title, summary } = show;
+	const router = useRouter();
+	const backendURL = generateBackendURL(router.asPath);
 
 	return (
 		<Layout links={show}>
@@ -38,6 +42,10 @@ const ShowPage = ({ show, seasons }) => {
 				<meta property="og:title" content={title} />
 				<meta property="og:description" content={summary} />
 				<meta property="og:site_name" content="Clipping Service" />
+				<meta
+					property="og:image"
+					content={addToURL(backendURL, 'thumbnail').href}
+				/>
 			</Head>
 			<p>{summary}</p>
 			<ThumbnailListing {...seasons} />

@@ -1,6 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
-import { flattenLinks } from 'utils/functions';
-import { BreadcrumbData, JointBreadcrumbType } from 'utils/types';
+import { BreadcrumbData } from 'utils/types';
 import classes from './Breadcrumb.module.scss';
 
 const Breadcrumb = ({ href, title, slash }) => (
@@ -9,25 +8,6 @@ const Breadcrumb = ({ href, title, slash }) => (
 		{slash && <span className={classes['slash']}>/</span>}
 	</>
 );
-
-type Library = {
-	slug: string;
-	title: string;
-};
-type Show = {
-	slug: string;
-	title: string;
-	library: Library;
-};
-type Season = {
-	index: number;
-	show: Show;
-};
-type Episode = {
-	title: string;
-	slug: string;
-	season: Season;
-};
 
 type BreadcrumbsProps = {
 	links: BreadcrumbData[];
