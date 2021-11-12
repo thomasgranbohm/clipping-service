@@ -20,9 +20,9 @@ export const getServerSideProps: GetServerSideProps = async ({
 	const oembed = {
 		version: '1.0',
 		type: 'photo',
-		url: `${backendURL.href}/thumbnail`,
+		url: `${process.env.NEXT_PUBLIC_BACKEND_URL}${backendURL.pathname}/thumbnail`,
 		height: requestType === 'show' || requestType === 'season' ? 384 : 1024,
-		width: 518
+		width: 518,
 	};
 
 	res.setHeader('Content-Type', 'application/json');
