@@ -4,6 +4,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
+import { addToURL, generateBackendURL } from 'utils/functions';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	const { library, show, season: index } = params;
@@ -33,6 +34,7 @@ const SeasonPage = ({ season, episodes }) => {
 	const { title, show } = season;
 
 	const router = useRouter();
+	const backendURL = generateBackendURL(router.asPath);
 
 	return (
 		<Layout links={season}>
@@ -42,6 +44,10 @@ const SeasonPage = ({ season, episodes }) => {
 				</title>
 				<meta property="og:title" content={`${show.title} - ${title}`} />
 				<meta property="og:site_name" content="Clipping Service" />
+				<meta
+					property="og:image"
+					content={addToURL(backendURL, 'thumbnail').href}
+				/>
 				<link
 					rel="alternate"
 					type="application/json+oembed"
