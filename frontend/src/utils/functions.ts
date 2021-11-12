@@ -27,11 +27,7 @@ export const generateBackendURL = (path: string): URL => {
 	const endpoint = queryNames[slashes.length];
 
 	const url = addToURL(
-		new URL(
-			typeof window !== 'undefined'
-				? process.env.NEXT_PUBLIC_BACKEND_URL
-				: process.env.BACKEND_URL
-		),
+		new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
 		`${endpoint}/${slug}`
 	);
 

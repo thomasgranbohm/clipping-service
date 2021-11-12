@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { GetServerSideProps } from 'next';
-import { privateAPI } from 'utils/api';
-import { generateBackendURL } from 'utils/functions';
+import { addToURL, generateBackendURL } from 'utils/functions';
 
 export const getServerSideProps: GetServerSideProps = async ({
 	res,
@@ -15,14 +13,13 @@ export const getServerSideProps: GetServerSideProps = async ({
 
 	const backendURL = generateBackendURL(query.url.toString());
 	const requestType = backendURL.pathname.split('/')[1];
-	// const { data } = await axios.get(backendURL.href);
 
 	const oembed = {
 		version: '1.0',
 		type: 'photo',
-		url: `${process.env.NEXT_PUBLIC_BACKEND_URL}${backendURL.pathname}/thumbnail`,
-		height: requestType === 'show' || requestType === 'season' ? 384 : 1024,
-		width: 518,
+		url: addToURL(backendURL, 'thumbnail'),
+		height: requestType === 'show' || requestType === 'season' ? 512 : 288,
+		width: requestType === 'show' || requestType === 'season' ? 384 : 512,
 	};
 
 	res.setHeader('Content-Type', 'application/json');
