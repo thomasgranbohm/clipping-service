@@ -1,10 +1,10 @@
-import { Season } from 'database/models/Season';
-import { Show } from 'database/models/Show';
 import { Router } from 'express';
-import DatabaseLimit from 'middlewares/DatabaseLimit';
-import MissingArgs from 'middlewares/MissingArgs';
 import { Includeable } from 'sequelize/types';
-import { getMedia } from 'services/PlexAPI';
+import { Season } from '../database/models/Season';
+import { Show } from '../database/models/Show';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
+import MissingArgs from '../middlewares/MissingArgs';
+import { getMedia } from '../services/PlexAPI';
 import { getLibraryWhereOptions as getLibraryWhereOptions } from './Library';
 
 const router = Router();

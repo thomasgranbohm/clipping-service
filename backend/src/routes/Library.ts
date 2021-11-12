@@ -1,7 +1,7 @@
-import { Library } from 'database/models/Library';
-import { Show } from 'database/models/Show';
+import { Library } from '../database/models/Library';
+import { Show } from '../database/models/Show';
 import { Router } from 'express';
-import DatabaseLimit from 'middlewares/DatabaseLimit';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { Includeable } from 'sequelize/types';
 
 const router = Router();

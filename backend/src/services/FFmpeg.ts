@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
-import { Clip } from 'database/models/Clip';
 import ffmpeg from 'ffmpeg-static';
+import { Clip } from '../database/models/Clip';
 import { getItemDetails } from './PlexAPI';
 
 const BACKTRACK = 5;

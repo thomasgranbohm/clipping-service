@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
-import { Clip } from 'database/models/Clip';
-import DatabaseLimit from 'middlewares/DatabaseLimit';
-import { getItemDetails } from 'services/PlexAPI';
-import { stream } from 'services/Streamer';
 import { Includeable } from 'sequelize/types';
+import { Clip } from '../database/models/Clip';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
+import { getItemDetails } from '../services/PlexAPI';
+import { stream } from '../services/Streamer';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
-import MissingArgs from 'middlewares/MissingArgs';
 
 const router = Router();
 

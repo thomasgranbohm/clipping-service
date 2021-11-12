@@ -1,8 +1,8 @@
-import { Clip } from 'database/models/Clip';
-import { Episode } from 'database/models/Episode';
-import { Library } from 'database/models/Library';
-import { Season } from 'database/models/Season';
-import { Show } from 'database/models/Show';
+import { Clip } from '../database/models/Clip';
+import { Episode } from '../database/models/Episode';
+import { Library } from '../database/models/Library';
+import { Season } from '../database/models/Season';
+import { Show } from '../database/models/Show';
 import { Router } from 'express';
 
 const router = Router();

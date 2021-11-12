@@ -1,10 +1,10 @@
-import { Episode } from 'database/models/Episode';
-import { Season } from 'database/models/Season';
 import { Router } from 'express';
-import DatabaseLimit from 'middlewares/DatabaseLimit';
-import MissingArgs from 'middlewares/MissingArgs';
 import { Includeable } from 'sequelize/types';
-import { getMedia } from 'services/PlexAPI';
+import { Episode } from '../database/models/Episode';
+import { Season } from '../database/models/Season';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
+import MissingArgs from '../middlewares/MissingArgs';
+import { getMedia } from '../services/PlexAPI';
 import { getShowWhereOptions, SHOW_REQUIRED_ARGS } from './Show';
 
 const router = Router();
@@ -16,7 +16,7 @@ export const getSeasonWhereOptions = (
 	...args: Parameters<typeof getShowWhereOptions>
 ): Includeable => {
 	return {
-		model: Season.scope("stripped"),
+		model: Season.scope('stripped'),
 		where: { index: parseInt(season) },
 		include: [getShowWhereOptions(...args)],
 	};

@@ -1,14 +1,11 @@
 import { Router } from 'express';
-import { Clip } from 'database/models/Clip';
-import { Episode } from 'database/models/Episode';
-import DatabaseLimit from 'middlewares/DatabaseLimit';
-import { Season } from 'database/models/Season';
-import { Show } from 'database/models/Show';
-import MissingArgs from 'middlewares/MissingArgs';
 import { Includeable } from 'sequelize/types';
+import { Clip } from '../database/models/Clip';
+import { Episode } from '../database/models/Episode';
+import DatabaseLimit from '../middlewares/DatabaseLimit';
+import MissingArgs from '../middlewares/MissingArgs';
+import { getMedia } from '../services/PlexAPI';
 import { getSeasonWhereOptions, SEASON_REQUIRED_ARGS } from './Season';
-import { getMedia } from 'services/PlexAPI';
-import { IncomingMessage } from 'http';
 
 const router = Router();
 

@@ -5,7 +5,7 @@ import {
 	getItemChildren,
 	getItemDetails,
 	getLibraryContents,
-} from 'services/PlexAPI';
+} from '../services/PlexAPI';
 import { DATABASE_CONFIG } from './config';
 import { Episode } from './models/Episode';
 import { Library } from './models/Library';
