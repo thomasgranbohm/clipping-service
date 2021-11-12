@@ -12,6 +12,9 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 		.filter((c) => !!c)
 		.join(' ');
 
+export const addToURL = (url: URL, endpoint): URL =>
+	new URL(`${url.origin}${url.pathname}/${endpoint}${url.search}`);
+
 export const generateBackendURL = (path: string): URL => {
 	const queryNames = ['library', 'show', 'season', 'episode'];
 
@@ -19,9 +22,9 @@ export const generateBackendURL = (path: string): URL => {
 	const slug = slashes.pop();
 	const endpoint = queryNames[slashes.length];
 
-	const url = new URL(
-		`/${endpoint}/${slug}`,
-		process.env.NEXT_PUBLIC_BACKEND_URL
+	const url = addToURL(
+		new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
+		`${endpoint}/${slug}`
 	);
 
 	for (const i in slashes) {

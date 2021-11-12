@@ -16,9 +16,8 @@ const Image = ({ className = '', src, alt, width, height }) => (
 			layout="responsive"
 			placeholder="blur"
 			// blurDataURL={`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0ntn5HwAEsgJWXUD+UAAAAABJRU5ErkJggg==`}
-			blurDataURL={`/_next/image?url=${src.replace(
-				process.env.NEXT_PUBLIC_BACKEND_URL,
-				'http://backend:1337'
+			blurDataURL={`/_next/image?url=${encodeURIComponent(
+				src.replace(process.env.NEXT_PUBLIC_BACKEND_URL, 'http://backend:1337')
 			)}&w=8&q=1`}
 			loading="lazy"
 		/>

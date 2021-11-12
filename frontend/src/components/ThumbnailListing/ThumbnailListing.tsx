@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
 	EpisodeThumbnail,
 	SeasonThumbnail,
@@ -30,7 +31,7 @@ const ThumbnailListing = ({
 			const url = generateBackendURL(router.asPath);
 			url.searchParams.append('offset', stateItems.length.toString());
 
-			const { data } = await publicAPI(`${url.pathname}/items${url.search}`);
+			const { data } = await axios.get(`${url.pathname}/items${url.search}`);
 			setStateItems([...stateItems, ...(data['items'] as [])]);
 		},
 		{

@@ -1,7 +1,7 @@
 import Anchor from 'components/Anchor/Anchor';
 import Image from 'components/Image/Image';
 import { useRouter } from 'next/dist/client/router';
-import { concat, generateBackendURL } from 'utils/functions';
+import { addToURL, concat, generateBackendURL } from 'utils/functions';
 import classes from './Thumbnail.module.scss';
 
 export const ShowThumbnail = (props: ThumbnailProps) => (
@@ -48,7 +48,7 @@ const Thumbnail = ({ type, slug, thumbnailType, title }: ThumbnailProps) => {
 								? 384
 								: 1024
 						}
-						src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${backendURL.pathname}/thumbnail${backendURL.search}`}
+						src={addToURL(backendURL, 'thumbnail').href}
 					/>
 				</div>
 				<p className={classes['title']} title={title}>
