@@ -40,9 +40,9 @@ const SeasonPage = ({ season, episodes }) => {
 		<Layout links={season}>
 			<Head>
 				<title>
-					{show.title} - {title}
+					{title} - {show.title}
 				</title>
-				<meta property="og:title" content={`${show.title} - ${title}`} />
+				<meta property="og:title" content={`${title} - ${show.title}`} />
 				<meta property="og:site_name" content="Clipping Service" />
 				<meta
 					property="og:image"
