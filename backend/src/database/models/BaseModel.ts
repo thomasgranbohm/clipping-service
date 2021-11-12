@@ -18,7 +18,7 @@ export class BaseModel extends Model {
 	static createSlug(instance: BaseModel) {
 		instance.slug = slugify(instance.title, {
 			lower: true,
-			remove: /[*+~.()'"!:@]/g,
+			remove: /[^a-zA-Z0-9\s-]/g,
 		});
 	}
 }

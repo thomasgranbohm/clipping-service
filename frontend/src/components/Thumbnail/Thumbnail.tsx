@@ -48,7 +48,7 @@ const Thumbnail = ({ type, slug, thumbnailType, title }: ThumbnailProps) => {
 								? 384
 								: 1024
 						}
-						src={`${backendURL.origin}${backendURL.pathname}/thumbnail${backendURL.search}`}
+						src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${backendURL.pathname}/thumbnail${backendURL.search}`}
 					/>
 				</div>
 				<p className={classes['title']} title={title}>
