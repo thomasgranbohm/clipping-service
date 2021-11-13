@@ -4,7 +4,7 @@ services:
     command: bash -c 'npm run build && npm run start'
     depends_on:
       - database
-    env_file: ./config/backend.env
+    env_file: ./config/production.backend.env
     environment:
       DATABASE_HOST: database
       NODE_ENV: production
@@ -29,7 +29,7 @@ services:
     command: bash -c '/test-endpoint.sh backend 1337 && npm run build && npm run start'
     depends_on:
       - backend
-    env_file: ./config/frontend.env
+    env_file: ./config/production.frontend.env
     image: node:16
     expose:
       - 3000

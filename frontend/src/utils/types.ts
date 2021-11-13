@@ -9,6 +9,7 @@ export type Show = {
 };
 export type Season = {
 	index: number;
+	title: string;
 	show: Show;
 };
 export type Episode = {

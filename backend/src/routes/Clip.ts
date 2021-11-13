@@ -69,16 +69,28 @@ router.post('/', async (req, res) => {
 				message: 'Could not find episode.',
 			};
 
+		if (title && title.length === 0)
+			throw {
+				status: 400,
+				message: 'Title cannot be null.',
+			};
+		else if (!/[^a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
+			throw {
+				status: 400,
+				message:
+					'Title does not pass regex test ([^a-zA-Z0-9\\s\\-.,;:()"\']])',
+			};
+		}
 		if (end < start)
 			throw {
-				name: 400,
-				description: 'End cannot be before start.',
+				status: 400,
+				message: 'End cannot be before start.',
 			};
 
 		if (start < 0 || end > foundEpisode.duration)
 			throw {
-				name: 400,
-				description: 'Start or end is beyond boundaries.',
+				status: 400,
+				message: 'Start or end is beyond boundaries.',
 			};
 
 		const clip = await Clip.create({
@@ -91,7 +103,9 @@ router.post('/', async (req, res) => {
 		return res.json(clip);
 	} catch (error) {
 		console.log(error);
-		return res.status(400).json({ error });
+		return res
+			.status(error['status'] || 400)
+			.json(error['message'] || { error });
 	}
 });
 

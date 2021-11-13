@@ -20,7 +20,7 @@ import { Show } from './Show';
 }))
 @Scopes(() => ({
 	stripped: {
-		attributes: ['index'],
+		attributes: ['index', 'title'],
 	},
 }))
 @Table({

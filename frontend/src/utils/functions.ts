@@ -74,7 +74,7 @@ export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
 				...parseLinks(localLinks.show),
 				{
 					href: localLinks.index.toString(),
-					title: `Season ${localLinks.index.toString()}`,
+					title: localLinks.title,
 				},
 			];
 		} else if ('library' in localLinks) {
