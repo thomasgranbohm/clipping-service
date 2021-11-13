@@ -1,15 +1,17 @@
+import { Router } from 'express';
+import { Includeable } from 'sequelize/types';
 import { Library } from '../database/models/Library';
 import { Show } from '../database/models/Show';
-import { Router } from 'express';
+import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
-import { Includeable } from 'sequelize/types';
 
 const router = Router();
 
 export const getLibraryWhereOptions = (library: any): Includeable => {
 	return {
 		model: Library.scope('stripped'),
-		where: { slug: library.toString() },
+		required: true,
+		...(library ? { where: { slug: library.toString() } } : {}),
 	};
 };
 
@@ -25,7 +27,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			Library.count(),
 		]);
 
-		return res.json({ items, offset, total, type: 'library' });
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'library',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,
@@ -63,8 +70,12 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 			Show.count({ include: [getLibraryWhereOptions(slug)] }),
 		]);
-
-		return res.json({ offset, items, total, type: 'show' });
+		return res.json({
+			next: getNextUrl(req, items.length),
+			items,
+			total,
+			type: 'show',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,

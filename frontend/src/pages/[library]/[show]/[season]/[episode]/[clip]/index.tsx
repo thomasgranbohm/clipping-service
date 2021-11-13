@@ -49,8 +49,6 @@ const ClipPage = ({ clip }) => {
 
 	const backendURL = generateBackendURL(router.asPath);
 
-	// console.log(backendURL.href, addToURL(backendURL, `download`).href);
-
 	return (
 		<Layout links={clip}>
 			<Head>

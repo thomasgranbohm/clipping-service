@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { Includeable } from 'sequelize/types';
-import { stream } from '../services/Streamer';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
+import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
+import { stream } from '../services/Streamer';
 import { getSeasonWhereOptions, SEASON_REQUIRED_ARGS } from './Season';
 
 const router = Router();
@@ -17,9 +18,10 @@ export const getEpisodeWhereOptions = (
 	...args: Parameters<typeof getSeasonWhereOptions>
 ): Includeable => {
 	return {
-		model: Episode.scope('stripped'),
-		where: { slug: episode.toString() },
 		include: [getSeasonWhereOptions(...args)],
+		model: Episode.scope('stripped'),
+		required: true,
+		...(episode ? { where: { slug: episode.toString() } } : {}),
 	};
 };
 
@@ -40,7 +42,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			Episode.count(),
 		]);
 
-		return res.json({ items, offset, total, type: 'episode' });
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'episode',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,
@@ -85,7 +92,12 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
-		return res.json({ items, offset, total, type: 'clip' });
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'clip',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,

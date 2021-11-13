@@ -3,15 +3,11 @@ import { createReadStream } from 'fs';
 import { Includeable } from 'sequelize/types';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
-import { Library } from '../database/models/Library';
-import { Season } from '../database/models/Season';
-import { Show } from '../database/models/Show';
+import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { stream } from '../services/Streamer';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
-import { getLibraryWhereOptions } from './Library';
 import { getSeasonWhereOptions } from './Season';
-import { getShowWhereOptions } from './Show';
 
 const router = Router();
 
@@ -21,9 +17,10 @@ export const getClipWhereOptions = (
 ): Includeable => {
 	return {
 		attributes: [],
-		model: Clip,
-		where: { slug: clip.toString() },
 		include: [getEpisodeWhereOptions(...args)],
+		model: Clip,
+		required: true,
+		...(clip ? { where: { slug: clip.toString() } } : {}),
 	};
 };
 
@@ -31,55 +28,7 @@ export const CLIP_REQUIRED_ARGS = ['season', ...EPISODE_REQUIRED_ARGS];
 
 const getAppropriateWhereOptions = (query): Includeable => {
 	const { episode, library, season, show } = query;
-	if (episode) return getEpisodeWhereOptions(episode, season, show, library);
-	if (season)
-		return {
-			model: Episode.scope('stripped'),
-			include: [getSeasonWhereOptions(season, show, library)],
-		};
-	if (show)
-		return {
-			model: Episode.scope('stripped'),
-			include: [
-				{
-					model: Season.scope('stripped'),
-					include: [getShowWhereOptions(show, library)],
-				},
-			],
-		};
-	if (library)
-		return {
-			model: Episode.scope('stripped'),
-			include: [
-				{
-					model: Season.scope('stripped'),
-					include: [
-						{
-							model: Show.scope('stripped'),
-							include: [getLibraryWhereOptions(library)],
-						},
-					],
-				},
-			],
-		};
-	return {
-		model: Episode.scope('stripped'),
-		include: [
-			{
-				model: Season.scope('stripped'),
-				include: [
-					{
-						model: Show.scope('stripped'),
-						include: [
-							{
-								model: Library.scope('stripped'),
-							},
-						],
-					},
-				],
-			},
-		],
-	};
+	return getEpisodeWhereOptions(episode, season, show, library);
 };
 
 router.get('/', DatabaseLimit, async (req, res) => {
@@ -92,10 +41,17 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			order: [['createdAt', 'DESC']],
 			include: [getAppropriateWhereOptions(req.query)],
 		}),
-		Clip.count(),
+		Clip.count({
+			include: [getAppropriateWhereOptions(req.query)],
+		}),
 	]);
 
-	return res.json({ items, offset, total, type: 'clip' });
+	return res.json({
+		items,
+		next: getNextUrl(req, items.length),
+		total,
+		type: 'clip',
+	});
 });
 
 router.post('/', async (req, res) => {

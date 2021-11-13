@@ -1,13 +1,17 @@
 import { ClipThumbnail } from 'components/Thumbnail/Thumbnail';
-import { concat, getURLFromModel } from 'utils/functions';
+import { useState } from 'react';
+import { publicAPI } from 'utils/api';
+import { concat, generateBackendURL, getURLFromModel } from 'utils/functions';
+import useObserver from 'utils/hooks';
 import classes from './ClipListing.module.scss';
 
 type ClipListingProps = {
 	items: [];
+	next: string;
 	total?: number;
 };
 
-const ClipListing = ({ items, total }: ClipListingProps) => {
+const ClipListing = ({ items, next, total }: ClipListingProps) => {
 	// const [stateClips, setStateClips] = useState<Array<any>>(items);
 
 	// const sentinel = useObserver(
@@ -21,15 +25,29 @@ const ClipListing = ({ items, total }: ClipListingProps) => {
 	// 		condition: stateClips.length === total,
 	// 	}
 	// );
+	const [nextURL, setNextURL] = useState(next);
+	const [stateItems, setStateItems] = useState(items);
+	const sentinel = useObserver(
+		async () => {
+			const { data } = await publicAPI.get(nextURL);
+			setNextURL(data['next']);
+			setStateItems([...stateItems, ...(data['items'] as [])]);
+		},
+		{
+			stoppingCondition: stateItems.length === total,
+			rootMargin: '256px',
+		}
+	);
 
 	return (
 		<div className={concat(classes['container'])}>
 			<h2>Clips</h2>
-			{items instanceof Array && items.length > 0 ? (
+			{stateItems instanceof Array && stateItems.length > 0 ? (
 				<div className={classes['clips']}>
-					{items.map((clip, i) => (
+					{stateItems.map((clip, i) => (
 						<ClipThumbnail key={i} {...clip} url={getURLFromModel(clip)} />
 					))}
+					{sentinel}
 				</div>
 			) : (
 				<p>Oof baboof, no clips...</p>

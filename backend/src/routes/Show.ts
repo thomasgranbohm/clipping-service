@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Includeable } from 'sequelize/types';
 import { Season } from '../database/models/Season';
 import { Show } from '../database/models/Show';
+import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
@@ -15,9 +16,10 @@ export const getShowWhereOptions = (
 	...args: Parameters<typeof getLibraryWhereOptions>
 ): Includeable => {
 	return {
-		model: Show.scope('stripped'),
-		where: { slug: show.toString() },
 		include: [getLibraryWhereOptions(...args)],
+		model: Show.scope('stripped'),
+		required: true,
+		...(show ? { where: { slug: show.toString() } } : {}),
 	};
 };
 
@@ -40,7 +42,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
-		return res.json({ items, offset, total, type: 'show' });
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'show',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,
@@ -85,7 +92,12 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
-		return res.json({ items, offset, total, type: 'season' });
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'season',
+		});
 	} catch (error) {
 		res.status(400).json({
 			status: 400,

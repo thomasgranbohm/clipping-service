@@ -1,47 +1,33 @@
-import axios from 'axios';
 import {
 	EpisodeThumbnail,
 	SeasonThumbnail,
 	ShowThumbnail,
 } from 'components/Thumbnail/Thumbnail';
-import { useRouter } from 'next/dist/client/router';
 import { useState } from 'react';
 import { publicAPI } from 'utils/api';
-import {
-	concat,
-	flattenLinks,
-	generateBackendURL,
-	getURLFromModel,
-} from 'utils/functions';
+import { concat, getURLFromModel } from 'utils/functions';
 import useObserver from 'utils/hooks';
 import classes from './ThumbnailListing.module.scss';
 
 type ThumbnailListingProps = {
 	items: [];
-	offset: number;
+	next: string;
 	total: number;
 	type: 'show' | 'season' | 'episode';
 };
 
 const ThumbnailListing = ({
 	items,
-	offset,
+	next,
 	total,
 	type,
 }: ThumbnailListingProps) => {
 	const [stateItems, setStateItems] = useState(items);
-	const router = useRouter();
+	const [nextURL, setNextURL] = useState(next);
 	const sentinel = useObserver(
 		async () => {
-			const url = generateBackendURL(router.asPath);
-			url.searchParams.append('offset', stateItems.length.toString());
-
-			const { data } = await publicAPI.get(
-				`${url.origin}${url.pathname}/items${url.search}`.replace(
-					process.env.NEXT_PUBLIC_BACKEND_URL,
-					''
-				)
-			);
+			const { data } = await publicAPI.get(nextURL);
+			setNextURL(data['next']);
 			setStateItems([...stateItems, ...(data['items'] as [])]);
 		},
 		{
