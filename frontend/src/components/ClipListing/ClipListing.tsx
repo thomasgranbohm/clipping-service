@@ -1,5 +1,5 @@
 import { ClipThumbnail } from 'components/Thumbnail/Thumbnail';
-import { concat } from 'utils/functions';
+import { concat, getURLFromModel } from 'utils/functions';
 import classes from './ClipListing.module.scss';
 
 type ClipListingProps = {
@@ -28,7 +28,7 @@ const ClipListing = ({ items, total }: ClipListingProps) => {
 			{items instanceof Array && items.length > 0 ? (
 				<div className={classes['clips']}>
 					{items.map((clip, i) => (
-						<ClipThumbnail key={i} {...clip} />
+						<ClipThumbnail key={i} {...clip} url={getURLFromModel(clip)} />
 					))}
 				</div>
 			) : (

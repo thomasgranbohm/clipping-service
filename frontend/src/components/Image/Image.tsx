@@ -2,7 +2,15 @@ import NextImage from 'next/image';
 import { concat } from 'utils/functions';
 import classes from './Image.module.scss';
 
-const Image = ({ className = '', src, alt, width, height }) => (
+export type ImageProps = {
+	className?: string;
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+};
+
+const Image = ({ className = '', src, alt, width, height }: ImageProps) => (
 	<div className={concat(classes['container'], className)}>
 		<NextImage
 			className={classes['image']}

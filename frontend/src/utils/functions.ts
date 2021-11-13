@@ -1,4 +1,5 @@
 import { BreadcrumbData, JointBreadcrumbType } from './types';
+import { ParsedUrlQuery } from 'querystring';
 
 export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 	classes
@@ -20,20 +21,9 @@ export const addToURL = (url: URL, endpoint): URL =>
 	);
 
 export const generateBackendURL = (path: string, clip?: boolean): URL => {
-	const isClip = clip || new RegExp(/^(\/|)clip(s|)\//, 'i').test(path);
-	if (isClip) {
-		return addToURL(
-			new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
-			(new RegExp(/^(\/|)clip(s|)\//, 'i').test(path)
-				? path
-				: `/clip/${path}`
-			).replace('clips', 'clip')
-		);
-	}
+	const queryNames = ['library', 'show', 'season', 'episode', 'clip'];
 
-	const queryNames = ['library', 'show', 'season', 'episode'];
-
-	const slashes = path.replace(/^\//, '').split('/');
+	const slashes = path.split('/').slice(1);
 	const slug = slashes.pop();
 	const endpoint = queryNames[slashes.length];
 
@@ -50,9 +40,21 @@ export const generateBackendURL = (path: string, clip?: boolean): URL => {
 	return url;
 };
 
+export const getURLParams = (params: ParsedUrlQuery) => {
+	const search = new URLSearchParams();
+	for (const [key, value] of Object.entries(params).slice()) {
+		search.append(key, value.toString());
+	}
+
+	return search;
+};
+
+export const getURLFromModel = (links?: JointBreadcrumbType): string =>
+	flattenLinks(links).pop().href;
+
 export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
 	const parseLinks = (localLinks?: JointBreadcrumbType): BreadcrumbData[] => {
-		if (localLinks === undefined) {
+		if (!!!localLinks) {
 			return [{ href: '', title: process.env.NEXT_PUBLIC_PAGE_TITLE }];
 		} else if ('episode' in localLinks) {
 			return [

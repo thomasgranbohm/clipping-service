@@ -28,31 +28,45 @@ router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const { library, show } = req.query;
 
-	const [items, total] = await Promise.all([
-		Season.findAll({
-			limit,
-			offset,
-			order: [['index', 'ASC']],
-			include: [getShowWhereOptions(show, library)],
-		}),
-		Season.count({
-			include: [getShowWhereOptions(show, library)],
-		}),
-	]);
+	try {
+		const [items, total] = await Promise.all([
+			Season.findAll({
+				limit,
+				offset,
+				order: [['index', 'ASC']],
+				include: [getShowWhereOptions(show, library)],
+			}),
+			Season.count({
+				include: [getShowWhereOptions(show, library)],
+			}),
+		]);
 
-	return res.json({ offset, items, total, type: 'season' });
+		return res.json({ offset, items, total, type: 'season' });
+	} catch (error) {
+		res.status(400).json({
+			status: 400,
+			message: error.toString(),
+		});
+	}
 });
 
 router.get('/:index', async (req, res) => {
 	const { index } = req.params;
 	const { library, show } = req.query;
 
-	const season = await Season.findOne({
-		where: { index },
-		include: [getShowWhereOptions(show, library)],
-	});
+	try {
+		const season = await Season.findOne({
+			where: { index },
+			include: [getShowWhereOptions(show, library)],
+		});
 
-	return res.json(season);
+		return res.json(season);
+	} catch (error) {
+		return res.status(404).json({
+			status: 404,
+			message: 'Could not find season.',
+		});
+	}
 });
 
 router.get('/:index/items', DatabaseLimit, async (req, res) => {
@@ -60,19 +74,26 @@ router.get('/:index/items', DatabaseLimit, async (req, res) => {
 	const { index } = req.params;
 	const { library, show } = req.query;
 
-	const [items, total] = await Promise.all([
-		Episode.findAll({
-			limit,
-			offset,
-			order: [['index', 'ASC']],
-			include: [getSeasonWhereOptions(index, show, library)],
-		}),
-		Episode.count({
-			include: [getSeasonWhereOptions(index, show, library)],
-		}),
-	]);
+	try {
+		const [items, total] = await Promise.all([
+			Episode.findAll({
+				limit,
+				offset,
+				order: [['index', 'ASC']],
+				include: [getSeasonWhereOptions(index, show, library)],
+			}),
+			Episode.count({
+				include: [getSeasonWhereOptions(index, show, library)],
+			}),
+		]);
 
-	return res.json({ items, offset, total, type: 'episode' });
+		return res.json({ items, offset, total, type: 'episode' });
+	} catch (err) {
+		return res.status(404).json({
+			status: 404,
+			message: 'Could not find season.',
+		});
+	}
 });
 
 router.get('/:index/thumbnail', async (req, res) => {
@@ -94,9 +115,11 @@ router.get('/:index/thumbnail', async (req, res) => {
 		const { data } = await getMedia(thumb);
 
 		data.pipe(res);
-	} catch (error) {
-		console.log(error);
-		return res.status(400).json({ error });
+	} catch (err) {
+		return res.status(404).json({
+			status: 404,
+			message: 'Could not find season.',
+		});
 	}
 });
 

@@ -1,15 +1,19 @@
 import Button from 'components/Button/Button';
+import ClipCreator from 'components/ClipCreator/ClipCreator';
+import ClipListing from 'components/ClipListing/ClipListing';
+import Image from 'components/Image/Image';
 import Layout from 'components/Layout/Layout';
+import Summary from 'components/Summary/Summary';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
-import { addToURL, generateBackendURL } from 'utils/functions';
+import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const { library, show, season, episode: episodeSlug } = params;
-	const urlParams = `library=${library}&show=${show}&season=${season}`;
+	const { episode: episodeSlug } = params;
+	const urlParams = getURLParams(params);
 	const [{ data: episode }, { data: clips }] = await Promise.all([
 		privateAPI(`/episode/${episodeSlug}/?${urlParams.toString()}`),
 		privateAPI(`/episode/${episodeSlug}/items?${urlParams.toString()}`),
@@ -63,11 +67,20 @@ const EpisodePage = ({ episode, clips }) => {
 					href={`/oembed?url=${router.pathname}`}
 				/>
 			</Head>
-			<p>{summary}</p>
-			{loggedIn && (
-				<Button type="create" href={`/create?path=${router.asPath}`} />
-			)}
-			{/* {clips.total > 0 && <ClipListing {...clips} />} */}
+			<Summary
+				image={
+					!loggedIn && {
+						alt: 'thumbnail',
+						height: 1080,
+						src: addToURL(backendURL, 'thumbnail').href,
+						width: 1920,
+					}
+				}
+			>
+				{summary}
+			</Summary>
+			{loggedIn && <ClipCreator episode={episode} />}
+			{clips.total > 0 && <ClipListing {...clips} />}
 		</Layout>
 	);
 };

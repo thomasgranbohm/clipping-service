@@ -1,15 +1,17 @@
-import axios from 'axios';
 import Video from 'components/Video/Video';
 import { useEffect, useRef, useState } from 'react';
-import { internalAPI, publicAPI } from 'utils/api';
+import { publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
 import classes from './ClipCreator.module.scss';
 
 const MAX_CLIP_LENGTH = 60;
 const MINIMUM_CLIP_LENGTH = 1;
 
-const ClipCreator = ({ details }) => {
-	const { key, duration } = details;
+const ClipCreator = ({ episode }) => {
+	const { slug, duration } = episode;
+	const { season } = episode;
+	const { show } = season;
+	const { library } = show;
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -17,7 +19,7 @@ const ClipCreator = ({ details }) => {
 	const [start, setStart] = useState(0);
 	const [end, setEnd] = useState(MAX_CLIP_LENGTH * 1e3);
 
-	const [name, setName] = useState('');
+	const [title, setTitle] = useState('');
 
 	useEffect(() => {
 		if (videoRef.current) {
@@ -50,7 +52,7 @@ const ClipCreator = ({ details }) => {
 
 	return (
 		<div className={classes['container']}>
-			<Video ref={videoRef} identifier={key} type="media" />
+			<Video ref={videoRef} identifier={slug} type="episode" />
 			<div className={classes['crop-boundary']}>
 				<h3>
 					{new Date(time + start).toISOString().substr(14, 8)} -{' '}
@@ -117,8 +119,8 @@ const ClipCreator = ({ details }) => {
 			</button>
 			<input
 				type="text"
-				value={name}
-				onChange={(e) => setName(e.target.value)}
+				value={title}
+				onChange={(e) => setTitle(e.target.value)}
 			/>
 			<button
 				type="submit"
@@ -128,11 +130,14 @@ const ClipCreator = ({ details }) => {
 						await publicAPI.get('/verify', {
 							withCredentials: true,
 						});
-						const resp = await publicAPI('/clips', {
+						const resp = await publicAPI('/clip', {
 							method: 'POST',
 							data: {
-								metadataKey: key,
-								name,
+								episode: slug,
+								season: season.index,
+								show: show.slug,
+								library: library.slug,
+								title,
 								start: (time + start) / 1000,
 								end: (time + end) / 1000,
 							},

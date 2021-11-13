@@ -16,6 +16,7 @@ export const getStaticProps: GetStaticProps = async () => {
 			libraries,
 			clips,
 		},
+		revalidate: 1,
 	};
 };
 

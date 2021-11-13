@@ -29,8 +29,7 @@ router.get('/shows', async (req, res) => {
 		attributes: ['id', 'slug'],
 		include: [
 			{
-				model: Library,
-				attributes: ['slug'],
+				model: Library.scope('stripped'),
 			},
 		],
 	});
@@ -44,16 +43,13 @@ router.get('/shows', async (req, res) => {
 });
 
 router.get('/seasons', async (req, res) => {
-	const seasons = await Season.findAll({
-		attributes: ['index'],
+	const seasons = await Season.scope('stripped').findAll({
 		include: [
 			{
-				model: Show,
-				attributes: ['slug'],
+				model: Show.scope('stripped'),
 				include: [
 					{
-						model: Library,
-						attributes: ['slug'],
+						model: Library.scope('stripped'),
 					},
 				],
 			},
@@ -78,20 +74,16 @@ router.get('/seasons', async (req, res) => {
 });
 
 router.get('/episodes', async (req, res) => {
-	const episodes = await Episode.findAll({
-		attributes: ['id', 'slug'],
+	const episodes = await Episode.scope('stripped').findAll({
 		include: [
 			{
-				attributes: ['index'],
-				model: Season,
+				model: Season.scope('stripped'),
 				include: [
 					{
-						model: Show,
-						attributes: ['slug'],
+						model: Show.scope('stripped'),
 						include: [
 							{
-								model: Library,
-								attributes: ['slug'],
+								model: Library.scope('stripped'),
 							},
 						],
 					},
@@ -124,9 +116,52 @@ router.get('/episodes', async (req, res) => {
 router.get('/clips', async (req, res) => {
 	const clips = await Clip.findAll({
 		attributes: ['id', 'slug'],
+		include: [
+			{
+				model: Episode.scope('stripped'),
+
+				include: [
+					{
+						model: Season.scope('stripped'),
+						include: [
+							{
+								model: Show.scope('stripped'),
+								include: [
+									{
+										model: Library.scope('stripped'),
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		],
 	});
 
-	return res.json({ clips });
+	return res.json(
+		clips.map(
+			({
+				slug: clipSlug,
+				episode: {
+					slug: episodeSlug,
+					season: {
+						index,
+						show: {
+							library: { slug: librarySlug },
+							slug: showSlug,
+						},
+					},
+				},
+			}) => ({
+				clip: clipSlug,
+				episode: episodeSlug,
+				season: index.toString(),
+				show: showSlug,
+				library: librarySlug,
+			})
+		)
+	);
 });
 
 export default router;

@@ -1,19 +1,20 @@
 import Anchor from 'components/Anchor/Anchor';
 import Image from 'components/Image/Image';
 import { useRouter } from 'next/dist/client/router';
-import { addToURL, concat, generateBackendURL } from 'utils/functions';
+import {
+	addToURL,
+	concat,
+	flattenLinks,
+	generateBackendURL,
+} from 'utils/functions';
 import classes from './Thumbnail.module.scss';
 
 export const ShowThumbnail = (props: ThumbnailProps) => (
 	<Thumbnail {...props} thumbnailType="show" />
 );
 
-type SeasonThumbnailProps = {
-	index: number;
-} & Exclude<ThumbnailProps, 'slug'>;
-
-export const SeasonThumbnail = ({ index, ...props }: SeasonThumbnailProps) => (
-	<Thumbnail {...props} slug={index.toString()} thumbnailType="season" />
+export const SeasonThumbnail = (props: ThumbnailProps) => (
+	<Thumbnail {...props} thumbnailType="season" />
 );
 
 export const EpisodeThumbnail = (props: ThumbnailProps) => (
@@ -21,27 +22,21 @@ export const EpisodeThumbnail = (props: ThumbnailProps) => (
 );
 
 export const ClipThumbnail = (props: ThumbnailProps) => (
-	<Thumbnail {...props} thumbnailType="clip" type="clips" />
+	<Thumbnail {...props} thumbnailType="clip" />
 );
 
 export type ThumbnailProps = {
-	type: string;
-	slug: string;
+	url: string;
 	title: string;
 	thumbnailType: 'show' | 'season' | 'episode' | 'clip';
 };
 
-const Thumbnail = ({ type, slug, thumbnailType, title }: ThumbnailProps) => {
+const Thumbnail = ({ url, thumbnailType, title, ...props }: ThumbnailProps) => {
 	const router = useRouter();
-	const backendURL = generateBackendURL(
-		`${router.asPath}/${slug}`,
-		thumbnailType === 'clip'
-	);
+	const backendURL = generateBackendURL(url);
 
 	return (
-		<Anchor
-			href={`${thumbnailType === 'clip' ? '/clips' : router.asPath}/${slug}`}
-		>
+		<Anchor href={url}>
 			<div className={concat(classes['container'], classes[thumbnailType])}>
 				<div className={classes['thumbnail-container']}>
 					<Image

@@ -7,7 +7,12 @@ import {
 import { useRouter } from 'next/dist/client/router';
 import { useState } from 'react';
 import { publicAPI } from 'utils/api';
-import { concat, generateBackendURL } from 'utils/functions';
+import {
+	concat,
+	flattenLinks,
+	generateBackendURL,
+	getURLFromModel,
+} from 'utils/functions';
 import useObserver from 'utils/hooks';
 import classes from './ThumbnailListing.module.scss';
 
@@ -47,13 +52,17 @@ const ThumbnailListing = ({
 
 	return (
 		<div className={concat(classes['container'], classes[type])}>
-			{stateItems.map((props, i) => {
-				if (type === 'show')
-					return <ShowThumbnail type={type} {...props} key={i} />;
-				if (type === 'season')
-					return <SeasonThumbnail type={type} {...props} key={i} />;
-				if (type === 'episode')
-					return <EpisodeThumbnail type={type} {...props} key={i} />;
+			{stateItems.map((props: any, i) => {
+				const thumbnailProps = {
+					key: i,
+					title: 'index' in props && `Season ${props.index}`,
+					type,
+					url: getURLFromModel(props),
+					...props,
+				};
+				if (type === 'show') return <ShowThumbnail {...thumbnailProps} />;
+				if (type === 'season') return <SeasonThumbnail {...thumbnailProps} />;
+				if (type === 'episode') return <EpisodeThumbnail {...thumbnailProps} />;
 			})}
 			{sentinel}
 		</div>

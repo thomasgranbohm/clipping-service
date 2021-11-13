@@ -16,14 +16,10 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 	const router = useRouter();
 	if (type === 'download') {
 		return (
-			<Anchor
-				href={href}
-				className={concat(classes['container'], classes[type])}
-				download
-			>
+			<a href={href} className={concat(classes['container'], classes[type])}>
 				<Icon type={'download'} />
 				{type}
-			</Anchor>
+			</a>
 		);
 	} else if (type === 'create') {
 		return (
@@ -35,34 +31,32 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 				{type}
 			</Anchor>
 		);
+	} else if (type === 'delete') {
+		return (
+			<button
+				className={concat(classes['container'], classes[type])}
+				onClick={async () => {
+					try {
+						await publicAPI.get('/verify', {
+							withCredentials: true,
+						});
+						const resp = await publicAPI(href, {
+							method: 'DELETE',
+						});
+						console.log(resp.data);
+						alert(`Deleted.`);
+						router.push('/');
+					} catch (error) {
+						console.error(error);
+						alert('Error when deleting.');
+					}
+				}}
+			>
+				<Icon type={'clear'} />
+				{type}
+			</button>
+		);
 	}
-
-	const onClick = async () => {
-		try {
-			await publicAPI.get('/verify', {
-				withCredentials: true,
-			});
-			const resp = await publicAPI(href, {
-				method: 'DELETE',
-			});
-			console.log(resp.data);
-			alert(`Deleted.`);
-			router.push('/');
-		} catch (error) {
-			console.error(error);
-			alert('Error when deleting.');
-		}
-	};
-
-	return (
-		<button
-			className={concat(classes['container'], classes[type])}
-			onClick={onClick}
-		>
-			<Icon type={'clear'} />
-			{type}
-		</button>
-	);
 };
 
 export default Button;

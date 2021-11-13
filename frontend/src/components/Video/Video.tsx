@@ -1,4 +1,6 @@
-import { forwardRef, useEffect } from 'react';
+import { useRouter } from 'next/dist/client/router';
+import { forwardRef } from 'react';
+import { addToURL, generateBackendURL } from 'utils/functions';
 import classes from './Video.module.scss';
 
 type VideoProps = {
@@ -9,14 +11,8 @@ type VideoProps = {
 
 const Video = forwardRef<HTMLVideoElement, VideoProps>(
 	({ identifier, toggleFullscreen, type }, videoRef) => {
-		const typeSpecificProps =
-			type === 'clip'
-				? {
-						poster:
-							type === 'clip' &&
-							`${process.env.NEXT_PUBLIC_BACKEND_URL}/${type}/${identifier}/thumbnail`,
-				  }
-				: {};
+		const router = useRouter();
+		const backendURL = generateBackendURL(router.asPath);
 
 		return (
 			<video
@@ -24,12 +20,9 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(
 				playsInline
 				ref={videoRef}
 				onDoubleClick={toggleFullscreen}
-				{...typeSpecificProps}
+				poster={addToURL(backendURL, 'thumbnail').href}
 			>
-				<source
-					src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${type}/${identifier}/watch`}
-					type={'video/mp4'}
-				/>
+				<source src={addToURL(backendURL, 'watch').href} type={'video/mp4'} />
 				<p>Your browser does not support HTML5 video.</p>
 			</video>
 		);

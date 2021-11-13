@@ -1,0 +1,26 @@
+@import 'styles/includes';
+
+.container {
+	&:not(.no-image) {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		grid-template-rows: 1fr;
+		grid-template-areas: 'text image';
+
+		> *:not(:last-child) {
+			margin-right: 1rem;
+		}
+
+		.text {
+			grid-area: text;
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+		.image {
+			grid-area: image;
+		}
+	}
+	&.no-image {
+		display: block;
+	}
+}

@@ -27,50 +27,71 @@ router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
 	const { library } = req.query;
 
-	const [items, total] = await Promise.all([
-		Show.findAll({
-			limit: limit,
-			offset: offset,
-			order: [['title', 'ASC']],
-			include: [getLibraryWhereOptions(library.toString())],
-		}),
-		Show.count({
-			include: [getLibraryWhereOptions(library.toString())],
-		}),
-	]);
+	try {
+		const [items, total] = await Promise.all([
+			Show.findAll({
+				limit: limit,
+				offset: offset,
+				order: [['title', 'ASC']],
+				include: [getLibraryWhereOptions(library.toString())],
+			}),
+			Show.count({
+				include: [getLibraryWhereOptions(library.toString())],
+			}),
+		]);
 
-	return res.json({ items, offset, total, type: 'show' });
+		return res.json({ items, offset, total, type: 'show' });
+	} catch (error) {
+		res.status(400).json({
+			status: 400,
+			message: error.toString(),
+		});
+	}
 });
 
 router.get('/:slug', async (req, res) => {
 	const { library } = req.query;
 
-	const show = await Show.findOne({
-		where: { slug: req.params.slug },
-		include: [getLibraryWhereOptions(library.toString())],
-	});
+	try {
+		const show = await Show.findOne({
+			where: { slug: req.params.slug },
+			include: [getLibraryWhereOptions(library.toString())],
+		});
 
-	return res.json(show);
+		return res.json(show);
+	} catch (error) {
+		res.status(400).json({
+			status: 400,
+			message: error.toString(),
+		});
+	}
 });
 
 router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 	const { slug } = req.params;
 	const library = req.query.library as string;
-
 	const { limit, offset } = req;
-	const [items, total] = await Promise.all([
-		Season.findAll({
-			limit,
-			offset,
-			order: [['index', 'ASC']],
-			include: [getShowWhereOptions(slug, library)],
-		}),
-		Season.count({
-			include: [getShowWhereOptions(slug, library)],
-		}),
-	]);
 
-	return res.json({ items, offset, total, type: 'season' });
+	try {
+		const [items, total] = await Promise.all([
+			Season.scope('stripped').findAll({
+				limit,
+				offset,
+				order: [['index', 'ASC']],
+				include: [getShowWhereOptions(slug, library)],
+			}),
+			Season.scope('stripped').count({
+				include: [getShowWhereOptions(slug, library)],
+			}),
+		]);
+
+		return res.json({ items, offset, total, type: 'season' });
+	} catch (error) {
+		res.status(400).json({
+			status: 400,
+			message: error.toString(),
+		});
+	}
 });
 
 router.get('/:slug/thumbnail', async (req, res) => {

@@ -1,19 +1,24 @@
+import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
-import { addToURL, generateBackendURL } from 'utils/functions';
+import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const [{ data: show }, { data: seasons }] = await Promise.all([
-		privateAPI(`/show/${params.show}?library=${params.library}`),
-		privateAPI(`/show/${params.show}/items?library=${params.library}`),
-	]);
+	const search = getURLParams(params);
+
+	const [{ data: show }, { data: seasons }, { data: clips }] =
+		await Promise.all([
+			privateAPI(`/show/${params.show}?${search.toString()}`),
+			privateAPI(`/show/${params.show}/items?${search.toString()}`),
+			privateAPI(`/clip/?${search.toString()}`),
+		]);
 
 	return {
-		props: { show, seasons },
+		props: { show, seasons, clips },
 		revalidate: 1,
 	};
 };
@@ -29,7 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const ShowPage = ({ show, seasons }) => {
+const ShowPage = ({ show, seasons, clips }) => {
 	const { title, summary } = show;
 	const router = useRouter();
 	const backendURL = generateBackendURL(router.asPath);
@@ -54,7 +59,7 @@ const ShowPage = ({ show, seasons }) => {
 			</Head>
 			<p>{summary}</p>
 			<ThumbnailListing {...seasons} />
-			{/* {clips.length > 0 && <ClipListing clips={clips} />} */}
+			{clips.total > 0 && <ClipListing {...clips} />}
 		</Layout>
 	);
 };

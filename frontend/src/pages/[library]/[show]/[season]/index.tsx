@@ -1,20 +1,23 @@
+import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
-import { addToURL, generateBackendURL } from 'utils/functions';
+import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const { library, show, season: index } = params;
-	const [{ data: season }, { data: episodes }] = await Promise.all([
-		privateAPI(`/season/${index}/?library=${library}&show=${show}`),
-		privateAPI(`/season/${index}/items?library=${library}&show=${show}`),
-	]);
+	const search = getURLParams(params);
+	const [{ data: season }, { data: episodes }, { data: clips }] =
+		await Promise.all([
+			privateAPI(`/season/${params.season}/?${search.toString()}`),
+			privateAPI(`/season/${params.season}/items?${search.toString()}`),
+			privateAPI(`/clip/?${search.toString()}`),
+		]);
 
 	return {
-		props: { season, episodes },
+		props: { season, episodes, clips },
 		revalidate: 1,
 	};
 };
@@ -30,7 +33,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const SeasonPage = ({ season, episodes }) => {
+const SeasonPage = ({ season, episodes, clips }) => {
 	const { title, show } = season;
 
 	const router = useRouter();
@@ -55,7 +58,7 @@ const SeasonPage = ({ season, episodes }) => {
 				/>
 			</Head>
 			<ThumbnailListing {...episodes} />
-			{/* {clips.length > 0 && <ClipListing clips={clips} />} */}
+			{clips.total > 0 && <ClipListing {...clips} />}
 		</Layout>
 	);
 };

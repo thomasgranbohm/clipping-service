@@ -9,7 +9,9 @@ import { Show } from '../database/models/Show';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { stream } from '../services/Streamer';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
+import { getLibraryWhereOptions } from './Library';
 import { getSeasonWhereOptions } from './Season';
+import { getShowWhereOptions } from './Show';
 
 const router = Router();
 
@@ -27,17 +29,68 @@ export const getClipWhereOptions = (
 
 export const CLIP_REQUIRED_ARGS = ['season', ...EPISODE_REQUIRED_ARGS];
 
-// router.use(MissingArgs(CLIP_REQUIRED_ARGS));
+const getAppropriateWhereOptions = (query): Includeable => {
+	const { episode, library, season, show } = query;
+	if (episode) return getEpisodeWhereOptions(episode, season, show, library);
+	if (season)
+		return {
+			model: Episode.scope('stripped'),
+			include: [getSeasonWhereOptions(season, show, library)],
+		};
+	if (show)
+		return {
+			model: Episode.scope('stripped'),
+			include: [
+				{
+					model: Season.scope('stripped'),
+					include: [getShowWhereOptions(show, library)],
+				},
+			],
+		};
+	if (library)
+		return {
+			model: Episode.scope('stripped'),
+			include: [
+				{
+					model: Season.scope('stripped'),
+					include: [
+						{
+							model: Show.scope('stripped'),
+							include: [getLibraryWhereOptions(library)],
+						},
+					],
+				},
+			],
+		};
+	return {
+		model: Episode.scope('stripped'),
+		include: [
+			{
+				model: Season.scope('stripped'),
+				include: [
+					{
+						model: Show.scope('stripped'),
+						include: [
+							{
+								model: Library.scope('stripped'),
+							},
+						],
+					},
+				],
+			},
+		],
+	};
+};
 
 router.get('/', DatabaseLimit, async (req, res) => {
 	const { limit, offset } = req;
-	const { episode, library, season, show } = req.query;
 
 	const [items, total] = await Promise.all([
 		Clip.findAll({
 			limit,
 			offset,
 			order: [['createdAt', 'DESC']],
+			include: [getAppropriateWhereOptions(req.query)],
 		}),
 		Clip.count(),
 	]);
@@ -51,7 +104,6 @@ router.post('/', async (req, res) => {
 	try {
 		const foundEpisode = await Episode.findOne({
 			where: { slug: episode },
-
 			include: [getSeasonWhereOptions(season, show, library)],
 		});
 
@@ -93,26 +145,7 @@ router.get('/:slug', async (req, res) => {
 	try {
 		const clip = await Clip.findOne({
 			where: { slug },
-			include: [
-				{
-					model: Episode.scope('stripped'),
-					include: [
-						{
-							model: Season.scope('stripped'),
-							include: [
-								{
-									model: Show.scope('stripped'),
-									include: [
-										{
-											model: Library.scope('stripped'),
-										},
-									],
-								},
-							],
-						},
-					],
-				},
-			],
+			include: [getAppropriateWhereOptions(req.query)],
 		});
 		if (!clip)
 			throw {
@@ -135,7 +168,9 @@ router.delete('/:slug', async (req, res) => {
 	const { slug } = req.params;
 
 	try {
-		const clip = await Clip.findOne({ where: { slug } });
+		const clip = await Clip.findOne({
+			where: { slug },
+		});
 		await clip.destroy();
 
 		return res.json({ deleted: clip });

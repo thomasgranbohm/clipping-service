@@ -5,13 +5,17 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
-import { generateBackendURL } from 'utils/functions';
+import { addToURL, generateBackendURL } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const { data } = await privateAPI(`/clip/${params.slug}`);
+	const { library, show, season, episode, clip: slug } = params;
+	const urlParams = `library=${library}&show=${show}&season=${season}&episode=${episode}`;
+	const { data: clip } = await privateAPI(
+		`/clip/${slug}/?${urlParams.toString()}`
+	);
 
-	if (!data) {
+	if (!clip) {
 		return {
 			notFound: true,
 			revalidate: 1,
@@ -19,7 +23,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	}
 
 	return {
-		props: { clip: data },
+		props: { clip },
 		revalidate: 1,
 	};
 };
@@ -28,15 +32,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const { data } = await privateAPI(`/path/clips`);
 
 	return {
-		paths: data['clips'].map(({ slug }) => ({
-			params: { slug },
+		paths: (data as any[]).map(({ clip, episode, season, show, library }) => ({
+			params: { clip, episode, season, show, library },
 		})),
 		fallback: 'blocking',
 	};
 };
 
 const ClipPage = ({ clip }) => {
-	const { slug, name, episode, ready, duration } = clip;
+	const { slug, title, episode, ready, duration } = clip;
 	const { season } = episode;
 	const { show } = season;
 
@@ -45,30 +49,43 @@ const ClipPage = ({ clip }) => {
 
 	const backendURL = generateBackendURL(router.asPath);
 
+	// console.log(backendURL.href, addToURL(backendURL, `download`).href);
+
 	return (
 		<Layout links={clip}>
 			<Head>
-				<title>Clip - {name}</title>
+				<title>Clip - {title}</title>
 				<meta
 					name="description"
 					content={`Clip from ${show.title} ${season.title}.`}
 				/>
-				<meta property="og:title" content={`Clip - ${name}`} />
+				<meta property="og:title" content={`Clip - ${title}`} />
 				<meta property="og:site_name" content="Clipping Service" />
 				<meta
 					property="og:description"
 					content={`Clip from ${show.title} ${season.title}.`}
 				/>
-				<meta property="og:video" content={`${backendURL.href}/watch`} />
-				<meta property="og:image" content={`${backendURL.href}/thumbnail`} />
+				<meta
+					property="og:video"
+					content={addToURL(backendURL, `watch`).href}
+				/>
+				<meta
+					property="og:image"
+					content={addToURL(backendURL, `thumbnail`).href}
+				/>
 				<link
 					type="application/json+oembed"
-					href={`${backendURL.href}/oembed`}
+					href={addToURL(backendURL, `oembed`).href}
 				/>
 			</Head>
 			<Player duration={duration} ready={ready} slug={slug} />
-			<Button type="download" href={`${backendURL.href}/download`} />
-			{loggedIn && <Button type="delete" href={`${backendURL.href}`} />}
+			<Button
+				type="download"
+				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clip/${slug}/download`}
+			>
+				Download
+			</Button>
+			{loggedIn && <Button type="delete" href={backendURL.href} />}
 		</Layout>
 	);
 };
