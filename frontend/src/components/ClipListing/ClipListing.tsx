@@ -27,8 +27,8 @@ const ClipListing = ({ items, total }: ClipListingProps) => {
 			<h2>Clips</h2>
 			{items instanceof Array && items.length > 0 ? (
 				<div className={classes['clips']}>
-					{items.map((clip) => (
-						<ClipThumbnail {...clip} />
+					{items.map((clip, i) => (
+						<ClipThumbnail key={i} {...clip} />
 					))}
 				</div>
 			) : (

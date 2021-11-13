@@ -1,15 +1,18 @@
 import { exec } from 'child_process';
 import ffmpeg from 'ffmpeg-static';
+import { resolve } from 'path';
 import { Clip } from '../database/models/Clip';
-import { getItemDetails } from './PlexAPI';
+import { Episode } from '../database/models/Episode';
 
 const BACKTRACK = 5;
 
 export const generateClip = async (clip: Clip) => {
-	const { filePath } = await getItemDetails(clip.metadataKey);
+	const { filePath } = await Episode.findOne({
+		where: { id: clip.episodeId },
+	});
 
 	if (!filePath)
-		return console.error('Could not find file for id: %d', clip.metadataKey);
+		return console.error('Could not find file for id: %d', clip.episodeId);
 
 	const CLIP_PATH = clip.getMediaPath();
 

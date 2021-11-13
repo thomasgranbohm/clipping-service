@@ -16,8 +16,13 @@ export type Episode = {
 	slug: string;
 	season: Season;
 };
+export type Clip = {
+	title: string;
+	slug: string;
+	episode: Episode;
+};
 
-export type JointBreadcrumbType = Library | Show | Season | Episode;
+export type JointBreadcrumbType = Library | Show | Season | Episode | Clip;
 export type BreadcrumbData = {
 	href: string;
 	title: string;

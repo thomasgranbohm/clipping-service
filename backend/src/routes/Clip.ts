@@ -2,10 +2,14 @@ import { Router } from 'express';
 import { createReadStream } from 'fs';
 import { Includeable } from 'sequelize/types';
 import { Clip } from '../database/models/Clip';
+import { Episode } from '../database/models/Episode';
+import { Library } from '../database/models/Library';
+import { Season } from '../database/models/Season';
+import { Show } from '../database/models/Show';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
-import { getItemDetails } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
+import { getSeasonWhereOptions } from './Season';
 
 const router = Router();
 
@@ -34,26 +38,28 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			limit,
 			offset,
 			order: [['createdAt', 'DESC']],
-			// include: [getEpisodeWhereOptions(episode, season, show, library)],
 		}),
-		Clip.count({
-			// include: [getEpisodeWhereOptions(episode, season, show, library)],
-		}),
+		Clip.count(),
 	]);
 
 	return res.json({ items, offset, total, type: 'clip' });
 });
 
 router.post('/', async (req, res) => {
-	const { name, metadataKey, start, end } = req.body;
+	const { title, episode, season, show, library, start, end } = req.body;
 
 	try {
-		const episode = await getItemDetails(metadataKey);
+		const foundEpisode = await Episode.findOne({
+			where: { slug: episode },
 
-		if (episode.type !== 'episode' || !episode.episodeId)
-			return res.status(400).json({
-				description: 'Cannot create a clip from a non-episode.',
-			});
+			include: [getSeasonWhereOptions(season, show, library)],
+		});
+
+		if (!foundEpisode)
+			throw {
+				status: 404,
+				message: 'Could not find episode.',
+			};
 
 		if (end < start)
 			throw {
@@ -61,23 +67,17 @@ router.post('/', async (req, res) => {
 				description: 'End cannot be before start.',
 			};
 
-		if (start < 0 || end > episode.duration)
+		if (start < 0 || end > foundEpisode.duration)
 			throw {
 				name: 400,
 				description: 'Start or end is beyond boundaries.',
 			};
 
 		const clip = await Clip.create({
-			name,
+			title,
 			start,
 			end,
-			metadataKey,
-			seasonId: episode.seasonId,
-			showId: episode.showId,
-			libraryId: episode.libraryId,
-			seasonTitle: episode.seasonTitle,
-			showTitle: episode.showTitle,
-			libraryTitle: episode.libraryTitle,
+			episodeId: foundEpisode.id,
 		});
 
 		return res.json(clip);
@@ -87,14 +87,32 @@ router.post('/', async (req, res) => {
 	}
 });
 
-router.get('/:id', async (req, res) => {
-	const { id } = req.params;
-	const { episode, library, season, show } = req.query;
+router.get('/:slug', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
-			// include: [getEpisodeWhereOptions(episode, season, show, library)],
+			where: { slug },
+			include: [
+				{
+					model: Episode.scope('stripped'),
+					include: [
+						{
+							model: Season.scope('stripped'),
+							include: [
+								{
+									model: Show.scope('stripped'),
+									include: [
+										{
+											model: Library.scope('stripped'),
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			],
 		});
 		if (!clip)
 			throw {
@@ -113,11 +131,11 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-router.delete('/:id', async (req, res) => {
-	const { id } = req.params;
+router.delete('/:slug', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
-		const clip = await Clip.findOne({ where: { id } });
+		const clip = await Clip.findOne({ where: { slug } });
 		await clip.destroy();
 
 		return res.json({ deleted: clip });
@@ -126,12 +144,12 @@ router.delete('/:id', async (req, res) => {
 	}
 });
 
-router.get('/:id/watch', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug/watch', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -150,12 +168,12 @@ router.get('/:id/watch', async (req, res) => {
 	}
 });
 
-router.get('/:id/download', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug/download', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -182,12 +200,12 @@ router.get('/:id/download', async (req, res) => {
 	}
 });
 
-router.get('/:id/thumbnail', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug/thumbnail', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -206,12 +224,12 @@ router.get('/:id/thumbnail', async (req, res) => {
 	}
 });
 
-router.get('/:id/oembed', async (req, res) => {
-	const { id } = req.params;
+router.get('/:slug/oembed', async (req, res) => {
+	const { slug } = req.params;
 
 	try {
 		const clip = await Clip.findOne({
-			where: { id },
+			where: { slug },
 		});
 		if (!clip)
 			throw {
@@ -226,7 +244,7 @@ router.get('/:id/oembed', async (req, res) => {
 
 		return res.json({
 			version: '1.0',
-			type: 'link',
+			type: 'video',
 			provider_name: 'Clipping Service',
 			provider_url: process.env.FRONTEND_URL,
 			thumbnail_height: 720,

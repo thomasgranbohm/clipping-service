@@ -16,10 +16,21 @@ export const addToURL = (url: URL, endpoint): URL =>
 	new URL(
 		`${url.origin}${url.pathname}${
 			!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : ''
-		}${endpoint}${url.search}`
+		}${endpoint}${url.search}`.replace(/((?<!:)\/{2,})/, '/')
 	);
 
-export const generateBackendURL = (path: string): URL => {
+export const generateBackendURL = (path: string, clip?: boolean): URL => {
+	const isClip = clip || new RegExp(/^(\/|)clip(s|)\//, 'i').test(path);
+	if (isClip) {
+		return addToURL(
+			new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
+			(new RegExp(/^(\/|)clip(s|)\//, 'i').test(path)
+				? path
+				: `/clip/${path}`
+			).replace('clips', 'clip')
+		);
+	}
+
 	const queryNames = ['library', 'show', 'season', 'episode'];
 
 	const slashes = path.replace(/^\//, '').split('/');
@@ -43,6 +54,14 @@ export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
 	const parseLinks = (localLinks?: JointBreadcrumbType): BreadcrumbData[] => {
 		if (localLinks === undefined) {
 			return [{ href: '', title: process.env.NEXT_PUBLIC_PAGE_TITLE }];
+		} else if ('episode' in localLinks) {
+			return [
+				...parseLinks(localLinks.episode),
+				{
+					href: localLinks.slug,
+					title: localLinks.title,
+				},
+			];
 		} else if ('season' in localLinks) {
 			return [
 				...parseLinks(localLinks.season),

@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { IncomingMessage } from 'http';
+import { resolve } from 'path';
 import {
 	EpisodeType,
 	LibraryType,
@@ -131,7 +132,10 @@ export const getItemDetails = async (id: number) => {
 		episodeId: ratingKey,
 		episodeThumb: getMediaId(thumb),
 		episodeTitle,
-		filePath: new String(filePath).replace('/mnt/harddrives/Plex Media', ''),
+		filePath: new String(filePath).replace(
+			process.env.PLEX_DIR,
+			resolve(process.cwd(), 'media')
+		),
 		index,
 		libraryId: parseInt(libraryId),
 		libraryTitle,

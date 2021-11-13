@@ -20,8 +20,8 @@ export const EpisodeThumbnail = (props: ThumbnailProps) => (
 	<Thumbnail {...props} thumbnailType="episode" />
 );
 
-export const ClipThumbnail = ({ slug, ...props }: ThumbnailProps) => (
-	<Thumbnail {...props} slug={slug} thumbnailType="clip" type="clips" />
+export const ClipThumbnail = (props: ThumbnailProps) => (
+	<Thumbnail {...props} thumbnailType="clip" type="clips" />
 );
 
 export type ThumbnailProps = {
@@ -33,10 +33,15 @@ export type ThumbnailProps = {
 
 const Thumbnail = ({ type, slug, thumbnailType, title }: ThumbnailProps) => {
 	const router = useRouter();
-	const backendURL = generateBackendURL(`${router.asPath}/${slug}`);
+	const backendURL = generateBackendURL(
+		`${router.asPath}/${slug}`,
+		thumbnailType === 'clip'
+	);
 
 	return (
-		<Anchor href={`${router.asPath}/${slug}`}>
+		<Anchor
+			href={`${thumbnailType === 'clip' ? '/clips' : router.asPath}/${slug}`}
+		>
 			<div className={concat(classes['container'], classes[thumbnailType])}>
 				<div className={classes['thumbnail-container']}>
 					<Image

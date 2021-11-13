@@ -3,7 +3,7 @@ import classes from './Video.module.scss';
 
 type VideoProps = {
 	identifier: string;
-	type: 'clip' | 'media';
+	type: 'clip' | 'episode';
 	toggleFullscreen?: (e) => void;
 };
 
@@ -14,7 +14,7 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(
 				? {
 						poster:
 							type === 'clip' &&
-							`${process.env.NEXT_PUBLIC_BACKEND_URL}/clips/${identifier}/thumbnail`,
+							`${process.env.NEXT_PUBLIC_BACKEND_URL}/${type}/${identifier}/thumbnail`,
 				  }
 				: {};
 
@@ -27,11 +27,7 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(
 				{...typeSpecificProps}
 			>
 				<source
-					src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${
-						type === 'clip'
-							? `/clips/${identifier}/watch`
-							: `/items/${identifier}/watch`
-					}`}
+					src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${type}/${identifier}/watch`}
 					type={'video/mp4'}
 				/>
 				<p>Your browser does not support HTML5 video.</p>

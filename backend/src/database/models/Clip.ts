@@ -63,34 +63,6 @@ export class Clip extends Model {
 	@Column
 	ready: boolean;
 
-	@AllowNull(false)
-	@Column
-	metadataKey: number;
-
-	@AllowNull(false)
-	@Column
-	showKey: number;
-
-	@AllowNull(false)
-	@Column
-	showTitle: string;
-
-	@AllowNull(false)
-	@Column
-	seasonKey: number;
-
-	@AllowNull(false)
-	@Column
-	seasonTitle: string;
-
-	@AllowNull(false)
-	@Column
-	libraryKey: number;
-
-	@AllowNull(false)
-	@Column
-	libraryTitle: string;
-
 	// Episode
 	@ForeignKey(() => Episode)
 	@Column
@@ -111,7 +83,7 @@ export class Clip extends Model {
 	@BeforeBulkDestroy
 	static async removeClip(instance: Clip) {
 		console.debug('Remove clip from file system with id %d.', instance.id);
-		if (instance) {
+		if (instance && instance.getPath) {
 			await rm(instance.getPath(), { recursive: true, force: true });
 		}
 	}

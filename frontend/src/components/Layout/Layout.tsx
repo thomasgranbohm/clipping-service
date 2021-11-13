@@ -5,25 +5,6 @@ import { flattenLinks } from 'utils/functions';
 import { JointBreadcrumbType } from 'utils/types';
 import classes from './Layout.module.scss';
 
-type Library = {
-	slug: string;
-	title: string;
-};
-type Show = {
-	slug: string;
-	title: string;
-	library: Library;
-};
-type Season = {
-	index: number;
-	show: Show;
-};
-type Episode = {
-	title: string;
-	slug: string;
-	season: Season;
-};
-
 type LayoutProps = {
 	links?: JointBreadcrumbType;
 };
