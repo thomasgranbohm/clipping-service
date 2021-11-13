@@ -76,8 +76,8 @@ server.get('/verify', async (req, res) => {
 const main = async () => {
 	const s = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
-		// await s.sync({ force: true });
-		// await syncAll();
+		await s.sync({ force: true });
+		await syncAll();
 	}
 	server.listen(1337, async () => {
 		console.log('Started!');
