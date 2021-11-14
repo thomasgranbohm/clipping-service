@@ -18,7 +18,6 @@ export const generateClip = async (clip: Clip) => {
 
 	const cmd = [
 		ffmpeg,
-
 		'-ss',
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		'-i',
@@ -35,13 +34,13 @@ export const generateClip = async (clip: Clip) => {
 		CLIP_PATH,
 	].join(' ');
 	console.debug(cmd);
-	console.time('Media Generation');
+	console.time(`media-generation-${clip.slug}`);
 	exec(cmd, (err, stdout, stderr) => {
 		if (err) {
 			console.log('Error while creating clip: %s', stderr);
 			return Clip.destroy({ where: { id: clip.id } });
 		}
-		console.timeEnd('Media Generation');
+		console.timeEnd(`media-generation-${clip.slug}`);
 		generateThumbnail(clip).then(() => clip.update({ ready: true }));
 	});
 };
@@ -61,10 +60,12 @@ export const generateThumbnail = async (clip: Clip) => {
 		THUMBNAIL_PATH,
 	].join(' ');
 	console.debug(cmd);
+	console.time(`thumbnail-generation-${clip.slug}`);
 	exec(cmd, (err, stdout, stderr) => {
 		if (err) {
 			console.log('Error while creating thumbnail: %s', stderr);
 			return;
 		}
+		console.timeEnd(`thumbnail-generation-${clip.slug}`);
 	});
 };
