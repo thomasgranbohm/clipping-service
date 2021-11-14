@@ -75,10 +75,10 @@ router.post('/', async (req, res) => {
 				message: 'Title cannot be null.',
 			};
 
-		if (!/[a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
+		if (!/^[a-zA-Z0-9 \-.,;:()"']+$/.test(title)) {
 			throw {
 				status: 400,
-				message: 'Title does not pass regex test ([a-zA-Z0-9\\s\\-.,;:()"\']])',
+				message: 'Title does not pass regex test (^[a-zA-Z0-9 -.,;:()"\']+$)',
 			};
 		}
 
@@ -106,7 +106,7 @@ router.post('/', async (req, res) => {
 		console.log(error);
 		return res
 			.status(error['status'] || 400)
-			.json(error['message'] || { error });
+			.json({ message: error['message'] || error });
 	}
 });
 
