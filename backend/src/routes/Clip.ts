@@ -69,12 +69,13 @@ router.post('/', async (req, res) => {
 				message: 'Could not find episode.',
 			};
 
-		if (title && title.length === 0)
+		if (!title || title.length === 0)
 			throw {
 				status: 400,
 				message: 'Title cannot be null.',
 			};
-		else if (!/[^a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
+
+		if (!/[^a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
 			throw {
 				status: 400,
 				message:
