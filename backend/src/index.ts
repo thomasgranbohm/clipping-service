@@ -9,7 +9,6 @@ import Library from './routes/Library';
 import Path from './routes/Path';
 import Season from './routes/Season';
 import Show from './routes/Show';
-import morgan from 'morgan';
 
 const server = express();
 
@@ -21,8 +20,6 @@ server.use(
 );
 server.use(express.json());
 server.use(cookieParser());
-
-server.use(morgan('tiny'));
 
 // Plex API
 server.use('/clip', Clip);

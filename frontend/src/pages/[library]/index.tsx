@@ -2,7 +2,7 @@ import Layout from 'components/Layout/Layout';
 import SEO from 'components/SEO/SEO';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { Head } from 'next/document';
+import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {

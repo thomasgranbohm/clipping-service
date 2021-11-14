@@ -2,7 +2,7 @@ import {
 	BeforeCreate,
 	BeforeUpdate,
 	Column,
-	Model
+	Model,
 } from 'sequelize-typescript';
 import slugify from 'slugify';
 import { SLUG_REGEX } from '../../constants';
@@ -17,13 +17,9 @@ export class BaseModel extends Model {
 	@BeforeCreate
 	@BeforeUpdate
 	static createSlug(instance: BaseModel) {
-		instance.slug = slugify(
-			instance.title,
-			{
-				lower: true,
-				remove: SLUG_REGEX,
-			}
-		);
-		console.log('Created slug', instance.slug);
+		instance.slug = slugify(instance.title, {
+			lower: true,
+			remove: SLUG_REGEX,
+		});
 	}
 }
