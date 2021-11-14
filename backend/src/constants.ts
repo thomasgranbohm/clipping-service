@@ -1,8 +1,8 @@
 import { resolve } from 'path';
 
 export const IDENTIFIER_REGEX = /[0-9a-f]{12}/;
-export const TITLE_REGEX = /^[a-zA-Z0-9 \-.,;:()"']+$/;
 export const SLUG_REGEX = /[^a-zA-Z0-9 -]/;
+export const TITLE_REGEX = /^[a-zA-Z0-9 \-.,;:()"'\?\!]+$/;
 
 export const CLIPS_DIR = resolve(process.cwd(), 'clips');
 
