@@ -74,7 +74,7 @@ const main = async () => {
 	const s = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
 		await s.sync({ force: true });
-		revalidate();
+		await revalidate();
 	}
 	server.listen(1337, async () => {
 		console.log('Started!');

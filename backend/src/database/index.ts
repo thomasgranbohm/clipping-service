@@ -14,7 +14,10 @@ import { Show } from './models/Show';
 
 export const connectToDatabase = () => new Sequelize(DATABASE_CONFIG);
 
-export const revalidate = () => setInterval(() => syncAll(), 60e3 * 60);
+export const revalidate = async () => {
+	await syncAll();
+	return setTimeout(revalidate, 60e3 * 60);
+};
 
 export const syncAll = async () => {
 	console.time('Synced');
