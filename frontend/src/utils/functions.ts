@@ -15,9 +15,9 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 
 export const addToURL = (url: URL, endpoint): URL =>
 	new URL(
-		`${url.origin}${url.pathname}${
+		url.origin + `${url.pathname}${
 			!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : ''
-		}${endpoint}${url.search}`.replace(/((?<!:)\/{2,})/, '/')
+		}${endpoint}${url.search}`.replace(/(\/{2,})/g, '/')
 	);
 
 export const generateBackendURL = (path: string, clip?: boolean): URL => {
