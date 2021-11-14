@@ -40,9 +40,11 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			limit,
 			offset,
 			order: [['createdAt', 'DESC']],
+			where: { ready: true },
 			include: [getAppropriateWhereOptions(req.query)],
 		}),
 		Clip.count({
+			where: { ready: true },
 			include: [getAppropriateWhereOptions(req.query)],
 		}),
 	]);
