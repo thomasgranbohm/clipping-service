@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { sign, verify } from 'jsonwebtoken';
-import { connectToDatabase, syncAll } from './database';
+import { connectToDatabase, revalidate } from './database';
 import Clip from './routes/Clip';
 import Episode from './routes/Episode';
 import Library from './routes/Library';
@@ -74,7 +74,7 @@ const main = async () => {
 	const s = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
 		await s.sync({ force: true });
-		await syncAll();
+		revalidate();
 	}
 	server.listen(1337, async () => {
 		console.log('Started!');

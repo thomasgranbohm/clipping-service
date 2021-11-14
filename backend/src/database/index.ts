@@ -14,13 +14,15 @@ import { Show } from './models/Show';
 
 export const connectToDatabase = () => new Sequelize(DATABASE_CONFIG);
 
+export const revalidate = () => setInterval(() => syncAll(), 60e3 * 60);
+
 export const syncAll = async () => {
 	console.time('Synced');
 	const libraries = await getAllLibraries();
 
 	for await (const { libraryId } of libraries) {
 		const { items: shows, libraryTitle } = await getLibraryContents(libraryId);
-		const createdLibrary = await Library.create({
+		const [library, libraryCreated] = await Library.upsert({
 			id: libraryId,
 			title: libraryTitle,
 			type: 'show',
@@ -35,9 +37,9 @@ export const syncAll = async () => {
 				summary,
 			} = (await getItemChildren(showId)) as ShowType;
 
-			const createdShow = await Show.create({
+			const [show, showCreated] = await Show.upsert({
 				id: showId,
-				libraryId: createdLibrary.id,
+				libraryId: library.id,
 				summary,
 				title: showTitle,
 				theme: showTheme,
@@ -52,10 +54,10 @@ export const syncAll = async () => {
 					seasonTitle,
 				} = (await getItemChildren(seasonId)) as SeasonType;
 
-				const createdSeason = await Season.create({
+				const [season, seasonCreated] = await Season.upsert({
 					id: seasonId,
 					index: seasonIndex,
-					showId: createdShow.id,
+					showId: show.id,
 					title: seasonTitle.length !== 0 ? seasonTitle : showTitle,
 					theme: seasonTheme.length !== 0 ? seasonTheme : showTheme,
 					thumb: seasonThumb.length !== 0 ? seasonThumb : showThumb,
@@ -65,12 +67,12 @@ export const syncAll = async () => {
 					const { duration, episodeThumb, episodeTitle, filePath, summary } =
 						await getItemDetails(episodeId);
 
-					const createdEpisode = await Episode.create({
+					const [episode, episodeCreated] = await Episode.upsert({
 						id: episodeId,
 						duration,
 						filePath,
 						index: episodeIndex,
-						seasonId: createdSeason.id,
+						seasonId: season.id,
 						summary,
 						title: episodeTitle,
 						thumb: episodeThumb,
