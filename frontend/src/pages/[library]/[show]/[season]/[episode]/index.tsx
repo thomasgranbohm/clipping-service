@@ -3,6 +3,7 @@ import ClipCreator from 'components/ClipCreator/ClipCreator';
 import ClipListing from 'components/ClipListing/ClipListing';
 import Image from 'components/Image/Image';
 import Layout from 'components/Layout/Layout';
+import SEO from 'components/SEO/SEO';
 import Summary from 'components/Summary/Summary';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
@@ -50,21 +51,11 @@ const EpisodePage = ({ episode, clips }) => {
 	return (
 		<Layout links={episode}>
 			<Head>
-				<title>
-					{title} - {show.title}
-				</title>
-				<meta name="description" content={summary} />
-				<meta property="og:title" content={`${title} - ${show.title}`} />
-				<meta property="og:description" content={summary} />
-				<meta property="og:site_name" content="Clipping Service" />
-				<meta
-					property="og:image"
-					content={addToURL(backendURL, 'thumbnail').href}
-				/>
-				<link
-					rel="alternate"
-					type="application/json+oembed"
-					href={`/oembed?url=${router.pathname}`}
+				<SEO
+					title={`${title} - ${show.title}`}
+					description={summary}
+					image={addToURL(backendURL, `thumbnail`).href}
+					oembed={`/oembed?url=${router.pathname}`}
 				/>
 			</Head>
 			<Summary

@@ -1,5 +1,6 @@
 import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
+import SEO from 'components/SEO/SEO';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
@@ -35,26 +36,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ShowPage = ({ show, seasons, clips }) => {
-	const { title, summary } = show;
+	const { title, summary, library } = show;
 	const router = useRouter();
 	const backendURL = generateBackendURL(router.asPath);
 
 	return (
 		<Layout links={show}>
 			<Head>
-				<title>{title}</title>
-				<meta name="description" content={summary} />
-				<meta property="og:title" content={title} />
-				<meta property="og:description" content={summary} />
-				<meta property="og:site_name" content="Clipping Service" />
-				<meta
-					property="og:image"
-					content={addToURL(backendURL, 'thumbnail').href}
-				/>
-				<link
-					rel="alternate"
-					type="application/json+oembed"
-					href={`/oembed?url=${router.pathname}`}
+				<SEO
+					title={`${title} - ${library.title}`}
+					description={summary}
+					image={addToURL(backendURL, `thumbnail`).href}
+					oembed={`/oembed?url=${router.pathname}`}
 				/>
 			</Head>
 			<p>{summary}</p>

@@ -1,6 +1,7 @@
 import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import LibraryListing from 'components/LibraryListing/LibraryListing';
+import SEO from 'components/SEO/SEO';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { privateAPI } from 'utils/api';
@@ -24,7 +25,7 @@ const Home = ({ clips, libraries }) => {
 	return (
 		<Layout>
 			<Head>
-				<title>{process.env.NEXT_PUBLIC_PAGE_TITLE}</title>
+				<SEO title={process.env.NEXT_PUBLIC_PAGE_TITLE} />
 			</Head>
 			<h2>Libraries</h2>
 			<LibraryListing {...libraries} />

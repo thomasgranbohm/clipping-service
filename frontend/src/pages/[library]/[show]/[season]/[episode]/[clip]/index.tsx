@@ -1,6 +1,7 @@
 import Button from 'components/Button/Button';
 import Layout from 'components/Layout/Layout';
 import Player from 'components/Player/Player';
+import SEO from 'components/SEO/SEO';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Head from 'next/head';
@@ -52,28 +53,12 @@ const ClipPage = ({ clip }) => {
 	return (
 		<Layout links={clip}>
 			<Head>
-				<title>Clip - {title}</title>
-				<meta
-					name="description"
-					content={`Clip from ${show.title} ${season.title}.`}
-				/>
-				<meta property="og:title" content={`Clip - ${title}`} />
-				<meta property="og:site_name" content="Clipping Service" />
-				<meta
-					property="og:description"
-					content={`Clip from ${show.title} ${season.title}.`}
-				/>
-				<meta
-					property="og:video"
-					content={addToURL(backendURL, `watch`).href}
-				/>
-				<meta
-					property="og:image"
-					content={addToURL(backendURL, `thumbnail`).href}
-				/>
-				<link
-					type="application/json+oembed"
-					href={addToURL(backendURL, `oembed`).href}
+				<SEO
+					title={`Clip - ${title}`}
+					description={`Clip from ${show.title} ${season.title}.`}
+					image={addToURL(backendURL, `thumbnail`).href}
+					oembed={addToURL(backendURL, `oembed`).href}
+					video={addToURL(backendURL, `watch`).href}
 				/>
 			</Head>
 			<Player duration={duration} ready={ready} slug={slug} />

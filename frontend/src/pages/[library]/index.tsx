@@ -1,6 +1,8 @@
 import Layout from 'components/Layout/Layout';
+import SEO from 'components/SEO/SEO';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { Head } from 'next/document';
 import { privateAPI } from 'utils/api';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -35,6 +37,11 @@ const LibraryPage = (props) => {
 
 	return (
 		<Layout links={library}>
+			<Head>
+				<SEO
+					title={`${library.title} - ${process.env.NEXT_PUBLIC_PAGE_TITLE}`}
+				/>
+			</Head>
 			<ThumbnailListing {...shows} />
 		</Layout>
 	);

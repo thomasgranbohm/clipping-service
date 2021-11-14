@@ -1,5 +1,6 @@
 import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
+import SEO from 'components/SEO/SEO';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
@@ -42,19 +43,10 @@ const SeasonPage = ({ season, episodes, clips }) => {
 	return (
 		<Layout links={season}>
 			<Head>
-				<title>
-					{title} - {show.title}
-				</title>
-				<meta property="og:title" content={`${title} - ${show.title}`} />
-				<meta property="og:site_name" content="Clipping Service" />
-				<meta
-					property="og:image"
-					content={addToURL(backendURL, 'thumbnail').href}
-				/>
-				<link
-					rel="alternate"
-					type="application/json+oembed"
-					href={`/oembed?url=${router.pathname}`}
+				<SEO
+					title={`${title} - ${show.title}`}
+					image={addToURL(backendURL, `thumbnail`).href}
+					oembed={`/oembed?url=${router.pathname}`}
 				/>
 			</Head>
 			<ThumbnailListing {...episodes} />
