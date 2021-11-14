@@ -75,11 +75,10 @@ router.post('/', async (req, res) => {
 				message: 'Title cannot be null.',
 			};
 
-		if (!/[^a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
+		if (/![a-zA-Z0-9\s\-.,;:()"']/.test(title)) {
 			throw {
 				status: 400,
-				message:
-					'Title does not pass regex test ([^a-zA-Z0-9\\s\\-.,;:()"\']])',
+				message: 'Title does not pass regex test ([a-zA-Z0-9\\s\\-.,;:()"\']])',
 			};
 		}
 		if (end < start)
