@@ -35,10 +35,14 @@ export class Clip extends Model {
 	@BeforeCreate
 	@BeforeUpdate
 	static createSlug(instance: Clip) {
-		instance.slug = slugify(instance.title, {
-			lower: true,
-			remove: /[*+~.()'"!:@]/g,
-		});
+		instance.slug = slugify(
+			instance.title,
+			{
+				lower: true,
+				remove: /[^a-zA-Z0-9 -]/g,
+				trim: true
+			}
+		);
 		instance.duration = instance.end - instance.start;
 	}
 
@@ -74,6 +78,17 @@ export class Clip extends Model {
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
+
+		console.log(
+			instance.slug,
+			(instance.slug = slugify(
+				instance.title.replace(/[^a-zA-Z0-9 -]/g, ' ').trim(),
+				{
+					lower: true,
+					remove: /[^a-zA-Z0-9 -]/g,
+				}
+			))
+		);
 
 		await mkdir(instance.getPath());
 		generateClip(instance);

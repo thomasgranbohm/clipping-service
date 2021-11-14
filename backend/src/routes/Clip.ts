@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
 import { Includeable } from 'sequelize/types';
+import { TITLE_REGEX } from '../constants';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 import { getNextUrl } from '../functions';
@@ -75,10 +76,10 @@ router.post('/', async (req, res) => {
 				message: 'Title cannot be null.',
 			};
 
-		if (!/^[a-zA-Z0-9 \-.,;:()"']+$/.test(title)) {
+		if (!TITLE_REGEX.test(title)) {
 			throw {
 				status: 400,
-				message: 'Title does not pass regex test (^[a-zA-Z0-9 -.,;:()"\']+$)',
+				message: `Title does not pass regex test (${TITLE_REGEX.toString()})`,
 			};
 		}
 
