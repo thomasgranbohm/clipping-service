@@ -1,6 +1,5 @@
 import { exec } from 'child_process';
 import ffmpeg from 'ffmpeg-static';
-import { resolve } from 'path';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 
