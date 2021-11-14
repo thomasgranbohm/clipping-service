@@ -4,7 +4,6 @@ import SEO from 'components/SEO/SEO';
 import ThumbnailListing from 'components/ThumbnailListing/ThumbnailListing';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 
@@ -42,14 +41,12 @@ const ShowPage = ({ show, seasons, clips }) => {
 
 	return (
 		<Layout links={show}>
-			<Head>
-				<SEO
-					title={`${title} - ${library.title}`}
-					description={summary}
-					image={addToURL(backendURL, `thumbnail`).href}
-					oembed={`/oembed?url=${router.pathname}`}
-				/>
-			</Head>
+			<SEO
+				title={`${title} - ${library.title}`}
+				description={summary}
+				image={addToURL(backendURL, `thumbnail`).href}
+				oembed={`/oembed?url=${router.pathname}`}
+			/>
 			<p>{summary}</p>
 			<ThumbnailListing {...seasons} />
 			{clips.total > 0 && <ClipListing {...clips} />}

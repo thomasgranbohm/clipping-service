@@ -1,13 +1,10 @@
-import Button from 'components/Button/Button';
 import ClipCreator from 'components/ClipCreator/ClipCreator';
 import ClipListing from 'components/ClipListing/ClipListing';
-import Image from 'components/Image/Image';
 import Layout from 'components/Layout/Layout';
 import SEO from 'components/SEO/SEO';
 import Summary from 'components/Summary/Summary';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
@@ -50,14 +47,12 @@ const EpisodePage = ({ episode, clips }) => {
 
 	return (
 		<Layout links={episode}>
-			<Head>
-				<SEO
-					title={`${title} - ${show.title}`}
-					description={summary}
-					image={addToURL(backendURL, `thumbnail`).href}
-					oembed={`/oembed?url=${router.pathname}`}
-				/>
-			</Head>
+			<SEO
+				title={`${title} - ${show.title}`}
+				description={summary}
+				image={addToURL(backendURL, `thumbnail`).href}
+				oembed={`/oembed?url=${router.pathname}`}
+			/>
 			<Summary
 				image={
 					!loggedIn && {

@@ -4,7 +4,6 @@ import Player from 'components/Player/Player';
 import SEO from 'components/SEO/SEO';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import Head from 'next/head';
 import { privateAPI } from 'utils/api';
 import { addToURL, generateBackendURL } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
@@ -52,15 +51,13 @@ const ClipPage = ({ clip }) => {
 
 	return (
 		<Layout links={clip}>
-			<Head>
-				<SEO
-					title={`Clip - ${title}`}
-					description={`Clip from ${show.title} ${season.title}.`}
-					image={addToURL(backendURL, `thumbnail`).href}
-					oembed={addToURL(backendURL, `oembed`).href}
-					video={addToURL(backendURL, `watch`).href}
-				/>
-			</Head>
+			<SEO
+				title={`Clip - ${title}`}
+				description={`Clip from ${show.title} ${season.title}.`}
+				image={addToURL(backendURL, `thumbnail`).href}
+				oembed={addToURL(backendURL, `oembed`).href}
+				video={addToURL(backendURL, `watch`).href}
+			/>
 			<Player duration={duration} ready={ready} slug={slug} />
 			<Button
 				type="download"

@@ -1,3 +1,5 @@
+import Head from 'next/head';
+
 type SEOProps = {
 	title: string;
 	description?: string;
@@ -7,7 +9,7 @@ type SEOProps = {
 };
 
 const SEO = ({ title, description, image, oembed, video }: SEOProps) => (
-	<>
+	<Head>
 		<title>{title}</title>
 		<meta property="og:title" content={title} />
 		<meta
@@ -21,7 +23,7 @@ const SEO = ({ title, description, image, oembed, video }: SEOProps) => (
 		{oembed && (
 			<link rel="alternate" type="application/json+oembed" href={oembed} />
 		)}
-	</>
+	</Head>
 );
 
 export default SEO;

@@ -37,11 +37,7 @@ const LibraryPage = (props) => {
 
 	return (
 		<Layout links={library}>
-			<Head>
-				<SEO
-					title={`${library.title} - ${process.env.NEXT_PUBLIC_PAGE_TITLE}`}
-				/>
-			</Head>
+			<SEO title={`${library.title} - ${process.env.NEXT_PUBLIC_PAGE_TITLE}`} />
 			<ThumbnailListing {...shows} />
 		</Layout>
 	);
