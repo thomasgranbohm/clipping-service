@@ -6,6 +6,8 @@ export const TITLE_REGEX = /^[a-zA-Z0-9 \-.,;:()"'\?\!]+$/;
 
 export const CLIPS_DIR = resolve(process.cwd(), 'clips');
 
+export const REVALIDATION_TIMEOUT = 60 * 60e3;
+
 export namespace DATABASE {
 	export const HOST = process.env.DATABASE_HOST || 'localhost';
 	export const PORT = parseInt(process.env.DATABASE_PORT) || 5432;
