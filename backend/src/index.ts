@@ -9,6 +9,7 @@ import Library from './routes/Library';
 import Path from './routes/Path';
 import Season from './routes/Season';
 import Show from './routes/Show';
+import Webhook from './routes/Webhook';
 
 const server = express();
 
@@ -28,6 +29,7 @@ server.use('/library', Library);
 server.use('/path', Path);
 server.use(`/season`, Season);
 server.use(`/show`, Show);
+server.use('/webhook', Webhook);
 server.use((err, _, res, __) => {
 	console.error('Got error:', err);
 

@@ -13,6 +13,7 @@
 - `docker` and `docker-compose`
 - OpenSSL
 - Plex Media Server setup
+- Plex Pass for webhooks
 
 ## What's left to do
 
@@ -22,5 +23,4 @@
 - Transcoding or some solution for media that browsers don't support
 - Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format
 - Improved UI and UX
-- Database revalidation with the Plex Media Server data after load
 - Backend error handling
