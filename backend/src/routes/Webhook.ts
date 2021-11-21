@@ -1,16 +1,16 @@
-import { revalidate } from 'database';
+import { revalidate, syncAll } from 'database';
 import { Router } from 'express';
 
 const router = Router();
 
 router.post('/plex', (req, res) => {
 	const { event } = req.body;
-	if (!event) return;
+	if (!event) return res.status(400).send('Not OK');
 
 	switch (event) {
 		case 'library.new':
 		case 'admin.database.backup':
-			revalidate();
+			syncAll();
 			break;
 	}
 
