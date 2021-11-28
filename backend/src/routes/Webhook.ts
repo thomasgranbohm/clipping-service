@@ -1,4 +1,4 @@
-import { revalidate, syncAll } from 'database';
+import { revalidate, syncAll } from '../database';
 import { Router } from 'express';
 
 const router = Router();
