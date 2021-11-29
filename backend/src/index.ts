@@ -1,8 +1,9 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import { connectToDatabase, revalidate } from './database';
+import Authentication from './middlewares/Authentication';
 import Clip from './routes/Clip';
 import Episode from './routes/Episode';
 import Library from './routes/Library';
@@ -41,11 +42,11 @@ server.use((err, _, res, __) => {
 
 server.post('/login', async (req, res) => {
 	if ('password' in req.body === false)
-		return res.status(401).send('No password provided.');
+		return res.status(401).send('Wrong password.');
 	const { password } = req.body;
 
 	if (password !== process.env.PASSWORD)
-		return res.status(400).send('Wrong password.');
+		return res.status(401).send('Wrong password.');
 
 	const cookie = await sign({ logged_in: true }, process.env.PRIVATE_KEY, {
 		algorithm: 'RS256',
@@ -55,21 +56,8 @@ server.post('/login', async (req, res) => {
 	return res.cookie('token', cookie).send('OK');
 });
 
-server.get('/verify', async (req, res) => {
-	if (!req.cookies || 'token' in req.cookies === false)
-		return res.status(401).send('No token provided.');
-
-	const { token } = req.cookies;
-
-	try {
-		await verify(token, process.env.PUBLIC_KEY, {
-			algorithms: ['RS256'],
-		});
-
-		res.status(200).send('OK');
-	} catch (error) {
-		res.status(401).send('Not authorized');
-	}
+server.get('/verify', Authentication, async (_, res) => {
+	res.status(200).send('OK');
 });
 
 const main = async () => {

@@ -5,6 +5,7 @@ import { TITLE_REGEX } from '../constants';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 import { getNextUrl } from '../functions';
+import Authentication from '../middlewares/Authentication';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { stream } from '../services/Streamer';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
@@ -57,7 +58,7 @@ router.get('/', DatabaseLimit, async (req, res) => {
 	});
 });
 
-router.post('/', async (req, res) => {
+router.post('/', Authentication, async (req, res) => {
 	const { title, episode, season, show, library, start, end } = req.body;
 
 	try {
