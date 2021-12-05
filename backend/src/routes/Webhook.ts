@@ -10,6 +10,7 @@ router.post('/plex', (req, res) => {
 	switch (event) {
 		case 'library.new':
 		case 'admin.database.backup':
+			console.debug('Webhook triggered syncing!');
 			syncAll();
 			break;
 	}

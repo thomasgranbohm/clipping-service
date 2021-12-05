@@ -7,6 +7,7 @@ import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
 import { stream } from '../services/Streamer';
+import { CustomError } from '../types';
 import { getSeasonWhereOptions, SEASON_REQUIRED_ARGS } from './Season';
 
 const router = Router();
@@ -27,7 +28,7 @@ export const getEpisodeWhereOptions = (
 
 router.use(MissingArgs(EPISODE_REQUIRED_ARGS));
 
-router.get('/', DatabaseLimit, async (req, res) => {
+router.get('/', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const { library, season, show } = req.query;
 
@@ -42,6 +43,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			Episode.count(),
 		]);
 
+		if (items.length === 0 && total === 0)
+			throw new CustomError({
+				status: 404,
+				message: 'No episodes found in season.',
+			});
+
 		return res.json({
 			items,
 			next: getNextUrl(req, items.length),
@@ -49,14 +56,16 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			type: 'episode',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', async (req, res, next) => {
 	const { slug } = req.params;
 	const { library, season, show } = req.query;
 
@@ -66,16 +75,24 @@ router.get('/:slug', async (req, res) => {
 			include: [getSeasonWhereOptions(season, show, library)],
 		});
 
+		if (!episode)
+			throw new CustomError({
+				status: 404,
+				message: 'Episode not found in season.',
+			});
+
 		return res.json(episode);
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug/items', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const { slug } = req.params;
 	const { library, season, show } = req.query;
@@ -92,6 +109,13 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
+		// Removed
+		// if (items.length === 0 && total === 0)
+		// 	throw new CustomError({
+		// 		status: 404,
+		// 		message: 'No clips found in episode.',
+		// 	});
+
 		return res.json({
 			items,
 			next: getNextUrl(req, items.length),
@@ -99,43 +123,22 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			type: 'clip',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug/thumbnail', async (req, res) => {
-	const { slug } = req.params;
-	const { library, season, show } = req.query;
-
-	try {
-		const { thumb } = await Episode.findOne({
-			attributes: ['thumb'],
-			where: { slug },
-			include: [getSeasonWhereOptions(season, show, library)],
-		});
-		if (!thumb)
-			throw {
-				name: '404',
-				description: 'Could not find episode.',
-			};
-
-		const { data } = await getMedia(thumb);
-
-		data.pipe(res);
-	} catch (error) {
-		return res.status(400).json({ error });
-	}
-});
-
-router.get('/:slug/watch', async (req, res) => {
+router.get('/:slug/thumbnail', async (req, res, next) => {
 	const { slug } = req.params;
 	const { library, season, show } = req.query;
 
 	try {
 		const episode = await Episode.findOne({
+			attributes: ['thumb'],
 			where: { slug },
 			include: [getSeasonWhereOptions(season, show, library)],
 		});
@@ -145,9 +148,50 @@ router.get('/:slug/watch', async (req, res) => {
 				description: 'Could not find episode.',
 			};
 
+		const { thumb } = episode;
+
+		if (!thumb)
+			throw new CustomError({
+				status: 404,
+				message: 'No thumbnail found for episode.',
+			});
+
+		const { data } = await getMedia(thumb);
+
+		data.pipe(res);
+	} catch (error) {
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
+	}
+});
+
+router.get('/:slug/watch', async (req, res, next) => {
+	const { slug } = req.params;
+	const { library, season, show } = req.query;
+
+	try {
+		const episode = await Episode.findOne({
+			where: { slug },
+			include: [getSeasonWhereOptions(season, show, library)],
+		});
+		if (!episode)
+			throw new CustomError({
+				status: 404,
+				message: 'Episode not found in season.',
+			});
+
 		return stream(req, res, episode.filePath);
 	} catch (error) {
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 

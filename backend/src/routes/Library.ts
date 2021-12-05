@@ -15,7 +15,7 @@ export const getLibraryWhereOptions = (library: any): Includeable => {
 	};
 };
 
-router.get('/', DatabaseLimit, async (req, res) => {
+router.get('/', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	try {
 		const [items, total] = await Promise.all([
@@ -34,29 +34,39 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			type: 'library',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', async (req, res, next) => {
 	const slug = req.params.slug as string;
 
 	try {
 		const library = await Library.findOne({ where: { slug } });
 
+		if (!library)
+			throw {
+				status: 404,
+				message: 'Library could not be found.',
+			};
+
 		return res.json(library);
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug/items', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const slug = req.params.slug as string;
 
@@ -70,6 +80,13 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 			Show.count({ include: [getLibraryWhereOptions(slug)] }),
 		]);
+
+		if (items.length === 0 && total === 0)
+			throw {
+				status: 404,
+				message: 'No shows found in library.',
+			};
+
 		return res.json({
 			next: getNextUrl(req, items.length),
 			items,
@@ -77,9 +94,11 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			type: 'show',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });

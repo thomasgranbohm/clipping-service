@@ -17,10 +17,10 @@
 
 ## What's left to do
 
+- Backend error handling
 - Better clip creating UI
+- Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format
 - Enhanced video player
+- Improved UI and UX
 - Search features
 - Transcoding or some solution for media that browsers don't support
-- Change PRIVATE_KEY and PUBLIC_KEY from PEM format to JWK string format
-- Improved UI and UX
-- Backend error handling

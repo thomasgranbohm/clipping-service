@@ -8,6 +8,7 @@ import { getNextUrl } from '../functions';
 import Authentication from '../middlewares/Authentication';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import { stream } from '../services/Streamer';
+import { CustomError } from '../types';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
 import { getSeasonWhereOptions } from './Season';
 
@@ -33,32 +34,48 @@ const getAppropriateWhereOptions = (query): Includeable => {
 	return getEpisodeWhereOptions(episode, season, show, library);
 };
 
-router.get('/', DatabaseLimit, async (req, res) => {
+router.get('/', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 
-	const [items, total] = await Promise.all([
-		Clip.findAll({
-			limit,
-			offset,
-			order: [['createdAt', 'DESC']],
-			where: { ready: true },
-			include: [getAppropriateWhereOptions(req.query)],
-		}),
-		Clip.count({
-			where: { ready: true },
-			include: [getAppropriateWhereOptions(req.query)],
-		}),
-	]);
+	try {
+		const [items, total] = await Promise.all([
+			Clip.findAll({
+				limit,
+				offset,
+				order: [['createdAt', 'DESC']],
+				where: { ready: true },
+				include: [getAppropriateWhereOptions(req.query)],
+			}),
+			Clip.count({
+				where: { ready: true },
+				include: [getAppropriateWhereOptions(req.query)],
+			}),
+		]);
 
-	return res.json({
-		items,
-		next: getNextUrl(req, items.length),
-		total,
-		type: 'clip',
-	});
+		// Removed
+		// if (items.length === 0 && total === 0)
+		// 	throw new CustomError({
+		// 		status: 404,
+		// 		message: 'No clips found in episode.',
+		// 	});
+
+		return res.json({
+			items,
+			next: getNextUrl(req, items.length),
+			total,
+			type: 'clip',
+		});
+	} catch (error) {
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
+	}
 });
 
-router.post('/', Authentication, async (req, res) => {
+router.post('/', Authentication, async (req, res, next) => {
 	const { title, episode, season, show, library, start, end } = req.body;
 
 	try {
@@ -68,35 +85,34 @@ router.post('/', Authentication, async (req, res) => {
 		});
 
 		if (!foundEpisode)
-			throw {
+			throw new CustomError({
 				status: 404,
-				message: 'Could not find episode.',
-			};
+				message: 'Episode not found in season.',
+			});
 
 		if (!title || title.length === 0)
-			throw {
+			throw new CustomError({
 				status: 400,
 				message: 'Title cannot be null.',
-			};
+			});
 
-		if (!TITLE_REGEX.test(title)) {
-			throw {
+		if (!TITLE_REGEX.test(title))
+			throw new CustomError({
 				status: 400,
 				message: `Title does not pass regex test (${TITLE_REGEX.toString()})`,
-			};
-		}
+			});
 
 		if (end < start)
-			throw {
+			throw new CustomError({
 				status: 400,
 				message: 'End cannot be before start.',
-			};
+			});
 
 		if (start < 0 || end > foundEpisode.duration)
-			throw {
+			throw new CustomError({
 				status: 400,
 				message: 'Start or end is beyond boundaries.',
-			};
+			});
 
 		const clip = await Clip.create({
 			title,
@@ -107,14 +123,16 @@ router.post('/', Authentication, async (req, res) => {
 
 		return res.json(clip);
 	} catch (error) {
-		console.log(error);
-		return res
-			.status(error['status'] || 400)
-			.json({ message: error['message'] || error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -123,23 +141,28 @@ router.get('/:slug', async (req, res) => {
 			include: [getAppropriateWhereOptions(req.query)],
 		});
 		if (!clip)
-			throw {
-				name: 404,
-				description: 'Could not find clip.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'Clip not found.',
+			});
 		else if (!clip.ready)
-			throw {
-				name: 400,
-				description: 'File not ready yet.',
-			};
+			throw new CustomError({
+				status: 425,
+				message: 'Clip not ready.',
+			});
 
 		return res.json(clip);
 	} catch (error) {
-		return res.status(404).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.delete('/:slug', async (req, res) => {
+router.delete('/:slug', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -150,11 +173,16 @@ router.delete('/:slug', async (req, res) => {
 
 		return res.json({ deleted: clip });
 	} catch (error) {
-		return res.status(404).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.get('/:slug/watch', async (req, res) => {
+router.get('/:slug/watch', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -162,23 +190,28 @@ router.get('/:slug/watch', async (req, res) => {
 			where: { slug },
 		});
 		if (!clip)
-			throw {
-				name: '404',
-				description: 'Could not find clip.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'Clip not found.',
+			});
 		else if (!clip.ready)
-			throw {
-				name: 400,
-				description: 'File not ready yet.',
-			};
+			throw new CustomError({
+				status: 425,
+				message: 'Clip not ready.',
+			});
 
 		return stream(req, res, clip.getMediaPath());
 	} catch (error) {
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.get('/:slug/download', async (req, res) => {
+router.get('/:slug/download', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -186,15 +219,15 @@ router.get('/:slug/download', async (req, res) => {
 			where: { slug },
 		});
 		if (!clip)
-			throw {
-				name: '404',
-				description: 'Could not find clip.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'Clip not found.',
+			});
 		else if (!clip.ready)
-			throw {
-				name: 400,
-				description: 'File not ready yet.',
-			};
+			throw new CustomError({
+				status: 425,
+				message: 'Clip not ready.',
+			});
 
 		res.setHeader(
 			'Content-disposition',
@@ -205,12 +238,16 @@ router.get('/:slug/download', async (req, res) => {
 		const filestream = createReadStream(clip.getMediaPath());
 		filestream.pipe(res);
 	} catch (error) {
-		console.error(error);
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.get('/:slug/thumbnail', async (req, res) => {
+router.get('/:slug/thumbnail', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -218,23 +255,28 @@ router.get('/:slug/thumbnail', async (req, res) => {
 			where: { slug },
 		});
 		if (!clip)
-			throw {
-				name: '404',
-				description: 'Could not find clip.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'Clip not found.',
+			});
 		else if (!clip.ready)
-			throw {
-				name: 400,
-				description: 'File not ready yet.',
-			};
+			throw new CustomError({
+				status: 425,
+				message: 'Clip not ready.',
+			});
 
 		return res.sendFile(clip.getThumbnailPath());
 	} catch (error) {
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 
-router.get('/:slug/oembed', async (req, res) => {
+router.get('/:slug/oembed', async (req, res, next) => {
 	const { slug } = req.params;
 
 	try {
@@ -242,15 +284,15 @@ router.get('/:slug/oembed', async (req, res) => {
 			where: { slug },
 		});
 		if (!clip)
-			throw {
-				name: '404',
-				description: 'Could not find clip.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'Clip not found.',
+			});
 		else if (!clip.ready)
-			throw {
-				name: 400,
-				description: 'File not ready yet.',
-			};
+			throw new CustomError({
+				status: 425,
+				message: 'Clip not ready.',
+			});
 
 		return res.json({
 			version: '1.0',
@@ -265,7 +307,12 @@ router.get('/:slug/oembed', async (req, res) => {
 			html: `<iframe width="320" height="200" src="${process.env.FRONTEND_URL}/api/clips/${clip.slug}/watch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
 		});
 	} catch (error) {
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 

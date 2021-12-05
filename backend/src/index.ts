@@ -23,21 +23,30 @@ server.use(
 server.use(express.json());
 server.use(cookieParser());
 
+type CustomError = {
+	status: number;
+	message: string;
+	stack?: string[];
+	error?: unknown;
+};
+
 // Plex API
 server.use('/clip', Clip);
 server.use('/episode', Episode);
 server.use('/library', Library);
 server.use('/path', Path);
-server.use(`/season`, Season);
-server.use(`/show`, Show);
+server.use('/season', Season);
+server.use('/show', Show);
 server.use('/webhook', Webhook);
-server.use((err, _, res, __) => {
+server.use((err: CustomError, _, res, __) => {
 	console.error('Got error:', err);
 
-	if ('status' in err) {
-		res.status(parseInt(err.status));
-	}
-	return res.json(err);
+	const { message, status, stack } = err;
+
+	return res.status(status).json({
+		message,
+		stack,
+	});
 });
 
 server.post('/login', async (req, res) => {
@@ -61,8 +70,9 @@ server.get('/verify', Authentication, async (_, res) => {
 });
 
 const main = async () => {
-	await connectToDatabase();
+	const s = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
+		await s.sync({ force: true });
 		await revalidate();
 	}
 	server.listen(1337, async () => {

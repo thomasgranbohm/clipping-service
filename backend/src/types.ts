@@ -56,3 +56,15 @@ export type EpisodeType = ShortEpisodeType &
 		filePath: string;
 		summary: string;
 	};
+
+export class CustomError extends Error {
+	status: number;
+	message: string;
+
+	constructor({ status, message }) {
+		super(message);
+
+		this.status = status;
+		this.message = message;
+	}
+}

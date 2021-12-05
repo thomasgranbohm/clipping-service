@@ -9,23 +9,36 @@ import { addToURL, generateBackendURL } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const { library, show, season, episode, clip: slug } = params;
-	const urlParams = `library=${library}&show=${show}&season=${season}&episode=${episode}`;
-	const { data: clip } = await privateAPI(
-		`/clip/${slug}/?${urlParams.toString()}`
-	);
+	try {
+		const { library, show, season, episode, clip: slug } = params;
+		const urlParams = `library=${library}&show=${show}&season=${season}&episode=${episode}`;
+		const { data: clip } = await privateAPI(
+			`/clip/${slug}/?${urlParams.toString()}`
+		);
 
-	if (!clip) {
+		if (!clip) {
+			return {
+				notFound: true,
+				revalidate: 1,
+			};
+		}
+
 		return {
-			notFound: true,
+			props: { clip },
 			revalidate: 1,
 		};
+	} catch (error) {
+		if (error['isAxiosError']) {
+			if (error['response']['status'] === 404) {
+				return {
+					notFound: true,
+				};
+			} else {
+				throw error['response']['data'];
+			}
+		}
+		throw error;
 	}
-
-	return {
-		props: { clip },
-		revalidate: 1,
-	};
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -53,7 +66,21 @@ const ClipPage = ({ clip }) => {
 		<Layout links={clip}>
 			<SEO
 				title={`Clip - ${title}`}
-				description={`Clip from ${show.title} ${season.title}.`}
+				description={`Clip from ${show.title} ${season.title}.
+	try {
+
+	} catch (error) {
+		if (error['isAxiosError']) {
+			if (error['response']['status'] === 404) {
+				return {
+					notFound: true,
+				};
+			} else {
+				throw error['response']['data'];
+			}
+		}
+		throw error;
+	}`}
 				image={addToURL(backendURL, `thumbnail`).href}
 				oembed={addToURL(backendURL, `oembed`).href}
 				video={addToURL(backendURL, `watch`).href}

@@ -6,6 +6,7 @@ import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
+import { CustomError } from '../types';
 import { getShowWhereOptions, SHOW_REQUIRED_ARGS } from './Show';
 
 const router = Router();
@@ -26,7 +27,7 @@ export const getSeasonWhereOptions = (
 
 router.use(MissingArgs(SEASON_REQUIRED_ARGS));
 
-router.get('/', DatabaseLimit, async (req, res) => {
+router.get('/', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const { library, show } = req.query;
 
@@ -43,6 +44,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
+		if (items.length === 0 && total === 0)
+			throw new CustomError({
+				status: 404,
+				message: 'No seasons found in show.',
+			});
+
 		return res.json({
 			next: getNextUrl(req, items.length),
 			items,
@@ -50,14 +57,16 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			type: 'season',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:index', async (req, res) => {
+router.get('/:index', async (req, res, next) => {
 	const { index } = req.params;
 	const { library, show } = req.query;
 
@@ -67,16 +76,24 @@ router.get('/:index', async (req, res) => {
 			include: [getShowWhereOptions(show, library)],
 		});
 
+		if (!season)
+			throw new CustomError({
+				status: 404,
+				message: 'Season not found in show.',
+			});
+
 		return res.json(season);
 	} catch (error) {
-		return res.status(404).json({
-			status: 404,
-			message: 'Could not find season.',
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:index/items', DatabaseLimit, async (req, res) => {
+router.get('/:index/items', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const { index } = req.params;
 	const { library, show } = req.query;
@@ -94,43 +111,61 @@ router.get('/:index/items', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
+		if (items.length === 0 && total === 0)
+			throw new CustomError({
+				status: 404,
+				message: 'No episodes found in season.',
+			});
+
 		return res.json({
 			items,
 			next: getNextUrl(req, items.length),
 			total,
 			type: 'episode',
 		});
-	} catch (err) {
-		return res.status(404).json({
-			status: 404,
-			message: 'Could not find season.',
+	} catch (error) {
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:index/thumbnail', async (req, res) => {
+router.get('/:index/thumbnail', async (req, res, next) => {
 	const { index } = req.params;
 	const { library, show } = req.query;
 
 	try {
-		const { thumb } = await Season.findOne({
+		const season = await Season.findOne({
 			attributes: ['thumb'],
 			where: { index },
 			include: [getShowWhereOptions(show, library)],
 		});
+
+		if (!season)
+			throw new CustomError({
+				status: 404,
+				message: 'Season not found in show.',
+			});
+
+		const { thumb } = season;
 		if (!thumb)
-			throw {
-				name: '404',
-				description: 'Could not find season.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'No thumbnail found for season.',
+			});
 
 		const { data } = await getMedia(thumb);
 
 		data.pipe(res);
-	} catch (err) {
-		return res.status(404).json({
-			status: 404,
-			message: 'Could not find season.',
+	} catch (error) {
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });

@@ -6,6 +6,7 @@ import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
+import { CustomError } from '../types';
 import { getLibraryWhereOptions as getLibraryWhereOptions } from './Library';
 
 const router = Router();
@@ -25,7 +26,7 @@ export const getShowWhereOptions = (
 
 router.use(MissingArgs(SHOW_REQUIRED_ARGS));
 
-router.get('/', DatabaseLimit, async (req, res) => {
+router.get('/', DatabaseLimit, async (req, res, next) => {
 	const { limit, offset } = req;
 	const { library } = req.query;
 
@@ -42,6 +43,12 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
+		if (items.length === 0 && total === 0)
+			throw {
+				status: 404,
+				message: `No shows found in library.`,
+			};
+
 		return res.json({
 			items,
 			next: getNextUrl(req, items.length),
@@ -49,32 +56,43 @@ router.get('/', DatabaseLimit, async (req, res) => {
 			type: 'show',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', async (req, res, next) => {
 	const { library } = req.query;
+	const { slug } = req.params;
 
 	try {
 		const show = await Show.findOne({
-			where: { slug: req.params.slug },
+			where: { slug },
 			include: [getLibraryWhereOptions(library.toString())],
 		});
 
+		if (!show)
+			throw {
+				status: 404,
+				message: 'Show not found in library.',
+			};
+
 		return res.json(show);
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug/items', DatabaseLimit, async (req, res) => {
+router.get('/:slug/items', DatabaseLimit, async (req, res, next) => {
 	const { slug } = req.params;
 	const library = req.query.library as string;
 	const { limit, offset } = req;
@@ -92,6 +110,12 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			}),
 		]);
 
+		if (items.length === 0 && total === 0)
+			throw {
+				status: 404,
+				message: 'No seasons found in show.',
+			};
+
 		return res.json({
 			items,
 			next: getNextUrl(req, items.length),
@@ -99,35 +123,49 @@ router.get('/:slug/items', DatabaseLimit, async (req, res) => {
 			type: 'season',
 		});
 	} catch (error) {
-		res.status(400).json({
-			status: 400,
-			message: error.toString(),
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
 		});
 	}
 });
 
-router.get('/:slug/thumbnail', async (req, res) => {
+router.get('/:slug/thumbnail', async (req, res, next) => {
 	const { slug } = req.params;
 	const { library } = req.query;
 
 	try {
-		const { thumb } = await Show.findOne({
+		const show = await Show.findOne({
 			attributes: ['thumb'],
 			where: { slug },
 			include: [getLibraryWhereOptions(library)],
 		});
+
+		if (!show)
+			throw new CustomError({
+				status: 404,
+				message: 'Show not found in library.',
+			});
+
+		const { thumb } = show;
 		if (!thumb)
-			throw {
-				name: '404',
-				description: 'Could not find show.',
-			};
+			throw new CustomError({
+				status: 404,
+				message: 'No thumbnail found for show.',
+			});
 
 		const { data } = await getMedia(thumb);
 
 		data.pipe(res);
 	} catch (error) {
-		console.log(error);
-		return res.status(400).json({ error });
+		next({
+			status: error['status'] || 500,
+			message: error['message'],
+			stack: error['stack'],
+			error,
+		});
 	}
 });
 

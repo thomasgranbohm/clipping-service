@@ -10,7 +10,7 @@ import {
 	ShortSeasonType,
 	ShortShowType,
 	ShowType,
-} from 'types';
+} from '../types';
 
 const plex = axios.create({
 	baseURL: `http://${process.env.PLEX_URL}`,

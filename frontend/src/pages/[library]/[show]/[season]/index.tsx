@@ -8,18 +8,31 @@ import { privateAPI } from 'utils/api';
 import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const search = getURLParams(params);
-	const [{ data: season }, { data: episodes }, { data: clips }] =
-		await Promise.all([
-			privateAPI(`/season/${params.season}/?${search.toString()}`),
-			privateAPI(`/season/${params.season}/items?${search.toString()}`),
-			privateAPI(`/clip/?${search.toString()}`),
-		]);
+	try {
+		const search = getURLParams(params);
+		const [{ data: season }, { data: episodes }, { data: clips }] =
+			await Promise.all([
+				privateAPI(`/season/${params.season}/?${search.toString()}`),
+				privateAPI(`/season/${params.season}/items?${search.toString()}`),
+				privateAPI(`/clip/?${search.toString()}`),
+			]);
 
-	return {
-		props: { season, episodes, clips },
-		revalidate: 1,
-	};
+		return {
+			props: { season, episodes, clips },
+			revalidate: 1,
+		};
+	} catch (error) {
+		if (error['isAxiosError']) {
+			if (error['response']['status'] === 404) {
+				return {
+					notFound: true,
+				};
+			} else {
+				throw error['response']['data'];
+			}
+		}
+		throw error;
+	}
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {

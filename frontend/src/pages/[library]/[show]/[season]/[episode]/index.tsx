@@ -10,20 +10,33 @@ import { addToURL, generateBackendURL, getURLParams } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-	const { episode: episodeSlug } = params;
-	const urlParams = getURLParams(params);
-	const [{ data: episode }, { data: clips }] = await Promise.all([
-		privateAPI(`/episode/${episodeSlug}/?${urlParams.toString()}`),
-		privateAPI(`/episode/${episodeSlug}/items?${urlParams.toString()}`),
-	]);
+	try {
+		const { episode: episodeSlug } = params;
+		const urlParams = getURLParams(params);
+		const [{ data: episode }, { data: clips }] = await Promise.all([
+			privateAPI(`/episode/${episodeSlug}/?${urlParams.toString()}`),
+			privateAPI(`/episode/${episodeSlug}/items?${urlParams.toString()}`),
+		]);
 
-	return {
-		props: {
-			episode,
-			clips,
-		},
-		revalidate: 1,
-	};
+		return {
+			props: {
+				episode,
+				clips,
+			},
+			revalidate: 1,
+		};
+	} catch (error) {
+		if (error['isAxiosError']) {
+			if (error['response']['status'] === 404) {
+				return {
+					notFound: true,
+				};
+			} else {
+				throw error['response']['data'];
+			}
+		}
+		throw error;
+	}
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {

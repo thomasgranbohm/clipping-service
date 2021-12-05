@@ -1,6 +1,6 @@
 import { Model, ModelCtor, Sequelize } from 'sequelize-typescript';
 import { WhereOptions } from 'sequelize/types';
-import { SeasonType, ShowType } from 'types';
+import { SeasonType, ShowType } from '../types';
 import { REVALIDATION_TIMEOUT } from '../constants';
 import {
 	getAllLibraries,
