@@ -1,24 +1,45 @@
+import {
+	AriaBreadcrumbItemProps,
+	AriaBreadcrumbsProps,
+} from '@react-types/breadcrumbs';
 import Anchor from 'components/Anchor/Anchor';
-import { BreadcrumbData } from 'utils/types';
+import { useRef } from 'react';
+import { useBreadcrumbItem, useBreadcrumbs } from 'react-aria';
 import classes from './Breadcrumb.module.scss';
 
-const Breadcrumb = ({ href, title, slash }) => (
-	<>
-		<Anchor href={`${href}`}>{title}</Anchor>
-		{slash && <span className={classes['slash']}>/</span>}
-	</>
-);
+type BreadcrumbProps = {
+	href: string;
+} & AriaBreadcrumbItemProps;
 
-type BreadcrumbsProps = {
-	links: BreadcrumbData[];
+export const Breadcrumb = ({ href, ...props }: BreadcrumbProps) => {
+	const ref = useRef<HTMLAnchorElement>(null);
+	const { itemProps } = useBreadcrumbItem(props, ref);
+	const { children, isCurrent } = props;
+
+	return (
+		<li className={classes['item']}>
+			<Anchor {...itemProps} ref={ref} href={href}>
+				{children}
+			</Anchor>
+			{!isCurrent && (
+				<span aria-hidden className={classes['slash']}>
+					/
+				</span>
+			)}
+		</li>
+	);
 };
 
-const Breadcrumbs = ({ links }: BreadcrumbsProps) => (
-	<nav className={classes['container']}>
-		{links &&
-			links.map((props, i, arr) => (
-				<Breadcrumb key={i} {...props} slash={i !== arr.length - 1} />
-			))}
-	</nav>
-);
+type BreadcrumbsProps = AriaBreadcrumbsProps<unknown>;
+
+const Breadcrumbs = (props: BreadcrumbsProps) => {
+	const { navProps } = useBreadcrumbs(props);
+	const { children } = props;
+
+	return (
+		<nav aria-label="Breadcrumb" className={classes['container']} {...navProps}>
+			<ol className={classes['list']}>{children}</ol>
+		</nav>
+	);
+};
 export default Breadcrumbs;

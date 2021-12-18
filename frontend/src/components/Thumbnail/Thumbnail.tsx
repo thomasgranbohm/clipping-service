@@ -36,8 +36,8 @@ const Thumbnail = ({ url, thumbnailType, title, ...props }: ThumbnailProps) => {
 	const backendURL = generateBackendURL(url);
 
 	return (
-		<Anchor href={url}>
-			<div className={concat(classes['container'], classes[thumbnailType])}>
+		<Anchor className={classes['container']} href={url}>
+			<div className={concat(classes['content'], classes[thumbnailType])}>
 				<div className={classes['thumbnail-container']}>
 					<Image
 						alt={title}

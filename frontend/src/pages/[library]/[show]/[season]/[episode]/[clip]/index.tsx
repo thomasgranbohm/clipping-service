@@ -66,21 +66,7 @@ const ClipPage = ({ clip }) => {
 		<Layout links={clip}>
 			<SEO
 				title={`Clip - ${title}`}
-				description={`Clip from ${show.title} ${season.title}.
-	try {
-
-	} catch (error) {
-		if (error['isAxiosError']) {
-			if (error['response']['status'] === 404) {
-				return {
-					notFound: true,
-				};
-			} else {
-				throw error['response']['data'];
-			}
-		}
-		throw error;
-	}`}
+				description={`Clip from ${show.title} ${season.title}.`}
 				image={addToURL(backendURL, `thumbnail`).href}
 				oembed={addToURL(backendURL, `oembed`).href}
 				video={addToURL(backendURL, `watch`).href}

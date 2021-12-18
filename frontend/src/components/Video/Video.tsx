@@ -4,13 +4,14 @@ import { addToURL, generateBackendURL } from 'utils/functions';
 import classes from './Video.module.scss';
 
 type VideoProps = {
+	controls?: boolean;
 	identifier: string;
 	type: 'clip' | 'episode';
 	toggleFullscreen?: (e) => void;
 };
 
 const Video = forwardRef<HTMLVideoElement, VideoProps>(
-	({ identifier, toggleFullscreen, type }, videoRef) => {
+	({ controls, identifier, toggleFullscreen, type }, videoRef) => {
 		const router = useRouter();
 		const backendURL = generateBackendURL(router.asPath);
 
@@ -21,6 +22,7 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(
 				ref={videoRef}
 				onDoubleClick={toggleFullscreen}
 				poster={addToURL(backendURL, 'thumbnail').href}
+				controls={controls}
 			>
 				<source src={addToURL(backendURL, 'watch').href} type={'video/mp4'} />
 				<p>Your browser does not support HTML5 video.</p>

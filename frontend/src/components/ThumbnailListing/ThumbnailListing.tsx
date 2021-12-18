@@ -37,21 +37,24 @@ const ThumbnailListing = ({
 	);
 
 	return (
-		<div className={concat(classes['container'], classes[type])}>
-			{stateItems.map((props: any, i) => {
-				const thumbnailProps = {
-					key: i,
-					title: 'index' in props && `Season ${props.index}`,
-					type,
-					url: getURLFromModel(props),
-					...props,
-				};
-				if (type === 'show') return <ShowThumbnail {...thumbnailProps} />;
-				if (type === 'season') return <SeasonThumbnail {...thumbnailProps} />;
-				if (type === 'episode') return <EpisodeThumbnail {...thumbnailProps} />;
-			})}
+		<>
+			<div className={concat(classes['container'], classes[type])}>
+				{stateItems.map((props: any, i) => {
+					const thumbnailProps = {
+						key: i,
+						title: 'index' in props && `Season ${props.index}`,
+						type,
+						url: getURLFromModel(props),
+						...props,
+					};
+					if (type === 'show') return <ShowThumbnail {...thumbnailProps} />;
+					if (type === 'season') return <SeasonThumbnail {...thumbnailProps} />;
+					if (type === 'episode')
+						return <EpisodeThumbnail {...thumbnailProps} />;
+				})}
+			</div>
 			{sentinel}
-		</div>
+		</>
 	);
 };
 

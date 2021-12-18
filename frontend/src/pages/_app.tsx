@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useEffect } from 'react';
+import { SSRProvider } from 'react-aria';
 import 'styles/globals.scss';
 import colors from 'styles/_colors.module.scss';
 
@@ -15,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 	}, []);
 
 	return (
-		<>
+		<SSRProvider>
 			<Head>
 				<meta name="theme-color" content={colors['accent']} />
 			</Head>
@@ -25,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<code>{JSON.stringify(pageProps, null, 4)}</code>
 				</pre>
 			)}
-		</>
+		</SSRProvider>
 	);
 }
 export default MyApp;

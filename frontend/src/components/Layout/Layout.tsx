@@ -1,5 +1,5 @@
 import Anchor from 'components/Anchor/Anchor';
-import Breadcrumbs from 'components/Breadcrumb/Breadcrumb';
+import Breadcrumbs, { Breadcrumb } from 'components/Breadcrumb/Breadcrumb';
 import { FC } from 'react';
 import { flattenLinks } from 'utils/functions';
 import { JointBreadcrumbType } from 'utils/types';
@@ -11,13 +11,27 @@ type LayoutProps = {
 
 const Layout: FC<LayoutProps> = ({ children, links, ...props }) => {
 	const flattenedLinks = flattenLinks(links);
-	const top = flattenedLinks.pop();
 
 	return (
 		<div className={classes['container']}>
 			<header>
-				<Breadcrumbs links={flattenedLinks} />
-				<h1>{top.title}</h1>
+				{flattenedLinks.length > 1 && (
+					<Breadcrumbs>
+						{flattenedLinks
+							.slice(0, flattenedLinks.length - 1)
+							.map(({ title, ...props }, i, arr) => (
+								<Breadcrumb
+									elementType="a"
+									key={i}
+									isCurrent={i === arr.length - 1}
+									{...props}
+								>
+									{title}
+								</Breadcrumb>
+							))}
+					</Breadcrumbs>
+				)}
+				<h1>{flattenedLinks.slice().pop().title}</h1>
 			</header>
 			<article className={classes['content']}>{children}</article>
 			<footer>

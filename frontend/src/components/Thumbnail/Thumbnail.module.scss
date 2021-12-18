@@ -1,6 +1,6 @@
 @import 'styles/includes';
 
-.container {
+.content {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -40,12 +40,8 @@
 		overflow: hidden;
 	}
 	.thumbnail {
-		transition: transform 0.2s ease-in-out;
+		transition: transform 0.2s ease-out;
 	}
-	&:hover .thumbnail {
-		transform: scale(1.02);
-	}
-
 	.title {
 		margin: 0;
 		font-size: 1.125rem;
@@ -55,5 +51,16 @@
 		overflow: hidden;
 		white-space: nowrap;
 		text-decoration: none;
+	}
+}
+
+.container:focus,
+.container:focus-visible,
+.container:hover {
+	.thumbnail {
+		transform: scale(1.02);
+	}
+	.title {
+		text-decoration: underline;
 	}
 }

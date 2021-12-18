@@ -52,7 +52,19 @@ const useObserver = (
 		};
 	});
 
-	const sentinel = !stoppingCondition && <div ref={ref}></div>;
+	const sentinel = !stoppingCondition && (
+		<div
+			ref={ref}
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+				padding: '2rem',
+				width: '100%',
+			}}
+		>
+			Loading...
+		</div>
+	);
 
 	return sentinel;
 };
