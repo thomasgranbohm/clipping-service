@@ -26,6 +26,7 @@ const Image = ({ className = '', src, alt, width, height }: ImageProps) => (
 			blurDataURL={`/_next/image?url=${encodeURIComponent(
 				src.replace(process.env.NEXT_PUBLIC_BACKEND_URL, 'http://backend:1337')
 			)}&w=8&q=1`}
+			objectFit="cover"
 			loading="lazy"
 		/>
 	</div>
