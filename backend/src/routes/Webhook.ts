@@ -1,17 +1,23 @@
-import { revalidate, syncAll } from '../database';
 import { Router } from 'express';
+import multer from 'multer';
+import { syncAll } from '../database';
 
 const router = Router();
+const upload = multer({ dest: '/tmp/' });
 
-router.post('/plex', (req, res) => {
+router.post('/plex', upload.single('thumb'), (req, res) => {
 	const { event } = req.body;
-	if (!event) return res.status(400).send('Not OK');
+
+	console.debug('Body', req.body);
 
 	switch (event) {
 		case 'library.new':
 		case 'admin.database.backup':
 			console.debug('Webhook triggered syncing!');
 			syncAll();
+			break;
+		default:
+			console.debug('Unrecognised event', event);
 			break;
 	}
 
