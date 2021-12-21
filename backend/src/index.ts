@@ -39,13 +39,14 @@ server.use('/season', Season);
 server.use('/show', Show);
 server.use('/webhook', Webhook);
 server.use((err: CustomError, _, res, __) => {
-	console.error('Got error:', err);
-
 	const { message, status, stack } = err;
 
-	return res.status(status).json({
-		message,
-		stack,
+	return res.status(status || 500).json({
+		message: message || 'Something went wrong.',
+		stack:
+			process.env.NODE_ENV === 'production'
+				? stack
+				: 'Only available in development.',
 	});
 });
 
