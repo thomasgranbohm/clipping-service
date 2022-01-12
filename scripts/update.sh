@@ -12,8 +12,7 @@ git pull
 echo "";
 
 echo "Install new dependencies...";
-docker-compose -f $COMPOSE_FILE run backend npm i
-docker-compose -f $COMPOSE_FILE run frontend npm i
+docker-compose -f $COMPOSE_FILE run frontend npm ci --production 
 echo "";
 
 bash $ROOTDIR/scripts/build.sh
