@@ -13,7 +13,7 @@ type BreadcrumbProps = {
 
 export const Breadcrumb = ({ href, ...props }: BreadcrumbProps) => {
 	const ref = useRef<HTMLAnchorElement>(null);
-	const { itemProps } = useBreadcrumbItem(props, ref);
+	const { itemProps } = useBreadcrumbItem({ ...props, isCurrent: false }, ref);
 	const { children, isCurrent } = props;
 
 	return (
