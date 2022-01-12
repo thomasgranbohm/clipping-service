@@ -1,9 +1,11 @@
-import { mkdir, rm } from 'fs/promises';
+import { access, mkdir, rm } from 'fs/promises';
 import { resolve } from 'path';
 import {
 	AfterCreate,
 	AllowNull,
+	BeforeBulkCreate,
 	BeforeBulkDestroy,
+	BeforeBulkUpdate,
 	BeforeCreate,
 	BeforeDestroy,
 	BeforeUpdate,
@@ -32,15 +34,23 @@ export class Clip extends Model {
 	@Column
 	slug: string;
 
+	@BeforeBulkCreate
+	@BeforeBulkUpdate
+	static beforeBulk(instances: Clip[]) {
+		instances.forEach(Clip.createSlug);
+	}
+
 	@BeforeCreate
 	@BeforeUpdate
 	static createSlug(instance: Clip) {
 		instance.title = instance.title.trim();
-		instance.slug = slugify(instance.title, {
-			lower: true,
-			remove: /[^a-zA-Z0-9 -]/g,
-			trim: true,
-		});
+		if (!instance.slug) {
+			instance.slug = slugify(instance.title, {
+				lower: true,
+				remove: /[^a-zA-Z0-9 -]/g,
+				trim: true,
+			});
+		}
 		instance.duration = instance.end - instance.start;
 	}
 
@@ -70,35 +80,44 @@ export class Clip extends Model {
 	@Column
 	episodeId: number;
 
-	@BelongsTo(() => Episode)
+	@BelongsTo(() => Episode, { onDelete: 'SET NULL' })
 	episode: Episode;
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
 
-		console.log(
-			instance.slug,
-			(instance.slug = slugify(
-				instance.title.replace(/[^a-zA-Z0-9 -]/g, ' ').trim(),
-				{
-					lower: true,
-					remove: /[^a-zA-Z0-9 -]/g,
-				}
-			))
-		);
+		const path = instance.getPath();
+		try {
+			await access(path);
+		} catch (error) {
+			console.log(
+				instance.slug,
+				(instance.slug = slugify(
+					instance.title.replace(/[^a-zA-Z0-9 -]/g, ' ').trim(),
+					{
+						lower: true,
+						remove: /[^a-zA-Z0-9 -]/g,
+					}
+				))
+			);
 
-		await mkdir(instance.getPath());
-		generateClip(instance);
+			await mkdir(path);
+			generateClip(instance);
+		}
 	}
 
 	@BeforeDestroy
-	@BeforeBulkDestroy
 	static async removeClip(instance: Clip) {
 		console.debug('Remove clip from file system with id %d.', instance.id);
 		if (instance && instance.getPath) {
 			await rm(instance.getPath(), { recursive: true, force: true });
 		}
+	}
+
+	@BeforeBulkDestroy
+	static async removeClips(instances: Clip[]) {
+		await Promise.all(instances.map(Clip.removeClip));
 	}
 
 	getPath() {

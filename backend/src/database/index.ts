@@ -1,6 +1,5 @@
 import { Model, ModelCtor, Sequelize } from 'sequelize-typescript';
 import { WhereOptions } from 'sequelize/types';
-import { SeasonType, ShowType } from '../types';
 import { REVALIDATION_TIMEOUT } from '../constants';
 import {
 	getAllLibraries,
@@ -8,7 +7,9 @@ import {
 	getItemDetails,
 	getLibraryContents,
 } from '../services/PlexAPI';
+import { SeasonType, ShowType } from '../types';
 import { DATABASE_CONFIG } from './config';
+import { Clip } from './models/Clip';
 import { Episode } from './models/Episode';
 import { Library } from './models/Library';
 import { Season } from './models/Season';
@@ -19,6 +20,30 @@ export const connectToDatabase = () => new Sequelize(DATABASE_CONFIG);
 export const revalidate = async () => {
 	await syncAll();
 	return setTimeout(revalidate, REVALIDATION_TIMEOUT);
+};
+
+export const reinitialize = async () => {
+	const clips = await Clip.findAll({
+		attributes: ['title', 'start', 'end', 'episodeId'],
+	});
+
+	await Episode.destroy({ where: {} });
+	await Season.destroy({ where: {} });
+	await Show.destroy({ where: {} });
+	await Library.destroy({ where: {} });
+
+	await syncAll();
+
+	await Clip.bulkCreate(
+		clips.map(({ title, slug, start, end, episodeId }) => ({
+			title,
+			slug,
+			start,
+			end,
+			episodeId,
+			ready: true,
+		}))
+	);
 };
 
 const upsert = async <M extends Model>(
