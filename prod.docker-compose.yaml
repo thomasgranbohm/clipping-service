@@ -30,6 +30,8 @@ services:
     depends_on:
       - backend
     env_file: ./config/production.frontend.env
+    environment:
+      NEXT_PUBLIC_GIT_COMMIT: ${GIT_COMMIT}
     image: node:16
     expose:
       - 3000

@@ -4,9 +4,10 @@
 
 ## Setup
 
-1. Copy every `*.example.env` to `*.env`
-2. Fill in the values
-3. Start!
+1. Copy every `config/*.example.env` to `config/*.env`
+1. Copy `example.env` to `.env`
+1. Fill in the values
+1. Run `./scripts/build.sh`
 
 ## Requirements
 

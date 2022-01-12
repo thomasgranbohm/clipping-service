@@ -2,6 +2,9 @@
 	"name": "frontend",
 	"version": "0.1.0",
 	"private": true,
+	"repository": "https://github.com/thomasgranbohm/clipping-service",
+	"author": "Thomas Granbohm <thomas.granbohm@gmail.com>",
+	"license": "MIT",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
