@@ -18,7 +18,8 @@
 		}
 	}
 
-	&.episode {
+	&.episode,
+	&.clip {
 		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
 
 		@include large-device {

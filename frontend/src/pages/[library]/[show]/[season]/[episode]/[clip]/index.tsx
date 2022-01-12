@@ -1,7 +1,7 @@
 import Button from 'components/Button/Button';
 import Layout from 'components/Layout/Layout';
-import Player from 'components/Player/Player';
 import SEO from 'components/SEO/SEO';
+import Video from 'components/Video/Video';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import { privateAPI } from 'utils/api';
@@ -53,7 +53,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const ClipPage = ({ clip }) => {
-	const { slug, title, episode, ready, duration } = clip;
+	const { title, episode } = clip;
 	const { season } = episode;
 	const { show } = season;
 
@@ -71,13 +71,7 @@ const ClipPage = ({ clip }) => {
 				oembed={addToURL(backendURL, `oembed`).href}
 				video={addToURL(backendURL, `watch`).href}
 			/>
-			<Player duration={duration} ready={ready} slug={slug} />
-			<Button
-				type="download"
-				href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/clip/${slug}/download`}
-			>
-				Download
-			</Button>
+			<Video url={backendURL} />
 			{loggedIn && <Button type="delete" href={backendURL.href} />}
 		</Layout>
 	);

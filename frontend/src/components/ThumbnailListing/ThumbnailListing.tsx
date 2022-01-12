@@ -1,8 +1,4 @@
-import {
-	EpisodeThumbnail,
-	SeasonThumbnail,
-	ShowThumbnail,
-} from 'components/Thumbnail/Thumbnail';
+import Thumbnail from 'components/Thumbnail/Thumbnail';
 import { useState } from 'react';
 import { publicAPI } from 'utils/api';
 import { concat, getURLFromModel } from 'utils/functions';
@@ -13,7 +9,7 @@ type ThumbnailListingProps = {
 	items: [];
 	next: string;
 	total: number;
-	type: 'show' | 'season' | 'episode';
+	type: 'show' | 'season' | 'episode' | 'clip';
 };
 
 const ThumbnailListing = ({
@@ -41,16 +37,12 @@ const ThumbnailListing = ({
 			<div className={concat(classes['container'], classes[type])}>
 				{stateItems.map((props: any, i) => {
 					const thumbnailProps = {
-						key: i,
 						title: 'index' in props && `Season ${props.index}`,
-						type,
 						url: getURLFromModel(props),
 						...props,
 					};
-					if (type === 'show') return <ShowThumbnail {...thumbnailProps} />;
-					if (type === 'season') return <SeasonThumbnail {...thumbnailProps} />;
-					if (type === 'episode')
-						return <EpisodeThumbnail {...thumbnailProps} />;
+
+					return <Thumbnail key={i} type={type} {...thumbnailProps} />;
 				})}
 			</div>
 			{sentinel}

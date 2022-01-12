@@ -23,9 +23,7 @@ export const revalidate = async () => {
 };
 
 export const reinitialize = async () => {
-	const clips = await Clip.findAll({
-		attributes: ['title', 'start', 'end', 'episodeId'],
-	});
+	const clips = await Clip.findAll({});
 
 	await Episode.destroy({ where: {} });
 	await Season.destroy({ where: {} });
@@ -35,14 +33,18 @@ export const reinitialize = async () => {
 	await syncAll();
 
 	await Clip.bulkCreate(
-		clips.map(({ title, slug, start, end, episodeId }) => ({
-			title,
-			slug,
-			start,
-			end,
-			episodeId,
-			ready: true,
-		}))
+		clips.map(
+			({ title, slug, start, end, episodeId, createdAt, updatedAt }) => ({
+				title,
+				slug,
+				start,
+				end,
+				episodeId,
+				createdAt,
+				updatedAt,
+				ready: true,
+			})
+		)
 	);
 };
 

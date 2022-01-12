@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { createReadStream } from 'fs';
+import { resolve } from 'path';
+import { cwd } from 'process';
 import { Includeable } from 'sequelize/types';
 import { TITLE_REGEX } from '../constants';
 import { Clip } from '../database/models/Clip';
@@ -43,21 +45,12 @@ router.get('/', DatabaseLimit, async (req, res, next) => {
 				limit,
 				offset,
 				order: [['createdAt', 'DESC']],
-				where: { ready: true },
 				include: [getAppropriateWhereOptions(req.query)],
 			}),
 			Clip.count({
-				where: { ready: true },
 				include: [getAppropriateWhereOptions(req.query)],
 			}),
 		]);
-
-		// Removed
-		// if (items.length === 0 && total === 0)
-		// 	throw new CustomError({
-		// 		status: 404,
-		// 		message: 'No clips found in episode.',
-		// 	});
 
 		return res.json({
 			items,
@@ -144,11 +137,6 @@ router.get('/:slug', async (req, res, next) => {
 			throw new CustomError({
 				status: 404,
 				message: 'Clip not found.',
-			});
-		else if (!clip.ready)
-			throw new CustomError({
-				status: 425,
-				message: 'Clip not ready.',
 			});
 
 		return res.json(clip);
@@ -254,16 +242,14 @@ router.get('/:slug/thumbnail', async (req, res, next) => {
 		const clip = await Clip.findOne({
 			where: { slug },
 		});
-		if (!clip)
+		if (!clip) {
 			throw new CustomError({
 				status: 404,
 				message: 'Clip not found.',
 			});
-		else if (!clip.ready)
-			throw new CustomError({
-				status: 425,
-				message: 'Clip not ready.',
-			});
+		} else if (!clip.ready) {
+			return res.sendFile(resolve(cwd(), 'src/public/clip-not-ready.png'));
+		}
 
 		return res.sendFile(clip.getThumbnailPath());
 	} catch (error) {

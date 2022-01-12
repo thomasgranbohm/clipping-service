@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useState } from 'react';
 import { publicAPI } from 'utils/api';
@@ -23,10 +22,10 @@ const LoginPage = () => {
 			if ('redirect' in router.query) {
 				const redirect = router.query.redirect.toString();
 				if (redirect.startsWith('/')) {
-					router.push(redirect);
+					return router.push(redirect);
 				}
 			}
-			router.push('/');
+			return router.push('/');
 		} catch (error) {
 			console.error(error);
 		}

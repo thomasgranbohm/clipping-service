@@ -1,7 +1,8 @@
 import Video from 'components/Video/Video';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/dist/client/router';
+import { MouseEventHandler, useEffect, useRef, useState } from 'react';
 import { publicAPI } from 'utils/api';
-import { concat } from 'utils/functions';
+import { concat, generateBackendURL } from 'utils/functions';
 import classes from './ClipCreator.module.scss';
 
 const MAX_CLIP_LENGTH = 60;
@@ -20,6 +21,42 @@ const ClipCreator = ({ episode }) => {
 	const [end, setEnd] = useState(MAX_CLIP_LENGTH * 1e3);
 
 	const [title, setTitle] = useState('');
+
+	const router = useRouter();
+	const url = generateBackendURL(router.asPath);
+
+	const createClip: MouseEventHandler<HTMLButtonElement> = async (e) => {
+		e.preventDefault();
+		try {
+			await publicAPI.get('/verify', {
+				withCredentials: true,
+			});
+		} catch (error) {
+			return router.push({
+				href: '/login',
+				query: `redirect=${router.asPath}`,
+			});
+		}
+
+		try {
+			await publicAPI('/clip', {
+				method: 'POST',
+				data: {
+					episode: slug,
+					season: season.index,
+					show: show.slug,
+					library: library.slug,
+					title,
+					start: (time + start) / 1000,
+					end: (time + end) / 1000,
+				},
+			});
+			alert('Clip created!');
+		} catch (err) {
+			console.log(err);
+			alert('Error! Check the console.');
+		}
+	};
 
 	useEffect(() => {
 		if (videoRef.current) {
@@ -52,7 +89,7 @@ const ClipCreator = ({ episode }) => {
 
 	return (
 		<div className={classes['container']}>
-			<Video ref={videoRef} identifier={slug} type="episode" />
+			<Video ref={videoRef} url={url} />
 			<div className={classes['crop-boundary']}>
 				<h3>
 					{new Date(time + start).toISOString().substr(14, 8)} -{' '}
@@ -122,34 +159,7 @@ const ClipCreator = ({ episode }) => {
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 			/>
-			<button
-				type="submit"
-				onClick={async (e) => {
-					e.preventDefault();
-					try {
-						await publicAPI.get('/verify', {
-							withCredentials: true,
-						});
-						const resp = await publicAPI('/clip', {
-							method: 'POST',
-							data: {
-								episode: slug,
-								season: season.index,
-								show: show.slug,
-								library: library.slug,
-								title,
-								start: (time + start) / 1000,
-								end: (time + end) / 1000,
-							},
-						});
-						console.log(resp.data);
-						alert('Clip created!');
-					} catch (err) {
-						console.log(err);
-						alert('Error! Check the console.');
-					}
-				}}
-			>
+			<button type="submit" onClick={createClip}>
 				Create clip
 			</button>
 		</div>
