@@ -14,7 +14,8 @@ services:
       - 1337
     volumes:
       - ${PLEX_DIR}:/home/node/app/media
-      - ./backend:/home/node/app
+      - ./backend/clips:/home/node/app/clips
+      - ./backend/uploads:/home/node/app/uploads
     working_dir: /home/node/app
   database:
     image: postgres

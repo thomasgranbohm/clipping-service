@@ -27,7 +27,7 @@ WORKDIR /home/node/app
 
 ENV NODE_ENV production
 
-COPY --from=build /home/node/app/dist ./dist
+COPY --from=build /home/node/app/dist ./dist/
 COPY --from=build /home/node/app/node_modules ./node_modules/
 COPY --from=build /home/node/app/package.json ./package.json
 
