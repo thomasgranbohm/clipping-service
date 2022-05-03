@@ -105,18 +105,12 @@ export class Clip extends Model {
 		try {
 			await access(path);
 		} catch (error) {
-			console.log(
-				instance.slug,
-				(instance.slug = slugify(
-					instance.title.replace(/[^a-zA-Z0-9 -]/g, ' ').trim(),
-					{
-						lower: true,
-						remove: /[^a-zA-Z0-9 -]/g,
-					}
-				))
-			);
-
 			await mkdir(path);
+		}
+
+		try {
+			await access(instance.getThumbnailPath());
+		} catch (error) {
 			generateClip(instance);
 		}
 	}
