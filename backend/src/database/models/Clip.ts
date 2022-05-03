@@ -90,7 +90,7 @@ export class Clip extends Model {
 
 		for (const clip of instances) {
 			try {
-				await access(clip.getPath());
+				await access(clip.getThumbnailPath());
 			} catch (error) {
 				await Clip.startFFmpeg(clip);
 			}
