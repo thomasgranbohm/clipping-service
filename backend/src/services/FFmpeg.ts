@@ -20,7 +20,7 @@ export const generateClip = async (clip: Clip) => {
 		'-ss',
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		'-i',
-		`'${filePath}'`,
+		`'${filePath.replace("'", "\\'")}'`,
 		'-ss',
 		Math.min(BACKTRACK, clip.start).toFixed(4),
 		'-t',

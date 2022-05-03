@@ -1,6 +1,7 @@
 import { access, mkdir, rm } from 'fs/promises';
 import { resolve } from 'path';
 import {
+	AfterBulkCreate,
 	AfterCreate,
 	AllowNull,
 	BeforeBulkCreate,
@@ -82,6 +83,19 @@ export class Clip extends Model {
 
 	@BelongsTo(() => Episode, { onDelete: 'SET NULL' })
 	episode: Episode;
+
+	@AfterBulkCreate
+	static async checkRegeneration(instances: Clip[]) {
+		if (process.env.NODE_ENV !== 'production') return;
+
+		for (const clip of instances) {
+			try {
+				await access(clip.getPath());
+			} catch (error) {
+				await Clip.startFFmpeg(clip);
+			}
+		}
+	}
 
 	@AfterCreate
 	static async startFFmpeg(instance: Clip) {
