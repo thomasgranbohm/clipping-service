@@ -18,6 +18,7 @@ export const generateClip = async (clip: Clip) => {
 
 	const command = format(
 		'%s -ss %d -i "%s" -ss %d -t %d -ac 2 -map_chapters -1 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -y %s',
+		ffmpeg,
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		filePath.replace('"', '\\"'),
 		Math.min(BACKTRACK, clip.start).toFixed(4),
