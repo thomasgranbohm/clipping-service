@@ -6,7 +6,6 @@ import { getNextUrl } from '../functions';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
 import MissingArgs from '../middlewares/MissingArgs';
 import { getMedia } from '../services/PlexAPI';
-import { stream } from '../services/Streamer';
 import { CustomError } from '../types';
 import { getSeasonWhereOptions, SEASON_REQUIRED_ARGS } from './Season';
 
@@ -184,7 +183,11 @@ router.get('/:slug/watch', async (req, res, next) => {
 				message: 'Episode not found in season.',
 			});
 
-		return stream(req, res, episode.filePath);
+		return res.sendFile(episode.filePath, {
+			headers: {
+				'Content-Type': 'video/mp4',
+			},
+		});
 	} catch (error) {
 		next({
 			status: error['status'] || 500,

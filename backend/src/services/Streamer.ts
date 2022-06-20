@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 
+// Deprecating the streamer for now since it did not fit my usecase
 export const stream = async (req: Request, res: Response, path: string) => {
 	const videoStat = await stat(path);
 	const { size } = videoStat;

@@ -9,7 +9,6 @@ import { Episode } from '../database/models/Episode';
 import { getNextUrl } from '../functions';
 import Authentication from '../middlewares/Authentication';
 import DatabaseLimit from '../middlewares/DatabaseLimit';
-import { stream } from '../services/Streamer';
 import { CustomError } from '../types';
 import { EPISODE_REQUIRED_ARGS, getEpisodeWhereOptions } from './Episode';
 import { getSeasonWhereOptions } from './Season';
@@ -188,7 +187,7 @@ router.get('/:slug/watch', async (req, res, next) => {
 				message: 'Clip not ready.',
 			});
 
-		return stream(req, res, clip.getMediaPath());
+		return res.sendFile(clip.getMediaPath());
 	} catch (error) {
 		next({
 			status: error['status'] || 500,
