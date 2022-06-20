@@ -179,14 +179,14 @@ export class Clip extends Model {
 	}
 
 	getInformationPath() {
-		return resolve(this.getPath(), 'information');
+		return resolve(this.getPath(), 'information.b64');
 	}
 
 	getMediaPath() {
-		return resolve(this.getPath(), 'clip');
+		return resolve(this.getPath(), 'clip.webm');
 	}
 
 	getThumbnailPath() {
-		return resolve(this.getPath(), 'thumbnail');
+		return resolve(this.getPath(), 'thumbnail.png');
 	}
 }
