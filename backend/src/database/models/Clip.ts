@@ -1,4 +1,4 @@
-import { access, mkdir, rm } from 'fs/promises';
+import { access, mkdir, open, rm } from 'fs/promises';
 import { resolve } from 'path';
 import {
 	AfterBulkCreate,
@@ -15,17 +15,24 @@ import {
 	DataType,
 	Default,
 	ForeignKey,
+	IsUUID,
 	Model,
+	PrimaryKey,
 	Table,
 	Unique,
 } from 'sequelize-typescript';
 import slugify from 'slugify';
 import { CLIPS_DIR } from '../../constants';
-import { generateClip } from '../../services/FFmpeg';
+import FFmpeg from '../../services/FFmpeg';
 import { Episode } from './Episode';
 
 @Table
 export class Clip extends Model {
+	@IsUUID(4)
+	@PrimaryKey
+	@Column
+	id: string;
+
 	@Unique
 	@AllowNull(false)
 	@Column
@@ -90,16 +97,19 @@ export class Clip extends Model {
 
 		for (const clip of instances) {
 			try {
+				await access(clip.getInformationPath());
 				await access(clip.getMediaPath());
 				await access(clip.getThumbnailPath());
+
+				await clip.update({ ready: true });
 			} catch (error) {
-				await Clip.startFFmpeg(clip);
+				await Clip.generateFiles(clip);
 			}
 		}
 	}
 
 	@AfterCreate
-	static async startFFmpeg(instance: Clip) {
+	static async generateFiles(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
 
 		const path = instance.getPath();
@@ -110,9 +120,40 @@ export class Clip extends Model {
 		}
 
 		try {
+			await access(instance.getInformationPath());
+		} catch (error) {
+			const {
+				createdAt,
+				duration,
+				end,
+				episodeId,
+				id,
+				start,
+				title,
+				updatedAt,
+			} = instance;
+
+			const information = await open(instance.getInformationPath(), 'w');
+			information.write(
+				Buffer.from(
+					JSON.stringify({
+						createdAt,
+						duration,
+						end,
+						episodeId,
+						id,
+						start,
+						title,
+						updatedAt,
+					})
+				).toString('base64')
+			);
+		}
+
+		try {
 			await access(instance.getMediaPath());
 		} catch (error) {
-			generateClip(instance);
+			await FFmpeg.generateClip(instance);
 		}
 	}
 
@@ -133,11 +174,15 @@ export class Clip extends Model {
 		return resolve(CLIPS_DIR, this.slug);
 	}
 
+	getInformationPath() {
+		return resolve(this.getPath(), 'information');
+	}
+
 	getMediaPath() {
-		return resolve(this.getPath(), 'clip.webm');
+		return resolve(this.getPath(), 'clip');
 	}
 
 	getThumbnailPath() {
-		return resolve(this.getPath(), 'thumbnail.png');
+		return resolve(this.getPath(), 'thumbnail');
 	}
 }

@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import ffmpeg from 'ffmpeg-static';
+import { format } from 'util';
 import { Clip } from '../database/models/Clip';
 import { Episode } from '../database/models/Episode';
 
@@ -15,66 +16,53 @@ export const generateClip = async (clip: Clip) => {
 
 	const CLIP_PATH = clip.getMediaPath();
 
-	const cmd = [
-		ffmpeg,
-		'-ss',
+	const command = format(
+		'%s -ss %d -i "%s" -ss %d -t %d -ac 2 -map_chapters -1 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -y %s',
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
-		'-i',
-		`"${filePath.replace('"', '\\"')}"`,
-		'-ss',
+		filePath.replace('"', '\\"'),
 		Math.min(BACKTRACK, clip.start).toFixed(4),
-		'-t',
 		(clip.end - clip.start).toFixed(4),
-		'-ac',
-		'2',
-		'-map_chapters',
-		'-1',
-		'-y',
-		CLIP_PATH,
-	].join(' ');
-	console.debug(cmd);
+		CLIP_PATH
+	);
+
+	console.debug(command);
 	console.time(`media-generation-${clip.slug}`);
-	exec(cmd, (err, stdout, stderr) => {
-		if (err) {
-			console.log('Error while creating clip: %s', stderr);
-			return Clip.destroy({ where: { id: clip.id } });
-		}
-		console.timeEnd(`media-generation-${clip.slug}`);
-		generateThumbnail(clip).then(() => clip.update({ ready: true }));
-	});
+	await new Promise((res, rej) =>
+		exec(command, (err, stdout, stderr) => {
+			if (err) {
+				console.log('Error while creating clip: %s', stderr);
+				return Clip.destroy({ where: { id: clip.id } });
+			}
+			res(true);
+		})
+	);
+	console.timeEnd(`media-generation-${clip.slug}`);
+
+	await generateThumbnail(clip);
+	clip.update({ ready: true });
 };
 
 export const generateThumbnail = async (clip: Clip) => {
 	const THUMBNAIL_PATH = clip.getThumbnailPath();
 
-	const cmd = [
+	const command = format(
+		'"%s" -i "%s" -ss 0 -frames:v 1 -y "%s"',
 		ffmpeg,
-		'-i',
 		clip.getMediaPath(),
-		'-ss',
-		'0',
-		'-frames:v',
-		'1',
-		'-c:v',
-		'libvpx-vp9',
-		'-crf',
-		'30',
-		'-b:v',
-		'0',
-		'-b:a',
-		'128k',
-		'-c:a',
-		'libopus',
-		'-y',
-		THUMBNAIL_PATH,
-	].join(' ');
-	console.debug(cmd);
+		THUMBNAIL_PATH
+	);
+	console.debug(command);
 	console.time(`thumbnail-generation-${clip.slug}`);
-	exec(cmd, (err, stdout, stderr) => {
-		if (err) {
-			console.log('Error while creating thumbnail: %s', stderr);
-			return;
-		}
-		console.timeEnd(`thumbnail-generation-${clip.slug}`);
-	});
+	await new Promise((res, rej) =>
+		exec(command, (err, _, stderr) => {
+			if (err) {
+				console.log('Error while creating thumbnail: %s', stderr);
+				return;
+			}
+			res(true);
+		})
+	);
+	console.timeEnd(`thumbnail-generation-${clip.slug}`);
 };
+
+export default { generateClip, generateThumbnail };

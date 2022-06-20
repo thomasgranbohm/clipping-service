@@ -1,6 +1,8 @@
+import fs, { readFile } from 'fs/promises';
+import { resolve } from 'path';
 import { Model, ModelCtor, Sequelize } from 'sequelize-typescript';
 import { WhereOptions } from 'sequelize/types';
-import { REVALIDATION_TIMEOUT } from '../constants';
+import { CLIPS_DIR, REVALIDATION_TIMEOUT } from '../constants';
 import {
 	getAllLibraries,
 	getItemChildren,
@@ -23,14 +25,66 @@ export const revalidate = async () => {
 };
 
 export const reinitialize = async () => {
-	const clips = await Clip.findAll({});
-
 	await Episode.destroy({ where: {} });
 	await Season.destroy({ where: {} });
 	await Show.destroy({ where: {} });
 	await Library.destroy({ where: {} });
 
 	await syncAll();
+
+	const clips = [];
+
+	const rawClips = await fs.readdir(CLIPS_DIR);
+	for (const clipFolder of rawClips) {
+		try {
+			const rawInformation = await readFile(resolve(CLIPS_DIR, clipFolder));
+			const {
+				createdAt,
+				duration,
+				end,
+				episodeId,
+				id,
+				start,
+				title,
+				updatedAt,
+			} = JSON.parse(
+				Buffer.from(rawInformation.toString('ascii'), 'base64').toString(
+					'ascii'
+				)
+			);
+
+			if (
+				[
+					createdAt,
+					duration,
+					end,
+					episodeId,
+					id,
+					start,
+					title,
+					updatedAt,
+				].every((a) => !!a)
+			) {
+				throw new Error('Could not restore clip.');
+			}
+
+			clips.push({
+				createdAt,
+				duration,
+				end,
+				episodeId,
+				id,
+				start,
+				title,
+				updatedAt,
+			});
+		} catch (error) {
+			console.log(
+				"Information file corrupted or wrong. Could not restore '%s'.",
+				clipFolder
+			);
+		}
+	}
 
 	await Clip.bulkCreate(
 		clips.map(
@@ -42,7 +96,6 @@ export const reinitialize = async () => {
 				episodeId,
 				createdAt,
 				updatedAt,
-				ready: true,
 			})
 		)
 	);
