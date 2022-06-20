@@ -29,8 +29,8 @@ import { Episode } from './Episode';
 
 @Table
 export class Clip extends Model {
-	@IsUUID(4)
 	@PrimaryKey
+	@Unique
 	@Column
 	id: string;
 

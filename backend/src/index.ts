@@ -71,8 +71,9 @@ server.get('/verify', Authentication, async (_, res) => {
 });
 
 const main = async () => {
-	await connectToDatabase();
+	const connection = await connectToDatabase();
 	if (process.env.NODE_ENV === 'production') {
+		await connection.sync({ force: true });
 		await reinitialize();
 	}
 	server.listen(1337, async () => {
