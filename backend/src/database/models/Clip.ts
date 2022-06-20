@@ -107,7 +107,7 @@ export class Clip extends Model {
 
 				await clip.update({ ready: true });
 			} catch (error) {
-				await Clip.generateFiles(clip);
+				Clip.generateFiles(clip);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ export class Clip extends Model {
 		try {
 			await access(instance.getMediaPath());
 		} catch (error) {
-			await FFmpeg.generateClip(instance);
+			FFmpeg.generateClip(instance);
 		}
 	}
 
