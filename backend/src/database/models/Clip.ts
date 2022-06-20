@@ -90,6 +90,7 @@ export class Clip extends Model {
 
 		for (const clip of instances) {
 			try {
+				await access(clip.getMediaPath());
 				await access(clip.getThumbnailPath());
 			} catch (error) {
 				await Clip.startFFmpeg(clip);
@@ -133,7 +134,7 @@ export class Clip extends Model {
 	}
 
 	getMediaPath() {
-		return resolve(this.getPath(), 'clip.mp4');
+		return resolve(this.getPath(), 'clip.webm');
 	}
 
 	getThumbnailPath() {
