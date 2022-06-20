@@ -15,7 +15,7 @@ const Video = forwardRef<HTMLVideoElement, VideoProps>(({ url }, videoRef) => (
 		poster={addToURL(url, 'thumbnail').href}
 		controls
 	>
-		<source src={addToURL(url, 'watch').href} type={'video/mp4'} />
+		<source src={addToURL(url, 'watch').href} />
 		<p>Your browser does not support HTML5 video.</p>
 	</video>
 ));

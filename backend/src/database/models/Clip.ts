@@ -110,7 +110,7 @@ export class Clip extends Model {
 		}
 
 		try {
-			await access(instance.getThumbnailPath());
+			await access(instance.getMediaPath());
 		} catch (error) {
 			generateClip(instance);
 		}
