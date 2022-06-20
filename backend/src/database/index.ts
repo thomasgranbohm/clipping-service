@@ -35,7 +35,7 @@ export const reinitialize = async () => {
 	const clips = [];
 
 	const rawClips = await fs.readdir(CLIPS_DIR);
-	for (const clipFolder of rawClips) {
+	for (const clipFolder of rawClips.filter((f) => !f.startsWith('.'))) {
 		try {
 			const rawInformation = await readFile(resolve(CLIPS_DIR, clipFolder));
 			const {

@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 import { access, mkdir, open, rm } from 'fs/promises';
 import { resolve } from 'path';
 import {
@@ -54,7 +54,7 @@ export class Clip extends Model {
 	static createSlug(instance: Clip) {
 		instance.title = instance.title.trim();
 		if (!instance.id) {
-			instance.id = uuid.v4();
+			instance.id = v4();
 		}
 		if (!instance.slug) {
 			instance.slug = slugify(instance.title, {
