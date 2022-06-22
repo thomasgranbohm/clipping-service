@@ -13,8 +13,7 @@ export const DATABASE_CONFIG: SequelizeOptions = {
 	database: DATABASE.NAME,
 	username: DATABASE.USERNAME,
 	password: DATABASE.PASSWORD,
-	logging: false,
-	// logging: process.env.NODE_ENV !== 'production' && console.debug,
+	logging: process.env.NODE_ENV !== 'production' && console.debug,
 	sync: { force: true },
 	models: [Library, Show, Season, Episode, Clip],
 };

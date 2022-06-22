@@ -140,11 +140,7 @@ export class Clip extends Model {
 			information.close();
 		}
 
-		try {
-			await access(instance.getMediaPath());
-		} catch (error) {
-			FFmpeg.generateClip(instance);
-		}
+		await FFmpeg.generateClip(instance);
 	}
 
 	@BeforeDestroy
