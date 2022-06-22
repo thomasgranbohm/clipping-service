@@ -40,7 +40,7 @@ export const reinitialize = async () => {
 			const rawInformation = await readFile(
 				resolve(CLIPS_DIR, clipFolder, 'information.b64'),
 				{
-					encoding: 'base64',
+					encoding: 'ascii',
 				}
 			);
 			const {
@@ -84,7 +84,7 @@ export const reinitialize = async () => {
 				"Information file corrupted or wrong. Could not restore '%s'.",
 				clipFolder
 			);
-			console.log(error);
+			console.debug(error);
 		}
 	}
 	try {
@@ -103,7 +103,7 @@ export const reinitialize = async () => {
 		);
 	} catch (error) {
 		console.log('Could not restore clips from raw data.');
-		console.log(error);
+		console.debug(error);
 	}
 };
 
