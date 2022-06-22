@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { createHash } from 'crypto';
 import ffmpeg from 'ffmpeg-static';
 import { format } from 'util';
 import { Clip } from '../database/models/Clip';
@@ -26,20 +27,28 @@ export const generateClip = async (clip: Clip) => {
 		CLIP_PATH
 	);
 
-	console.debug(command);
-	console.time(`media-generation-${clip.slug}`);
-	await new Promise((res, rej) =>
-		exec(command, (err, stdout, stderr) => {
-			if (err) {
-				console.log('Error while creating clip: %s', stderr);
-				return Clip.destroy({ where: { id: clip.id } });
-			}
-			res(true);
-		})
-	);
-	console.timeEnd(`media-generation-${clip.slug}`);
+	const hash = createHash('sha256');
+	hash.write(`${command}|${JSON.stringify(clip.getInformation())}`);
+	const generationHash = hash.digest('hex');
 
-	await generateThumbnail(clip);
+	if (generationHash !== clip.generationHash) {
+		console.debug(command);
+		console.time(`media-generation-${clip.slug}`);
+		await new Promise((res, rej) =>
+			exec(command, (err, stdout, stderr) => {
+				if (err) {
+					console.log('Error while creating clip: %s', stderr);
+					return Clip.destroy({ where: { id: clip.id } });
+				}
+				res(true);
+			})
+		);
+		console.timeEnd(`media-generation-${clip.slug}`);
+    
+		await generateThumbnail(clip);
+		clip.update({ generationHash });
+	}
+
 	clip.update({ ready: true });
 };
 

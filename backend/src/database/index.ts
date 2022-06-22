@@ -48,6 +48,7 @@ export const reinitialize = async () => {
 				duration,
 				end,
 				episodeId,
+				generationHash,
 				id,
 				start,
 				title,
@@ -74,6 +75,7 @@ export const reinitialize = async () => {
 				duration,
 				end,
 				episodeId,
+				generationHash,
 				id,
 				start,
 				title,
@@ -88,19 +90,7 @@ export const reinitialize = async () => {
 		}
 	}
 	try {
-		await Clip.bulkCreate(
-			clips.map(
-				({ title, slug, start, end, episodeId, createdAt, updatedAt }) => ({
-					title,
-					slug,
-					start,
-					end,
-					episodeId,
-					createdAt,
-					updatedAt,
-				})
-			)
-		);
+		await Clip.bulkCreate(clips);
 	} catch (error) {
 		console.log('Could not restore clips from raw data.');
 		console.debug(error);

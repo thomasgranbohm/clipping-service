@@ -87,6 +87,9 @@ export class Clip extends Model {
 	@Column
 	ready: boolean;
 
+	@Column
+	generationHash: string;
+
 	// Episode
 	@ForeignKey(() => Episode)
 	@Column
@@ -101,13 +104,13 @@ export class Clip extends Model {
 
 		for (const clip of instances) {
 			try {
-				await access(clip.getInformationPath());
-				await access(clip.getMediaPath());
-				await access(clip.getThumbnailPath());
-
-				await clip.update({ ready: true });
-			} catch (error) {
 				Clip.generateFiles(clip);
+			} catch (error) {
+				console.error(
+					'Something went wrong trying to generate files for %s.',
+					clip.title
+				);
+				console.error(error);
 			}
 		}
 	}
@@ -126,32 +129,15 @@ export class Clip extends Model {
 		try {
 			await access(instance.getInformationPath());
 		} catch (error) {
-			const {
-				createdAt,
-				duration,
-				end,
-				episodeId,
-				id,
-				start,
-				title,
-				updatedAt,
-			} = instance;
-
 			const information = await open(instance.getInformationPath(), 'w');
+
 			information.write(
-				Buffer.from(
-					JSON.stringify({
-						createdAt,
-						duration,
-						end,
-						episodeId,
-						id,
-						start,
-						title,
-						updatedAt,
-					})
-				).toString('base64')
+				Buffer.from(JSON.stringify(instance.getInformation())).toString(
+					'base64'
+				)
 			);
+
+			information.close();
 		}
 
 		try {
@@ -172,6 +158,32 @@ export class Clip extends Model {
 	@BeforeBulkDestroy
 	static async removeClips(instances: Clip[]) {
 		await Promise.all(instances.map(Clip.removeClip));
+	}
+
+	getInformation() {
+		const {
+			createdAt,
+			duration,
+			end,
+			episodeId,
+			generationHash,
+			id,
+			start,
+			title,
+			updatedAt,
+		} = this;
+
+		return {
+			createdAt,
+			duration,
+			end,
+			episodeId,
+			generationHash,
+			id,
+			start,
+			title,
+			updatedAt,
+		};
 	}
 
 	getPath() {
