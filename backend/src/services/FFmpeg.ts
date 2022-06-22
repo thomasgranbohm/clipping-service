@@ -17,7 +17,7 @@ export const generateClip = async (clip: Clip) => {
 	const CLIP_PATH = clip.getMediaPath();
 
 	const command = format(
-		'%s -ss %d -i "%s" -ss %d -t %d -ac 2 -map_chapters -1 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -y %s',
+		'%s -ss %d -i "%s" -ss %d -t %d -ac 2 -map_chapters -1 -c:v libvpx -minrate 1M -maxrate 1M -b:v 1M -c:a libvorbis -y %s',
 		ffmpeg,
 		Math.max(clip.start - BACKTRACK, 0).toFixed(4),
 		filePath.replace('"', '\\"'),
