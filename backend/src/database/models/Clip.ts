@@ -191,7 +191,7 @@ export class Clip extends Model {
 	}
 
 	getMediaPath() {
-		return resolve(this.getPath(), 'clip.webm');
+		return resolve(this.getPath(), 'clip.mp4');
 	}
 
 	getThumbnailPath() {
