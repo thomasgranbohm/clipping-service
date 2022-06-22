@@ -37,7 +37,12 @@ export const reinitialize = async () => {
 	const rawClips = await fs.readdir(CLIPS_DIR);
 	for (const clipFolder of rawClips.filter((f) => !f.startsWith('.'))) {
 		try {
-			const rawInformation = await readFile(resolve(CLIPS_DIR, clipFolder));
+			const rawInformation = await readFile(
+				resolve(CLIPS_DIR, clipFolder, 'information.b64'),
+				{
+					encoding: 'base64',
+				}
+			);
 			const {
 				createdAt,
 				duration,
@@ -47,11 +52,7 @@ export const reinitialize = async () => {
 				start,
 				title,
 				updatedAt,
-			} = JSON.parse(
-				Buffer.from(rawInformation.toString('ascii'), 'base64').toString(
-					'ascii'
-				)
-			);
+			} = JSON.parse(Buffer.from(rawInformation, 'base64').toString('ascii'));
 
 			if (
 				[
@@ -83,22 +84,27 @@ export const reinitialize = async () => {
 				"Information file corrupted or wrong. Could not restore '%s'.",
 				clipFolder
 			);
+			console.log(error);
 		}
 	}
-
-	await Clip.bulkCreate(
-		clips.map(
-			({ title, slug, start, end, episodeId, createdAt, updatedAt }) => ({
-				title,
-				slug,
-				start,
-				end,
-				episodeId,
-				createdAt,
-				updatedAt,
-			})
-		)
-	);
+	try {
+		await Clip.bulkCreate(
+			clips.map(
+				({ title, slug, start, end, episodeId, createdAt, updatedAt }) => ({
+					title,
+					slug,
+					start,
+					end,
+					episodeId,
+					createdAt,
+					updatedAt,
+				})
+			)
+		);
+	} catch (error) {
+		console.log('Could not restore clips from raw data.');
+		console.log(error);
+	}
 };
 
 const upsert = async <M extends Model>(
