@@ -55,7 +55,7 @@ export const reinitialize = async () => {
 			} = JSON.parse(Buffer.from(rawInformation, 'base64').toString('ascii'));
 
 			if (
-				[
+				![
 					createdAt,
 					duration,
 					end,
