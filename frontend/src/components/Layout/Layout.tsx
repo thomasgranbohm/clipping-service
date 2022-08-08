@@ -1,11 +1,12 @@
 import Anchor from 'components/Anchor/Anchor';
 import Breadcrumbs, { Breadcrumb } from 'components/Breadcrumb/Breadcrumb';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { flattenLinks } from 'utils/functions';
 import { JointBreadcrumbType } from 'utils/types';
 import classes from './Layout.module.scss';
 
 type LayoutProps = {
+	children?: ReactNode;
 	links?: JointBreadcrumbType;
 };
 

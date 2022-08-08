@@ -63,7 +63,7 @@ const ClipCreator = ({ episode }) => {
 			videoRef.current.pause();
 			videoRef.current.currentTime = (time + end) / 1000;
 		}
-	}, [end]);
+	}, [time, end]);
 
 	useEffect(() => {
 		if (videoRef.current) {
@@ -73,17 +73,18 @@ const ClipCreator = ({ episode }) => {
 	}, [start, time]);
 
 	useEffect(() => {
-		if (videoRef.current) {
-			videoRef.current.ontimeupdate = (e) => {
+		let element = videoRef.current;
+		if (element) {
+			element.ontimeupdate = (e) => {
 				if (e.target['currentTime'] > (time + end) / 1000) {
-					videoRef.current.currentTime = (time + start) / 1000;
-					videoRef.current.pause();
-					videoRef.current.ontimeupdate = null;
+					element.currentTime = (time + start) / 1000;
+					element.pause();
+					element.ontimeupdate = null;
 				}
 			};
 		}
 		return () => {
-			if (videoRef.current) videoRef.current.ontimeupdate = null;
+			if (element) element.ontimeupdate = null;
 		};
 	}, [end, start, time]);
 

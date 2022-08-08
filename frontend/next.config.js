@@ -15,4 +15,5 @@ module.exports = {
 	publicRuntimeConfig: {
 		imageDomains: urls,
 	},
+	swcMinify: false,
 };
