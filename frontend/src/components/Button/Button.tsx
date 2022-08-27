@@ -9,17 +9,30 @@ import classes from './Button.module.scss';
 
 type ButtonProps = {
 	href: string;
-	type: 'download' | 'delete' | 'create';
+	type: 'download' | 'delete' | 'create' | 'login';
 };
 
 const Button: FC<ButtonProps> = ({ href, type }) => {
 	const router = useRouter();
-	if (type === 'download') {
+	if (type === 'login') {
 		return (
-			<a href={href} className={concat(classes['container'], classes[type])}>
+			<Anchor
+				href={href}
+				className={concat(classes['container'], classes[type])}
+			>
+				<Icon type="key" />
+				{type}
+			</Anchor>
+		);
+	} else if (type === 'download') {
+		return (
+			<Anchor
+				href={href}
+				className={concat(classes['container'], classes[type])}
+			>
 				<Icon type={'download'} />
 				{type}
-			</a>
+			</Anchor>
 		);
 	} else if (type === 'create') {
 		return (

@@ -9,6 +9,12 @@
 	grid-template-areas: 'header' 'content' 'footer';
 	grid-template-rows: auto 1fr 6rem;
 
+	.title-container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
 	.content {
 		grid-area: content;
 

@@ -10,7 +10,8 @@ type IconProps = {
 		| 'pause'
 		| 'download'
 		| 'clear'
-		| 'add';
+		| 'add'
+		| 'key';
 } & HTMLAttributes<HTMLElement>;
 
 const Icon = ({ className, type, ...props }: IconProps) => (
