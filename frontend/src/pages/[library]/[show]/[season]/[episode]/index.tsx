@@ -59,7 +59,10 @@ const EpisodePage = ({ episode, clips }) => {
 	const backendURL = generateBackendURL(router.asPath);
 
 	return (
-		<Layout links={episode} displayLoginButton={!loggedIn}>
+		<Layout
+			links={episode}
+			displayLoginButton={typeof loggedIn === 'boolean' ? !loggedIn : true}
+		>
 			<SEO
 				title={`${title} - ${show.title}`}
 				description={summary}
