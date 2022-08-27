@@ -29,6 +29,7 @@ const Button: FC<ButtonProps> = ({ href, type }) => {
 			<Anchor
 				href={href}
 				className={concat(classes['container'], classes[type])}
+				target="_blank"
 				download
 			>
 				<Icon type={'download'} />

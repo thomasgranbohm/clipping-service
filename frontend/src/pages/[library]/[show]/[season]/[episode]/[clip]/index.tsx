@@ -74,7 +74,7 @@ const ClipPage = ({ clip }) => {
 			/>
 			<Video url={backendURL} />
 			{loggedIn && <Button type="delete" href={backendURL.href} />}
-			<Button type="download" href={`${downloadURL.href}/watch`} />
+			<Button type="download" href={`${downloadURL.href}/download`} />
 		</Layout>
 	);
 };
