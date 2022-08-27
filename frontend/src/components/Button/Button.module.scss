@@ -50,3 +50,13 @@
 		background-color: hsl(0, 100%, 45%);
 	}
 }
+
+.login {
+	background: black;
+	color: white;
+
+	@media (prefers-color-scheme: dark) {
+		background: white;
+		color: black;
+	}
+}

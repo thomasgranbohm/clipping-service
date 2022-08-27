@@ -37,7 +37,7 @@ const Layout: FC<LayoutProps> = ({ children, displayLoginButton, links }) => {
 				<div className={classes['title-container']}>
 					<h1>{flattenedLinks.slice().pop().title}</h1>
 					{displayLoginButton && (
-						<Button type="login" href={`/login?redirect=${router.pathname}`}>
+						<Button type="login" href={`/login?redirect=${router.asPath}`}>
 							Login
 						</Button>
 					)}
