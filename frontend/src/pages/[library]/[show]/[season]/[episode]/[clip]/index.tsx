@@ -61,7 +61,7 @@ const ClipPage = ({ clip }) => {
 	const router = useRouter();
 
 	const backendURL = generateBackendURL(router.asPath);
-	const downloadURL = addToURL(backendURL, '/watch');
+	const downloadURL = addToURL(backendURL, '/download');
 
 	return (
 		<Layout links={clip}>
@@ -74,7 +74,7 @@ const ClipPage = ({ clip }) => {
 			/>
 			<Video url={backendURL} />
 			{loggedIn && <Button type="delete" href={backendURL.href} />}
-			<Button type="download" href={`${downloadURL.href}/download`} />
+			<Button type="download" href={downloadURL.href} />
 		</Layout>
 	);
 };
