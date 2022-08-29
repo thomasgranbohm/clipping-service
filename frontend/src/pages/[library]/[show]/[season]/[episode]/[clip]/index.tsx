@@ -7,12 +7,13 @@ import { useRouter } from 'next/dist/client/router';
 import { privateAPI } from 'utils/api';
 import { addToURL, generateBackendURL } from 'utils/functions';
 import { useLoggedIn } from 'utils/hooks';
+import { Clip } from 'utils/types';
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 	try {
 		const { library, show, season, episode, clip: slug } = params;
 		const urlParams = `library=${library}&show=${show}&season=${season}&episode=${episode}`;
-		const { data: clip } = await privateAPI(
+		const { data: clip } = await privateAPI.get<Clip>(
 			`/clip/${slug}/?${urlParams.toString()}`
 		);
 
@@ -52,7 +53,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-const ClipPage = ({ clip }) => {
+interface ClipPageProps {
+	clip: Clip;
+}
+
+const ClipPage = ({ clip }: ClipPageProps) => {
 	const { title, episode } = clip;
 	const { season } = episode;
 	const { show } = season;
@@ -61,7 +66,6 @@ const ClipPage = ({ clip }) => {
 	const router = useRouter();
 
 	const backendURL = generateBackendURL(router.asPath);
-	const downloadURL = addToURL(backendURL, '/download');
 
 	return (
 		<Layout links={clip}>
@@ -74,7 +78,7 @@ const ClipPage = ({ clip }) => {
 			/>
 			<Video url={backendURL} />
 			{loggedIn && <Button type="delete" href={backendURL.href} />}
-			<Button type="download" href={downloadURL.href} />
+			<Button type="download" href={`/api/download?slug=${clip.slug}`} />
 		</Layout>
 	);
 };

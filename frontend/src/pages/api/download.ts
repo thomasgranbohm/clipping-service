@@ -5,7 +5,7 @@ const Handler = async (req, res) => {
 			`${process.env.NEXT_PUBLIC_BACKEND_URL}/clip/${slug}/download`
 		);
 	} catch (error) {
-		return res.status(401).send('Nope');
+		return res.status(500).send('Internal server error');
 	}
 };
 

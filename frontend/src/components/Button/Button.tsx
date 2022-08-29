@@ -1,9 +1,8 @@
-import axios from 'axios';
 import Anchor from 'components/Anchor/Anchor';
 import Icon from 'components/Icon/Icon';
 import { useRouter } from 'next/dist/client/router';
-import { FC } from 'react';
-import { internalAPI, publicAPI } from 'utils/api';
+import { ReactNode } from 'react';
+import { publicAPI } from 'utils/api';
 import { concat } from 'utils/functions';
 import classes from './Button.module.scss';
 
@@ -12,7 +11,7 @@ type ButtonProps = {
 	type: 'download' | 'delete' | 'create' | 'login';
 };
 
-const Button: FC<ButtonProps> = ({ href, type }) => {
+const Button = ({ href, type }: ButtonProps) => {
 	const router = useRouter();
 	if (type === 'login') {
 		return (

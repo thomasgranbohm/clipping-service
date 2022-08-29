@@ -2,17 +2,18 @@ import Anchor from 'components/Anchor/Anchor';
 import Breadcrumbs, { Breadcrumb } from 'components/Breadcrumb/Breadcrumb';
 import Button from 'components/Button/Button';
 import { useRouter } from 'next/dist/client/router';
-import { FC } from 'react';
+import { ReactNode } from 'react';
 import { flattenLinks } from 'utils/functions';
 import { JointBreadcrumbType } from 'utils/types';
 import classes from './Layout.module.scss';
 
 type LayoutProps = {
+	children: ReactNode;
 	displayLoginButton?: boolean;
 	links?: JointBreadcrumbType;
 };
 
-const Layout: FC<LayoutProps> = ({ children, displayLoginButton, links }) => {
+const Layout = ({ children, displayLoginButton, links }: LayoutProps) => {
 	const flattenedLinks = flattenLinks(links);
 
 	const router = useRouter();
@@ -37,9 +38,7 @@ const Layout: FC<LayoutProps> = ({ children, displayLoginButton, links }) => {
 				<div className={classes['title-container']}>
 					<h1>{flattenedLinks.slice().pop().title}</h1>
 					{displayLoginButton && (
-						<Button type="login" href={`/login?redirect=${router.asPath}`}>
-							Login
-						</Button>
+						<Button type="login" href={`/login?redirect=${router.asPath}`} />
 					)}
 				</div>
 			</header>
