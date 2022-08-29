@@ -3,7 +3,7 @@ import {
 	AriaBreadcrumbsProps,
 } from '@react-types/breadcrumbs';
 import Anchor from 'components/Anchor/Anchor';
-import { useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import { useBreadcrumbItem, useBreadcrumbs } from 'react-aria';
 import classes from './Breadcrumb.module.scss';
 
@@ -30,7 +30,7 @@ export const Breadcrumb = ({ href, ...props }: BreadcrumbProps) => {
 	);
 };
 
-type BreadcrumbsProps = AriaBreadcrumbsProps<unknown>;
+type BreadcrumbsProps = { children: ReactNode } & AriaBreadcrumbsProps;
 
 const Breadcrumbs = (props: BreadcrumbsProps) => {
 	const { navProps } = useBreadcrumbs(props);
