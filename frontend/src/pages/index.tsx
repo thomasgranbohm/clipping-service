@@ -2,10 +2,10 @@ import ClipListing from 'components/ClipListing/ClipListing';
 import Layout from 'components/Layout/Layout';
 import LibraryListing from 'components/LibraryListing/LibraryListing';
 import SEO from 'components/SEO/SEO';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { privateAPI } from 'utils/api';
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
 	const [{ data: libraries }, { data: clips }] = await Promise.all([
 		privateAPI('/library'),
 		privateAPI('/clip'),

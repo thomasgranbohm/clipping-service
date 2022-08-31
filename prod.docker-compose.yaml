@@ -18,29 +18,25 @@ services:
       - ./backend/uploads:/home/node/app/uploads
     working_dir: /home/node/app
   database:
-    image: postgres
     environment:
       POSTGRES_DB: clipping-service
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
     expose:
       - 5432
+    image: postgres
     volumes:
       - database:/var/lib/postgresql/data
   frontend:
-    command: bash -c '/test-endpoint.sh backend 1337 && npm run build && npm run start'
+    build:
+      context: ./frontend
     depends_on:
-      - backend
-    env_file: ./config/production.frontend.env
+      backend:
+        condition: service_healthy
     environment:
       NEXT_PUBLIC_GIT_COMMIT: ${GIT_COMMIT}
     expose:
       - 3000
-    image: node:16
-    user: node
-    volumes:
-      - ./frontend:/home/node/app
-      - ./scripts/test-endpoint.sh:/test-endpoint.sh
     working_dir: /home/node/app
   nginx:
     command: bash -c '/test-endpoint.sh backend 1337 && echo "Starting NGiNX..." && nginx -g "daemon off;"'

@@ -1,5 +1,8 @@
-import { BreadcrumbData, JointBreadcrumbType } from './types';
+import getConfig from 'next/config';
 import { ParsedUrlQuery } from 'querystring';
+import { BreadcrumbData, JointBreadcrumbType } from './types';
+
+const { publicRuntimeConfig } = getConfig();
 
 export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 	classes
@@ -15,9 +18,14 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 
 export const addToURL = (url: URL, endpoint): URL =>
 	new URL(
-		url.origin + `${url.pathname}${
-			!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : ''
-		}${endpoint}${url.search}`.replace(/(\/{2,})/g, '/')
+		url.origin
+			.concat(
+				url.pathname,
+				!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : '',
+				endpoint,
+				url.search
+			)
+			.replace(/(?<!http:|https:)\/{2,}/g, '/')
 	);
 
 export const generateBackendURL = (path: string, clip?: boolean): URL => {
@@ -28,7 +36,7 @@ export const generateBackendURL = (path: string, clip?: boolean): URL => {
 	const endpoint = queryNames[slashes.length];
 
 	const url = addToURL(
-		new URL(process.env.NEXT_PUBLIC_BACKEND_URL),
+		new URL(publicRuntimeConfig.EXTERNAL_BACKEND_URL),
 		`${endpoint}/${slug}`
 	);
 

@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-const urls = [process.env.BACKEND_URL, process.env.NEXT_PUBLIC_BACKEND_URL].map(
-	(url) => new URL(url).hostname
-);
+const urls = [
+	process.env.EXTERNAL_BACKEND_URL,
+	process.env.INTERNAL_BACKEND_URL,
+].map((url) => new URL(url).hostname);
 
 module.exports = {
 	reactStrictMode: true,
@@ -14,5 +15,10 @@ module.exports = {
 	},
 	publicRuntimeConfig: {
 		imageDomains: urls,
+		EXTERNAL_BACKEND_URL:
+			process.env.EXTERNAL_BACKEND_URL || 'http://localhost:1337',
+		INTERNAL_BACKEND_URL:
+			process.env.INTERNAL_BACKEND_URL || 'http://backend:1337',
 	},
+	output: 'standalone',
 };

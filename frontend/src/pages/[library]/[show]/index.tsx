@@ -37,6 +37,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
+	if (process.env.SKIP_BUILD_STATIC_GENERATION) {
+		return {
+			paths: [],
+			fallback: 'blocking',
+		};
+	}
+
 	const { data } = await privateAPI('/path/shows');
 
 	return {
