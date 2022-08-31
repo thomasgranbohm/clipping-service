@@ -17,6 +17,7 @@ module.exports = {
 		imageDomains: urls,
 		EXTERNAL_BACKEND_URL:
 			process.env.EXTERNAL_BACKEND_URL || 'http://localhost:1337',
+		GIT_COMMIT: process.env.GIT_COMMIT,
 		INTERNAL_BACKEND_URL:
 			process.env.INTERNAL_BACKEND_URL || 'http://backend:1337',
 	},
