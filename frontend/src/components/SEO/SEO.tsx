@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import Head from 'next/head';
 
 type SEOProps = {
@@ -8,14 +9,13 @@ type SEOProps = {
 	video?: string;
 };
 
+const { publicRuntimeConfig } = getConfig();
+
 const SEO = ({ title, description, image, oembed, video }: SEOProps) => (
 	<Head>
 		<title>{title}</title>
 		<meta property="og:title" content={title} />
-		<meta
-			property="og:site_name"
-			content={process.env.NEXT_PUBLIC_PAGE_TITLE}
-		/>
+		<meta property="og:site_name" content={publicRuntimeConfig.PAGE_TITLE} />
 		{description && <meta name="description" content={description} />}
 		{description && <meta property="og:description" content={description} />}
 		{image && <meta property="og:image" content={image} />}

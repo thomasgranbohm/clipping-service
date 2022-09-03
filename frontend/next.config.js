@@ -20,6 +20,7 @@ module.exports = {
 		GIT_COMMIT: process.env.GIT_COMMIT,
 		INTERNAL_BACKEND_URL:
 			process.env.INTERNAL_BACKEND_URL || 'http://backend:1337',
+		PAGE_TITLE: process.env.PAGE_TITLE || 'Clipping Service',
 	},
 	output: 'standalone',
 };

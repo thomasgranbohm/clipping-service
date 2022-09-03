@@ -63,7 +63,7 @@ export const getURLFromModel = (links?: JointBreadcrumbType): string =>
 export const flattenLinks = (links?: JointBreadcrumbType): BreadcrumbData[] => {
 	const parseLinks = (localLinks?: JointBreadcrumbType): BreadcrumbData[] => {
 		if (!!!localLinks) {
-			return [{ href: '', title: process.env.NEXT_PUBLIC_PAGE_TITLE }];
+			return [{ href: '', title: publicRuntimeConfig.PAGE_TITLE }];
 		} else if ('episode' in localLinks) {
 			return [
 				...parseLinks(localLinks.episode),
