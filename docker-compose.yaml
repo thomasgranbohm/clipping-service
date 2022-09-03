@@ -4,7 +4,7 @@ services:
     command: npm run dev
     depends_on:
       - database
-    env_file: ./config/backend.env
+    env_file: ./backend/.env
     environment:
       DATABASE_HOST: database
     image: node:16
@@ -27,7 +27,6 @@ services:
     command: npm run dev
     depends_on:
       - backend
-    env_file: ./config/frontend.env
     image: node:16
     ports:
       - 3000:3000
