@@ -41,14 +41,20 @@ server.use('/webhook', Webhook);
 server.use((err: CustomError, _, res, __) => {
 	const { message, status, stack } = err;
 
+	if (process.env.NODE_ENV !== 'production') {
+		console.error(err.error);
+	}
+
 	return res.status(status || 500).json({
 		message: message || 'Something went wrong.',
 		stack:
-			process.env.NODE_ENV === 'production'
+			process.env.NODE_ENV !== 'production'
 				? stack
 				: 'Only available in development.',
 	});
 });
+
+server.get('/health-check', (_, res) => res.send('Running.'));
 
 server.post('/login', async (req, res) => {
 	if ('password' in req.body === false)
@@ -71,14 +77,20 @@ server.get('/verify', Authentication, async (_, res) => {
 });
 
 const main = async () => {
-	const connection = await connectToDatabase();
-	if (process.env.NODE_ENV === 'production') {
-		await connection.sync({ force: true });
-		await reinitialize();
+	try {
+		const connection = await connectToDatabase();
+
+		if (process.env.NODE_ENV === 'production') {
+			await connection.sync({ force: true });
+			await reinitialize();
+		}
+		server.listen(1337, async () => {
+			console.log('Started!');
+		});
+	} catch (error) {
+		console.error('Something went wrong starting the project.');
+		console.error(error);
 	}
-	server.listen(1337, async () => {
-		console.log('Started!');
-	});
 };
 
 main();

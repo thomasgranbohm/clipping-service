@@ -22,7 +22,7 @@ RUN npm run build
 RUN npm ci --production
 
 # Start stage
-FROM node:16-alpine
+FROM node:16-alpine AS run
 WORKDIR /home/node/app
 
 ENV NODE_ENV production
@@ -34,5 +34,8 @@ COPY --from=build /home/node/app/package.json ./package.json
 USER node
 
 EXPOSE 1337
+
+HEALTHCHECK  --interval=1m --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:1337/health-check || exit 1
 
 CMD ["npm", "start"]

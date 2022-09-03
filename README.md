@@ -4,10 +4,8 @@
 
 ## Setup
 
-1. Copy every `config/*.example.env` to `config/*.env`
-1. Copy `example.env` to `.env`
-1. Fill in the values
-1. Run `./scripts/build.sh`
+1. Run `make setup`
+2. Fill in missing values in `.env` and `backend/.env`
 
 ## Requirements
 

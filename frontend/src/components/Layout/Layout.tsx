@@ -1,6 +1,7 @@
 import Anchor from 'components/Anchor/Anchor';
 import Breadcrumbs, { Breadcrumb } from 'components/Breadcrumb/Breadcrumb';
 import Button from 'components/Button/Button';
+import getConfig from 'next/config';
 import { useRouter } from 'next/dist/client/router';
 import { ReactNode } from 'react';
 import { flattenLinks } from 'utils/functions';
@@ -12,6 +13,8 @@ type LayoutProps = {
 	displayLoginButton?: boolean;
 	links?: JointBreadcrumbType;
 };
+
+const { publicRuntimeConfig } = getConfig();
 
 const Layout = ({ children, displayLoginButton, links }: LayoutProps) => {
 	const flattenedLinks = flattenLinks(links);
@@ -49,13 +52,13 @@ const Layout = ({ children, displayLoginButton, links }: LayoutProps) => {
 						Source code
 					</Anchor>{' '}
 				</p>
-				{process.env.NEXT_PUBLIC_GIT_COMMIT && (
+				{publicRuntimeConfig.GIT_COMMIT && (
 					<p>
 						Build:{' '}
 						<Anchor
-							href={`https://github.com/thomasgranbohm/clipping-service/commits/${process.env.NEXT_PUBLIC_GIT_COMMIT}`}
+							href={`https://github.com/thomasgranbohm/clipping-service/commits/${publicRuntimeConfig.GIT_COMMIT}`}
 						>
-							{process.env.NEXT_PUBLIC_GIT_COMMIT}
+							{publicRuntimeConfig.GIT_COMMIT}
 						</Anchor>
 					</p>
 				)}

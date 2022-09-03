@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import NextImage from 'next/image';
 import { concat } from 'utils/functions';
 import classes from './Image.module.scss';
@@ -10,13 +11,15 @@ export type ImageProps = {
 	height: number;
 };
 
+const { publicRuntimeConfig } = getConfig();
+
 const Image = ({ className = '', src, alt, width, height }: ImageProps) => (
 	<div className={concat(classes['container'], className)}>
 		<NextImage
 			className={classes['image']}
 			src={src.replace(
-				process.env.NEXT_PUBLIC_BACKEND_URL,
-				'http://backend:1337'
+				publicRuntimeConfig.EXTERNAL_BACKEND_URL,
+				publicRuntimeConfig.INTERNAL_BACKEND_URL
 			)}
 			alt={alt}
 			width={width}
@@ -24,7 +27,10 @@ const Image = ({ className = '', src, alt, width, height }: ImageProps) => (
 			layout="responsive"
 			placeholder="blur"
 			blurDataURL={`/_next/image?url=${encodeURIComponent(
-				src.replace(process.env.NEXT_PUBLIC_BACKEND_URL, 'http://backend:1337')
+				src.replace(
+					publicRuntimeConfig.EXTERNAL_BACKEND_URL,
+					publicRuntimeConfig.INTERNAL_BACKEND_URL
+				)
 			)}&w=8&q=1`}
 			objectFit="cover"
 			loading="lazy"
