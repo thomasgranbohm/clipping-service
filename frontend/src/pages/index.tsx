@@ -16,7 +16,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 			libraries,
 			clips,
 		},
-		revalidate: 1,
 	};
 };
 
