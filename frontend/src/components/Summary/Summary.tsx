@@ -11,7 +11,13 @@ type SummaryProps = {
 const Summary = ({ children, image }: SummaryProps) => (
 	<div className={concat(classes['container'], !image && classes['no-image'])}>
 		<p className={classes['text']}>{children}</p>
-		{image && <Image className={classes['image']} {...image} />}
+		{image && (
+			<Image
+				className={classes['image']}
+				alt="Thumbnail of the episode"
+				{...image}
+			/>
+		)}
 	</div>
 );
 
