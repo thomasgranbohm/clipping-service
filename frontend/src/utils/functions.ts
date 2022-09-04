@@ -18,14 +18,14 @@ export const concat = (...classes: Array<string | [unknown, any] | unknown>) =>
 
 export const addToURL = (url: URL, endpoint): URL =>
 	new URL(
-		url.origin
+		url.pathname
 			.concat(
-				url.pathname,
 				!endpoint.startsWith('/') && !url.pathname.endsWith('/') ? '/' : '',
 				endpoint,
 				url.search
 			)
-			.replace(/(?<!:)\/+/g, '/')
+			.replace(/\/{2,}/g, '/'),
+		url.origin
 	);
 
 export const generateBackendURL = (path: string, clip?: boolean): URL => {
