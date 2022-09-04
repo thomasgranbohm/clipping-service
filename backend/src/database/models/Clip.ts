@@ -104,7 +104,7 @@ export class Clip extends Model {
 
 		for (const clip of instances) {
 			try {
-				Clip.generateFiles(clip);
+				clip.generateFiles();
 			} catch (error) {
 				console.error(
 					'Something went wrong trying to generate files for %s.',
@@ -116,27 +116,28 @@ export class Clip extends Model {
 	}
 
 	@AfterCreate
-	static async generateFiles(instance: Clip) {
+	static runGeneration(instance: Clip) {
 		if (process.env.NODE_ENV !== 'production') return;
+		instance.generateFiles();
+	}
 
-		const path = instance.getPath();
+	async generateFiles() {
+		const path = this.getPath();
 		try {
 			await access(path);
 		} catch (error) {
 			await mkdir(path);
 		}
 
-		const oldGenerationHash = instance.generationHash;
-		await FFmpeg.generateClip(instance);
-		const newGenerationHash = instance.generationHash;
+		const oldGenerationHash = this.generationHash;
+		await FFmpeg.generateClip(this);
+		const newGenerationHash = this.generationHash;
 
 		if (oldGenerationHash !== newGenerationHash) {
-			const information = await open(instance.getInformationPath(), 'w');
+			const information = await open(this.getInformationPath(), 'w');
 
 			information.write(
-				Buffer.from(JSON.stringify(instance.getInformation())).toString(
-					'base64'
-				)
+				Buffer.from(JSON.stringify(this.getInformation())).toString('base64')
 			);
 
 			information.close();
