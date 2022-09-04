@@ -50,8 +50,6 @@ export const generateClip = async (clip: Clip) => {
 		await generateThumbnail(clip);
 		clip.update({ generationHash });
 	}
-
-	clip.update({ ready: true });
 };
 
 export const generateThumbnail = async (clip: Clip) => {

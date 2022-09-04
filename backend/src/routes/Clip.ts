@@ -247,7 +247,7 @@ router.get('/:slug/thumbnail', async (req, res, next) => {
 				message: 'Clip not found.',
 			});
 		} else if (!clip.ready) {
-			return res.sendFile(resolve(cwd(), 'src/public/clip-not-ready.png'));
+			return res.sendFile(resolve(cwd(), 'public/clip-not-ready.png'));
 		}
 
 		return res.sendFile(clip.getThumbnailPath());

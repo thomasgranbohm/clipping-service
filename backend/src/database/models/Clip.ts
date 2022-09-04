@@ -142,6 +142,7 @@ export class Clip extends Model {
 
 			information.close();
 		}
+		this.update({ ready: true });
 	}
 
 	@BeforeDestroy
