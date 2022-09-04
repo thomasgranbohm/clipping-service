@@ -25,7 +25,7 @@ export const addToURL = (url: URL, endpoint): URL =>
 				endpoint,
 				url.search
 			)
-			.replace(/(?<!http:|https:)\/{2,}/g, '/')
+			.replace(/(?<!:)\/+/g, '/')
 	);
 
 export const generateBackendURL = (path: string, clip?: boolean): URL => {
