@@ -28,7 +28,9 @@ export const generateClip = async (clip: Clip) => {
 	);
 
 	const hash = createHash('sha256');
-	hash.write(`${command}|${JSON.stringify(clip.getInformation())}`);
+	hash.write(
+		`${command}|${clip.duration}|${clip.start}|${clip.end}|${clip.slug}`
+	);
 	const generationHash = hash.digest('hex');
 
 	if (generationHash !== clip.generationHash) {

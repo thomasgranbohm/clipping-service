@@ -63,7 +63,7 @@ export class Clip extends Model {
 				trim: true,
 			});
 		}
-		instance.duration = instance.end - instance.start;
+		instance.duration = Math.round((instance.end - instance.start) * 100) / 100;
 	}
 
 	@AllowNull(false)
@@ -126,6 +126,8 @@ export class Clip extends Model {
 			await mkdir(path);
 		}
 
+		await FFmpeg.generateClip(instance);
+
 		try {
 			await access(instance.getInformationPath());
 		} catch (error) {
@@ -139,8 +141,6 @@ export class Clip extends Model {
 
 			information.close();
 		}
-
-		await FFmpeg.generateClip(instance);
 	}
 
 	@BeforeDestroy
