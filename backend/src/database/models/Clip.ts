@@ -126,11 +126,11 @@ export class Clip extends Model {
 			await mkdir(path);
 		}
 
+		const oldGenerationHash = instance.generationHash;
 		await FFmpeg.generateClip(instance);
+		const newGenerationHash = instance.generationHash;
 
-		try {
-			await access(instance.getInformationPath());
-		} catch (error) {
+		if (oldGenerationHash !== newGenerationHash) {
 			const information = await open(instance.getInformationPath(), 'w');
 
 			information.write(
