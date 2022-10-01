@@ -8,5 +8,5 @@ export const privateAPI = axios.create({
 });
 
 export const publicAPI = axios.create({
-	baseURL: publicRuntimeConfig.EXTERNAL_BACKEND_URL,
+	baseURL: '/api',
 });
