@@ -1,7 +1,10 @@
 import Anchor from 'components/Anchor/Anchor';
 import Image from 'components/Image/Image';
+import { forwardRef } from 'react';
 import { addToURL, concat, generateBackendURL } from 'utils/functions';
 import classes from './Thumbnail.module.scss';
+
+export type SkeletonThumbnailProps = Pick<ThumbnailProps, 'type'>;
 
 export type ThumbnailProps = {
 	url: string;
@@ -9,6 +12,27 @@ export type ThumbnailProps = {
 	type: 'show' | 'season' | 'episode' | 'clip';
 	disabled?: boolean;
 };
+
+export const SkeletonThumbnail = forwardRef<
+	HTMLDivElement,
+	SkeletonThumbnailProps
+>(({ type }, ref) => {
+	return (
+		<div
+			ref={ref}
+			className={concat(classes['content'], classes[type], classes['skeleton'])}
+		>
+			<div className={classes['thumbnail-container']}>
+				<div className={classes['thumbnail']} />
+			</div>
+			<p className={classes['title']} aria-hidden>
+				filler
+			</p>
+		</div>
+	);
+});
+
+SkeletonThumbnail.displayName = 'SkeletonThumbnail';
 
 const Thumbnail = ({ url, type, title, disabled }: ThumbnailProps) => {
 	const backendURL = generateBackendURL(url);

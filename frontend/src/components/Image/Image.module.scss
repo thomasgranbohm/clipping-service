@@ -1,5 +1,8 @@
+@import 'styles/includes';
+
 .container {
 	.image {
+		background-color: $accent;
 		transition: 0.1s;
 	}
 }

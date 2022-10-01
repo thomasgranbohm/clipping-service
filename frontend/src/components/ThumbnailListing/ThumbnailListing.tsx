@@ -1,8 +1,8 @@
-import Thumbnail from 'components/Thumbnail/Thumbnail';
+import Thumbnail, { SkeletonThumbnail } from 'components/Thumbnail/Thumbnail';
 import { useState } from 'react';
 import { publicAPI } from 'utils/api';
 import { concat, getURLFromModel } from 'utils/functions';
-import useObserver from 'utils/hooks';
+import { useObserver } from 'utils/hooks';
 import classes from './ThumbnailListing.module.scss';
 
 type ThumbnailListingProps = {
@@ -20,7 +20,7 @@ const ThumbnailListing = ({
 }: ThumbnailListingProps) => {
 	const [stateItems, setStateItems] = useState(items);
 	const [nextURL, setNextURL] = useState(next);
-	const sentinel = useObserver(
+	const ref = useObserver(
 		async () => {
 			const { data } = await publicAPI.get(nextURL);
 			setNextURL(data['next']);
@@ -44,8 +44,10 @@ const ThumbnailListing = ({
 
 					return <Thumbnail key={i} type={type} {...thumbnailProps} />;
 				})}
+				{new Array(total - stateItems.length).fill(null).map((_, i) => (
+					<SkeletonThumbnail ref={i === 0 ? ref : null} key={i} type={type} />
+				))}
 			</div>
-			{sentinel}
 		</>
 	);
 };

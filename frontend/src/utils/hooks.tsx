@@ -15,7 +15,7 @@ export const useLoggedIn = () => {
 	return { loggedIn };
 };
 
-const useObserver = (
+export const useObserver = (
 	callback: () => {},
 	options?: {
 		stoppingCondition?: boolean;
@@ -52,7 +52,18 @@ const useObserver = (
 		};
 	});
 
-	const sentinel = !stoppingCondition && (
+	return ref;
+};
+
+const useSentinel = (
+	callback: () => {},
+	options?: {
+		stoppingCondition?: boolean;
+	} & IntersectionObserverInit
+) => {
+	const ref = useObserver(callback, options);
+
+	const sentinel = !options.stoppingCondition && (
 		<div
 			ref={ref}
 			style={{
@@ -69,4 +80,4 @@ const useObserver = (
 	return sentinel;
 };
 
-export default useObserver;
+export default useSentinel;
