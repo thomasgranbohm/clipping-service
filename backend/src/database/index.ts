@@ -190,7 +190,7 @@ export const syncAll = async () => {
 					const { duration, episodeThumb, episodeTitle, filePath, summary } =
 						await getItemDetails(episodeId);
 
-					const episode = await upsert<Episode>(
+					await upsert<Episode>(
 						Episode,
 						{
 							id: episodeId,
