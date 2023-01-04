@@ -6,6 +6,7 @@
 
 1. Run `make setup`
 2. Fill in missing values in `.env` and `backend/.env`
+	- [How to find your Plex token](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/)
 
 ## Requirements
 

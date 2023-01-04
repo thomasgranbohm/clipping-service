@@ -28,7 +28,7 @@ export const addToURL = (url: URL, endpoint): URL =>
 		url.origin
 	);
 
-export const generateBackendURL = (path: string, clip?: boolean): URL => {
+export const generateBackendURL = (path: string): URL => {
 	const queryNames = ['library', 'show', 'season', 'episode', 'clip'];
 
 	const slashes = path.split('/').slice(1);
@@ -36,7 +36,7 @@ export const generateBackendURL = (path: string, clip?: boolean): URL => {
 	const endpoint = queryNames[slashes.length];
 
 	const url = addToURL(
-		new URL(publicRuntimeConfig.EXTERNAL_BACKEND_URL),
+		new URL(publicRuntimeConfig.BACKEND_URL),
 		`${endpoint}/${slug}`
 	);
 

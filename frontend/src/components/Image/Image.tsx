@@ -17,20 +17,14 @@ const Image = ({ className = '', src, alt, width, height }: ImageProps) => (
 	<div className={concat(classes['container'], className)}>
 		<NextImage
 			className={classes['image']}
-			src={src.replace(
-				publicRuntimeConfig.EXTERNAL_BACKEND_URL,
-				publicRuntimeConfig.INTERNAL_BACKEND_URL
-			)}
+			src={src.replace(publicRuntimeConfig.BACKEND_URL, 'http://backend:1337')}
 			alt={alt}
 			width={width}
 			height={height}
 			layout="responsive"
 			placeholder="blur"
 			blurDataURL={`/_next/image?url=${encodeURIComponent(
-				src.replace(
-					publicRuntimeConfig.EXTERNAL_BACKEND_URL,
-					publicRuntimeConfig.INTERNAL_BACKEND_URL
-				)
+				src.replace(publicRuntimeConfig.BACKEND_URL, 'http://backend:1337')
 			)}&w=8&q=1`}
 			objectFit="cover"
 			loading="lazy"
