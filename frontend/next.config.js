@@ -1,21 +1,15 @@
 /** @type {import('next').NextConfig} */
-
-const urls = [process.env.BACKEND_URL, 'backend'].map(
-	(url) => new URL(url).hostname
-);
-
 module.exports = {
 	reactStrictMode: true,
 	images: {
-		domains: urls,
+		domains: ['backend'],
 		minimumCacheTTL: 60,
 		deviceSizes: [8, 16, 32, 48, 64, 128, 196, 256, 384],
 		imageSizes: [8, 16, 32, 48, 64, 96, 128, 256, 384],
 	},
 	publicRuntimeConfig: {
-		imageDomains: urls,
 		GIT_COMMIT: process.env.GIT_COMMIT,
-		BACKEND_URL: 'http://backend:1337',
+		BACKEND_URL: process.env.BACKEND_URL,
 		PAGE_TITLE: 'Clipping Service',
 	},
 	output: 'standalone',
