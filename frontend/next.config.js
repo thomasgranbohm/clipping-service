@@ -12,5 +12,8 @@ module.exports = {
 		BACKEND_URL: process.env.BACKEND_URL,
 		PAGE_TITLE: 'Clipping Service',
 	},
+	serverRuntimeConfig: {
+		PUBLIC_KEY: process.env.PUBLIC_KEY,
+	},
 	output: 'standalone',
 };

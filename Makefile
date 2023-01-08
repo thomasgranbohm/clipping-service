@@ -19,7 +19,10 @@ generate-keys:
 
 	@openssl rsa -in /tmp/private.pem -outform PEM -pubout -out /tmp/public.pem > /dev/null 2>&1
 
-	@sed -i -zE "s/PRIVATE_KEY='-----BEGIN PRIVATE KEY-----(.|\n)*-----END PRIVATE KEY-----'\n//" $(DIR)/backend/.env
+	@sed -i ':a;N;$$!ba;s/\n/\\\\n/g' /tmp/private.pem
+	@sed -i ':a;N;$$!ba;s/\n/\\\\n/g' /tmp/public.pem
+
+	@sed -i -zE "s/PRIVATE_KEY='-----BEGIN PRIVATE KEY-----(.|\n)*-----END PRIVATE KEY-----'\n//" backend/.env
 	@echo "PRIVATE_KEY='`cat /tmp/private.pem`'" >> backend/.env
 
 	@sed -i -zE "s/PUBLIC_KEY='-----BEGIN PUBLIC KEY-----(.|\n)*-----END PUBLIC KEY-----'\n//" backend/.env
