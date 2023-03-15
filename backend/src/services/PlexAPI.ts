@@ -21,11 +21,6 @@ const plex = axios.create({
 
 const getMediaId = (str = '') => str.replace(/\/library\/metadata\//g, '');
 
-const toLowerCase = (obj: Object) =>
-	Object.entries(obj)
-		.map(([key, value]) => ({ [key.toLowerCase()]: value }))
-		.reduce((prev, curr) => ({ ...prev, ...curr }), {});
-
 const requestPlex = async (url) => {
 	try {
 		const resp = await plex(url);

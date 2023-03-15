@@ -9,7 +9,7 @@ export const useLoggedIn = () => {
 			withCredentials: true,
 		})
 			.then(() => setLoggedIn(true))
-			.catch((err) => {});
+			.catch(() => {});
 	}, []);
 
 	return { loggedIn };

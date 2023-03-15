@@ -57,8 +57,10 @@ server.use((err: CustomError, _, res, __) => {
 server.get('/health-check', (_, res) => res.send('Running.'));
 
 server.post('/login', async (req, res) => {
-	if ('password' in req.body === false)
+	if ('password' in req.body === false) {
 		return res.status(401).send('Wrong password.');
+	}
+
 	const { password } = req.body;
 
 	if (password !== process.env.PASSWORD)

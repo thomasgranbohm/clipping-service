@@ -1,19 +1,20 @@
 import { NextApiHandler } from 'next';
-import { verify } from 'jsonwebtoken';
-import { getCookieParser } from 'next/dist/server/api-utils';
-import getConfig from 'next/config';
-
-const { serverRuntimeConfig } = getConfig();
+import { privateAPI } from 'utils/api';
 
 const Handler: NextApiHandler = async (req, res) => {
-	const parseCookie = getCookieParser(req.headers);
-	const cookies = parseCookie();
+	console.log(req.headers, req.cookies);
 
 	try {
-		if ('token' in cookies === false) throw new Error();
+		if ('token' in req.cookies !== true) {
+			throw new Error();
+		}
 
-		await verify(cookies.token, serverRuntimeConfig.PUBLIC_KEY, {
-			algorithms: ['RS256'],
+		await privateAPI.get('/verify', {
+			headers: {
+				cookie: Object.entries(req.cookies)
+					.map(([key, value]) => `${key}=${value}`)
+					.join(';'),
+			},
 		});
 
 		return res.send('OK');

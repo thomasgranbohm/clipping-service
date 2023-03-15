@@ -28,7 +28,7 @@ export const getClipWhereOptions = (
 	};
 };
 
-export const CLIP_REQUIRED_ARGS = ['season', ...EPISODE_REQUIRED_ARGS];
+export const CLIP_REQUIRED_ARGS = ['episode', ...EPISODE_REQUIRED_ARGS];
 
 const getAppropriateWhereOptions = (query): Includeable => {
 	const { episode, library, season, show } = query;
