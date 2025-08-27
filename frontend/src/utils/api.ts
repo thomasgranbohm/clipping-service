@@ -1,9 +1,12 @@
 import axios from 'axios';
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 export const privateAPI = axios.create({
-	baseURL: 'http://backend:1337',
+	baseURL: publicRuntimeConfig.INTERNAL_BACKEND_URL,
 });
 
 export const publicAPI = axios.create({
-	baseURL: '/api',
+	baseURL: publicRuntimeConfig.EXTERNAL_FRONTEND_URL + '/api',
 });

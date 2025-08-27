@@ -48,6 +48,10 @@ export const generateBackendURL = (path: string): URL => {
 	return url;
 };
 
+export const generateFrontendURL = (path: string): URL => {
+	return addToURL(new URL(publicRuntimeConfig.EXTERNAL_FRONTEND_URL), path);
+};
+
 export const getURLParams = (params: ParsedUrlQuery) => {
 	const search = new URLSearchParams();
 	for (const [key, value] of Object.entries(params).slice()) {
