@@ -36,7 +36,7 @@ export const generateBackendURL = (path: string): URL => {
 	const endpoint = queryNames[slashes.length];
 
 	const url = addToURL(
-		new URL(publicRuntimeConfig.EXTERNAL_FRONTEND_URL),
+		new URL(publicRuntimeConfig.EXTERNAL_BACKEND_URL),
 		`${endpoint}/${slug}`
 	);
 
